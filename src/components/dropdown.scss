@@ -35,7 +35,7 @@
 }
 
 .dropdown .dropdownBody {
-  padding: 0 12px;
+  padding: 0px 12px;
   overflow-y: hidden;
   transition-property: max-height;
   transition-duration: .5s;
@@ -76,4 +76,10 @@
   flex-shrink: 0;
   text-align: center;
   height: 16px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0px;
 }

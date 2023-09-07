@@ -1,0 +1,54 @@
+.radioOptions, .checkOptions {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.radioOptions {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  flex-basis: 120px;
+  padding: 6px;
+  label {
+    padding-top: 3px;
+  }
+}
+
+.radio {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  background-image: url('../assets/radio-button-unchecked.svg');
+  color: var(--teal-dark-75);
+  &:checked {
+    background-image: url('../assets/radio-button-checked.svg');
+  }
+}
+
+.checkbox {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  background-image: url('../assets/check-box-outline-blank.svg');
+  color: var(--teal-dark-75);
+  &:checked {
+    background-image: url('../assets/check-box.svg');
+  }
+}
+
+.checkOptions {
+  flex-wrap: wrap;
+  display: flex;
+}

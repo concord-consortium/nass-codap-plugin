@@ -3,9 +3,17 @@ import { Dropdown } from "./dropdown";
 import css from "./app.scss";
 import classnames from "classnames";
 import { Information } from "./information";
+import { defaultSelectedOptions } from "./constants";
+
 
 function App() {
   const [showInfo, setShowInfo] = useState<boolean>(false);
+  const [selectedOptions, setSelectedOptions] = useState<typeof defaultSelectedOptions>(defaultSelectedOptions);
+
+  const handleSetSelectedOptions = (option: string, value: string | string[]) => {
+    const newSelectedOptions = {...selectedOptions, [option]: value};
+    setSelectedOptions(newSelectedOptions);
+  };
 
   const handleInfoClick = () => {
     setShowInfo(true);
@@ -33,16 +41,22 @@ function App() {
           sectionName={"Place"}
           sectionAltText={"Place alt text"}
           sectionDescription={"Place description"}
+          handleSetSelectedOptions={handleSetSelectedOptions}
+          selectedOptions={selectedOptions}
         />
         <Dropdown
           sectionName={"Attributes"}
           sectionAltText={"Attributes alt text"}
           sectionDescription={"Attributes description"}
+          handleSetSelectedOptions={handleSetSelectedOptions}
+          selectedOptions={selectedOptions}
         />
         <Dropdown
           sectionName={"Years"}
           sectionAltText={"Years alt text"}
           sectionDescription={"Years description"}
+          handleSetSelectedOptions={handleSetSelectedOptions}
+          selectedOptions={selectedOptions}
         />
       </div>
       <div className={css.summary}>
