@@ -13,12 +13,22 @@ interface IProps {
 }
 
 export const Dropdown: React.FC<IProps> = (props) => {
-  const {sectionName, sectionAltText, sectionDescription, handleSetSelectedOptions, selectedOptions} = props;
+  const {sectionName, sectionAltText, handleSetSelectedOptions, selectedOptions} = props;
   const [showItems, setShowItems] = useState<boolean>(false);
 
   const handleClick = () => {
     setShowItems(!showItems);
   };
+
+  const renderSummary = () => {
+    if (sectionName === "Place") {
+      const place = selectedOptions.place || "";
+      const states = selectedOptions.states.join(`, `);
+      return (
+        `${place}: ${states}`
+      );
+    }
+  }
 
   const renderOptions = () => {
     if (sectionName === "Place") {
@@ -36,6 +46,7 @@ export const Dropdown: React.FC<IProps> = (props) => {
   <div className={`${css.dropdown}`}>
     <div className={`${css.sectionHeaderLine} ${css.dropdownHeader}`} title={sectionAltText}>
       <span className={css.sectionTitle}>{sectionName}</span>
+      <div>{renderSummary()}</div>
       <span className={css.userSelection}></span>
       <span className={classnames(css.dropdownIndicator, {[css.up]: showItems})} onClick={handleClick}></span>
     </div>
