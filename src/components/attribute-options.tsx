@@ -24,9 +24,9 @@ export const AttributeOptions: React.FC<IProps> = (props) => {
     if (key === "cropUnits" || key === "crops") {
       return classnames(css.checkOptions, css.narrow);
     } else {
-      return classnames(css.checkOptions, css.vertical)
+      return classnames(css.checkOptions, css.vertical);
     }
-  }
+  };
 
   return (
     <>
@@ -44,7 +44,7 @@ export const AttributeOptions: React.FC<IProps> = (props) => {
               />
             </div>
             </>
-          )
+          );
         })
       }
     </>

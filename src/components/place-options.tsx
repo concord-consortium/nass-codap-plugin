@@ -1,6 +1,6 @@
 import React from "react";
 import { placeOptions, stateOptions } from "./constants";
-import { IStateOptions } from "./types"
+import { IStateOptions } from "./types";
 import { Options } from "./options";
 
 import css from "./options.scss";
@@ -13,7 +13,8 @@ interface IProps {
 export const PlaceOptions: React.FC<IProps> = (props) => {
   const {handleSetSelectedOptions, selectedOptions} = props;
 
-  const commonProps = {selectedOptions, handleSetSelectedOptions}
+  const commonProps = {selectedOptions, handleSetSelectedOptions};
+
   return (
     <>
       <div className={css.instruction}>{placeOptions.label}:</div>

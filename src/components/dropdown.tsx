@@ -31,9 +31,9 @@ export const Dropdown: React.FC<IProps> = (props) => {
     } else if (sectionName === "Attributes") {
       return (
         ""
-      )
+      );
     }
-  }
+  };
 
   const commonProps = {handleSetSelectedOptions, selectedOptions};
 
