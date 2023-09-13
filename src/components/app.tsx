@@ -1,15 +1,20 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { Dropdown } from "./dropdown";
 import classnames from "classnames";
 import { Information } from "./information";
-import { defaultSelectedOptions } from "./constants";
+import { categories, defaultSelectedOptions } from "./constants";
 import { IStateOptions } from "./types";
 
 import css from "./app.scss";
+import { runTestQuery } from "../scripts/api";
 
 function App() {
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const [selectedOptions, setSelectedOptions] = useState<IStateOptions>(defaultSelectedOptions);
+
+  useEffect(() => {
+    runTestQuery();
+  }, [])
 
   const handleSetSelectedOptions = (option: string, value: string | string[]) => {
     const newSelectedOptions = {...selectedOptions, [option]: value};
@@ -38,24 +43,17 @@ function App() {
         </div>
       </div>
       <div className={css.scrollArea}>
-        <Dropdown
-          sectionName={"Place"}
-          sectionAltText={"Place alt text"}
-          handleSetSelectedOptions={handleSetSelectedOptions}
-          selectedOptions={selectedOptions}
-        />
-        <Dropdown
-          sectionName={"Attributes"}
-          sectionAltText={"Attributes alt text"}
-          handleSetSelectedOptions={handleSetSelectedOptions}
-          selectedOptions={selectedOptions}
-        />
-        <Dropdown
-          sectionName={"Years"}
-          sectionAltText={"Years alt text"}
-          handleSetSelectedOptions={handleSetSelectedOptions}
-          selectedOptions={selectedOptions}
-        />
+        {categories.map((cat) => {
+          return (
+            <Dropdown
+              key={cat.header}
+              category={cat.header}
+              sectionAltText={cat.altText}
+              handleSetSelectedOptions={handleSetSelectedOptions}
+              selectedOptions={selectedOptions}
+            />
+          )
+        })}
       </div>
       <div className={css.summary}>
         <span className={css.statusGraphic}></span>

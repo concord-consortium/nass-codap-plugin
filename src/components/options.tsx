@@ -29,7 +29,9 @@ export const Options: React.FC<IOptions> = (props) => {
       if (e.currentTarget.checked) {
         newArray.push(e.target.value);
         newArray.sort();
-
+        if (optionKey === "years") {
+          newArray.reverse();
+        }
       } else {
         if (isOptionSelected(e.target.value)) {
           newArray = newArray.filter((o) => o !== e.target.value);

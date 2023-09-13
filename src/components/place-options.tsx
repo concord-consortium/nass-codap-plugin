@@ -1,5 +1,5 @@
 import React from "react";
-import { placeOptions, stateOptions } from "./constants";
+import { placeOptions } from "./constants";
 import { IStateOptions } from "./types";
 import { Options } from "./options";
 
@@ -12,29 +12,25 @@ interface IProps {
 
 export const PlaceOptions: React.FC<IProps> = (props) => {
   const {handleSetSelectedOptions, selectedOptions} = props;
-
-  const commonProps = {selectedOptions, handleSetSelectedOptions};
-
   return (
     <>
-      <div className={css.instruction}>{placeOptions.label}:</div>
-      <div className={css.radioOptions}>
-        <Options
-          options={placeOptions.options}
-          optionKey="geographicLevel"
-          inputType="radio"
-          { ...commonProps}
-        />
-      </div>
-      <div className={css.instruction}>{stateOptions.label}:</div>
-      <div className={css.checkOptions}>
-        <Options
-          options={stateOptions.options}
-          optionKey="states"
-          inputType="checkbox"
-          {...commonProps}
-        />
-      </div>
+      {placeOptions.map((placeOpt) => {
+        return (
+          <>
+            <div key={`instructions-${placeOpt.key}`} className={css.instruction}>{placeOpt.instructions}:</div>
+            <div key={`options-container-${placeOpt.key}`} className={placeOpt.key === "geographicLevel" ? css.radioOptions : css.checkOptions}>
+              <Options
+                key={`options-${placeOpt.key}`}
+                options={placeOpt.options}
+                optionKey={placeOpt.key}
+                inputType={placeOpt.key === "geographicLevel" ? "radio" : "checkbox"}
+                selectedOptions={selectedOptions}
+                handleSetSelectedOptions={handleSetSelectedOptions}
+              />
+            </div>
+          </>
+        );
+      })}
     </>
   );
 };

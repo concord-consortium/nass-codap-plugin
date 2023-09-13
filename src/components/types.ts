@@ -14,6 +14,6 @@ export type OptionKey = keyof IStateOptions;
 export interface IAttrOptions {
   key: keyof IStateOptions,
   label: string|null,
-  options: string[]
+  options: string[],
   instructions: string|null
 }

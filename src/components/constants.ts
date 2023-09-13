@@ -1,12 +1,16 @@
 import { IAttrOptions, IStateOptions } from "./types";
 
-export const placeOptions = {
-  label: "Size of area for data",
+export const geographicLevelOptions: IAttrOptions = {
+  label: null,
+  key: "geographicLevel",
+  instructions: "Size of area for data",
   options : ["State", "County"]
 };
 
-export const stateOptions = {
-  label: "Choose states to include in your dataset from the list below",
+export const stateOptions: IAttrOptions = {
+  label: null,
+  key: "states",
+  instructions: "Choose states to include in your dataset from the list below",
   options: [
     "Alabama",
     "Alaska",
@@ -61,6 +65,8 @@ export const stateOptions = {
   ]
 };
 
+export const placeOptions = [geographicLevelOptions, stateOptions];
+
 const farmerOptions: IAttrOptions = {
   key: "farmerDemographics",
   label: "Farmer Demographics",
@@ -81,7 +87,7 @@ const economicOptions: IAttrOptions = {
 };
 const cropUnitOptions: IAttrOptions = {
   key: "cropUnits",
-  label: "Production",
+  label: "Crop Production",
   options: ["Area Harvested", "Yield"],
   instructions: "(Choose units)"
 };
@@ -93,6 +99,24 @@ const cropOptions: IAttrOptions = {
 };
 
 export const attributeOptions = [farmerOptions, farmOptions, economicOptions, cropUnitOptions, cropOptions];
+
+const yearsArray = [];
+for (let year = 2022; year >= 1910; year--) {
+  yearsArray.push(`${year}`);
+}
+
+export const yearsOptions: IAttrOptions = {
+  key: "years",
+  label: "Years",
+  options: yearsArray,
+  instructions: null
+}
+
+export const categories = [
+  {header: "Place", options: placeOptions, altText: ""},
+  {header: "Attributes", options: attributeOptions, altText: ""},
+  {header: "Years", options: yearsOptions, altText: ""}
+]
 
 export const defaultSelectedOptions: IStateOptions = {
   "geographicLevel": "",
