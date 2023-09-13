@@ -24,7 +24,6 @@ export const Options: React.FC<IOptions> = (props) => {
   };
 
   const handleSelectState = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log({optionKey}, "e.target.value", e.target.value);
     if (Array.isArray(selectedOptions[optionKey])) {
       let newArray = [...selectedOptions[optionKey]];
       if (e.currentTarget.checked) {
