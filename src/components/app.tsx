@@ -1,14 +1,15 @@
 import React, {useState} from "react";
 import { Dropdown } from "./dropdown";
-import css from "./app.scss";
 import classnames from "classnames";
 import { Information } from "./information";
 import { defaultSelectedOptions } from "./constants";
+import { IStateOptions } from "./types";
 
+import css from "./app.scss";
 
 function App() {
   const [showInfo, setShowInfo] = useState<boolean>(false);
-  const [selectedOptions, setSelectedOptions] = useState<typeof defaultSelectedOptions>(defaultSelectedOptions);
+  const [selectedOptions, setSelectedOptions] = useState<IStateOptions>(defaultSelectedOptions);
 
   const handleSetSelectedOptions = (option: string, value: string | string[]) => {
     const newSelectedOptions = {...selectedOptions, [option]: value};
@@ -40,21 +41,18 @@ function App() {
         <Dropdown
           sectionName={"Place"}
           sectionAltText={"Place alt text"}
-          sectionDescription={"Place description"}
           handleSetSelectedOptions={handleSetSelectedOptions}
           selectedOptions={selectedOptions}
         />
         <Dropdown
           sectionName={"Attributes"}
           sectionAltText={"Attributes alt text"}
-          sectionDescription={"Attributes description"}
           handleSetSelectedOptions={handleSetSelectedOptions}
           selectedOptions={selectedOptions}
         />
         <Dropdown
           sectionName={"Years"}
           sectionAltText={"Years alt text"}
-          sectionDescription={"Years description"}
           handleSetSelectedOptions={handleSetSelectedOptions}
           selectedOptions={selectedOptions}
         />

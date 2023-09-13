@@ -1,3 +1,5 @@
+import { IAttrOptions, IStateOptions } from "./types";
+
 export const placeOptions = {
   label: "Size of area for data",
   options : ["State", "County"]
@@ -59,7 +61,46 @@ export const stateOptions = {
   ]
 };
 
-export const defaultSelectedOptions = {
-  place: null,
-  states: []
+const farmerOptions: IAttrOptions = {
+  key: "farmerDemographics",
+  label: "Farmer Demographics",
+  options: ["Total Farmers", "Age", "Race", "Gender"],
+  instructions: null
+};
+const farmOptions: IAttrOptions = {
+  key: "farmDemographics",
+  label: "Farm Demographics",
+  options: ["Total Farms", "Organization Type", "Economic Class", "Acres Operated", "Organic"],
+  instructions: null
+};
+const economicOptions: IAttrOptions = {
+  key: "economicsAndWages",
+  label: "Economics & Wages",
+  options: ["Labor Status", "Wages", "Time Worked"],
+  instructions: null
+};
+const cropUnitOptions: IAttrOptions = {
+  key: "cropUnits",
+  label: "Production",
+  options: ["Area Harvested", "Yield"],
+  instructions: "(Choose units)"
+};
+const cropOptions: IAttrOptions = {
+  key: "crops",
+  label: null,
+  options: ["Corn", "Cotton", "Grapes", "Grasses", "Oats", "Soybeans", "Wheat"],
+  instructions: "(Choose crops)"
+};
+
+export const attributeOptions = [farmerOptions, farmOptions, economicOptions, cropUnitOptions, cropOptions];
+
+export const defaultSelectedOptions: IStateOptions = {
+  "geographicLevel": "",
+  "states": [],
+  "farmerDemographics": [],
+  "farmDemographics": [],
+  "economicsAndWages": [],
+  "cropUnits": "",
+  "crops": [],
+  "years": []
 };

@@ -51,4 +51,29 @@
 .checkOptions {
   flex-wrap: wrap;
   display: flex;
+  &.vertical {
+    flex-direction: column;
+    .option {
+      flex-basis: auto;
+      padding: 0px;
+    }
+  }
+  &.narrow {
+    margin: 0px;
+    .option {
+      flex-basis: auto;
+      padding: 3px;
+      margin-top: 0px;
+    }
+  }
+}
+
+.category {
+  font-weight: 600;
+}
+
+.instructions {
+  padding-left: 6px;
+  margin-top: 6px;
+
 }

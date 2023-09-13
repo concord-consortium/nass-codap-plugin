@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import classnames from "classnames";
-import css from "./dropdown.scss";
 import { PlaceOptions } from "./place-options";
 import { defaultSelectedOptions } from "./constants";
+import { AttributeOptions } from "./attribute-options";
+
+import css from "./dropdown.scss";
 
 interface IProps {
   sectionName: string
   sectionAltText: string
-  sectionDescription: string
   handleSetSelectedOptions: (option: string, value: string|string[]) => void
   selectedOptions: typeof defaultSelectedOptions;
 }
@@ -22,22 +23,28 @@ export const Dropdown: React.FC<IProps> = (props) => {
 
   const renderSummary = () => {
     if (sectionName === "Place") {
-      const place = selectedOptions.place || "";
+      const place = selectedOptions.geographicLevel || "";
       const states = selectedOptions.states.join(`, `);
       return (
         `${place}: ${states}`
       );
+    } else if (sectionName === "Attributes") {
+      return (
+        ""
+      )
     }
   }
+
+  const commonProps = {handleSetSelectedOptions, selectedOptions};
 
   const renderOptions = () => {
     if (sectionName === "Place") {
       return (
-        <PlaceOptions
-          handleSetSelectedOptions={handleSetSelectedOptions}
-          selectedPlace={selectedOptions.place}
-          selectedStates={selectedOptions.states}
-        />
+        <PlaceOptions {...commonProps}/>
+      );
+    } else if (sectionName === "Attributes") {
+      return (
+        <AttributeOptions {...commonProps}/>
       );
     }
   };
