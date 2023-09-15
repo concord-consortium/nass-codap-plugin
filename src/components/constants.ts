@@ -120,12 +120,12 @@ export const categories = [
 ];
 
 export const defaultSelectedOptions: IStateOptions = {
-  "geographicLevel": "State",
-  "states": ["All States"],
-  "farmerDemographics": [],
-  "farmDemographics": [],
-  "economicsAndWages": [],
-  "cropUnits": "",
-  "crops": [],
-  "years": []
+  geographicLevel: "State",
+  states: ["All States"],
+  farmerDemographics: [],
+  farmDemographics: [],
+  economicsAndWages: [],
+  cropUnits: "",
+  crops: [],
+  years: []
 };

@@ -19,7 +19,7 @@ export const connect = {
     },
 
     createNewDataset: async function (geoLevel) {
-      const geoLabel = geoLevel === "State" ? "States" : "Counties";
+      const geoLabel = geoLevel === "State" ? states : "Counties";
       return codapInterface.sendRequest({
           action: 'create',
           resource: 'dataContext',

@@ -1,12 +1,12 @@
 export interface IStateOptions {
-  "geographicLevel": string,
-  "states": string[]
-  "farmerDemographics": string[],
-  "farmDemographics": string[],
-  "economicsAndWages": string[],
-  "cropUnits": string,
-  "crops": string[]
-  "years": string[]
+  geographicLevel: string,
+  states: string[]
+  farmerDemographics: string[],
+  farmDemographics: string[],
+  economicsAndWages: string[],
+  cropUnits: string,
+  crops: string[]
+  years: string[]
 }
 
 export type OptionKey = keyof IStateOptions;

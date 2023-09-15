@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { attributeOptions, yearsOptions } from "./constants";
 import { IStateOptions } from "./types";
 import { Options } from "./options";
+import { queryData } from "../scripts/query-headers";
+import { flatten } from "./utils";
 
 import css from "./options.scss";
-import { queryData } from "../scripts/query-headers";
 
 interface IProps {
   handleSetSelectedOptions: (option: string, value: string|string[]) => void;
@@ -13,47 +14,49 @@ interface IProps {
 
 export const YearsOptions: React.FC<IProps> = (props) => {
   const {handleSetSelectedOptions, selectedOptions} = props;
+  const [availableYearOptions, setAvailableYearOptions] = useState<string[]>([]);
+  const {farmerDemographics, farmDemographics, crops, economicsAndWages} = selectedOptions;
+
+  useEffect(() => {
+    const attrKeys = attributeOptions.filter((attr) => attr.key !== "cropUnits").map((attr) => attr.key);
+    const selectedAttrKeys = attrKeys.filter((key) => selectedOptions[key].length > 0);
+
+    if (!selectedAttrKeys.length) {
+      return;
+    }
+
+    const yearKeyToUse = selectedOptions.geographicLevel === "County" ? "county" : "state";
+    const allSelectedAttrs = flatten(selectedAttrKeys.map((key) => selectedOptions[key]));
+    const newAvailableYears = allSelectedAttrs.reduce((years, attr) => {
+      const subAttrData = queryData.find((d) => d.plugInAttribute === attr);
+      const availableYears = subAttrData?.years[yearKeyToUse];
+      if (availableYears) {
+        availableYears.forEach((y) => {
+          years.add(y);
+        });
+      }
+      return years;
+    }, new Set());
+
+    setAvailableYearOptions(Array.from(newAvailableYears));
+  }, [farmerDemographics, farmDemographics, crops, economicsAndWages])
 
   const handleSelectYear = (yearKey: string, years: string|string[]) => {
     handleSetSelectedOptions(yearKey, years);
-
-    // check if any attributeOption keys have values in selectedOptions
-    const attrKeys = attributeOptions.map((attr) => attr.key);
-    const selectedAttrKeys = attrKeys.filter((key) => selectedOptions[key].length > 0);
-    const areAnyAttrsSelected = selectedAttrKeys.length > 0;
-    // if any attributes are selected, check that selected year data is available for that selected attribute
-    if (areAnyAttrsSelected) {
-      const selectedYears = Array.isArray(years) ? years : [years];
-      const selectedAttrs = selectedAttrKeys.map((key) => selectedOptions[key]);
-      selectedAttrs.forEach((attr) => {
-        if (Array.isArray(attr)) {
-          attr.forEach((subAttr) => {
-            const subAttrData = queryData.find((d) => d.plugInAttribute === subAttr);
-            const yearKeyToUse = selectedOptions.geographicLevel === "county" ? "county" : "state";
-            const availableYears = subAttrData?.years[yearKeyToUse];
-            if (availableYears) {
-              // check -- are selectedYears included in queryParams?.years[yearKeyTouse] ?
-              const areYearsValid = selectedYears.map((y) => availableYears.indexOf(y) > -1).indexOf(false) < 0;
-              console.log({areYearsValid});
-              console.log({availableYears});
-              console.log({selectedYears});
-              // do something if years are not valid
-            }
-          });
-        }
-      });
-    }
   };
 
   return (
     <div className={css.checkOptions}>
+      {availableYearOptions.length === 0 ?
+      <div>Please select attributes to see available years.</div>
+      :
       <Options
-        options={yearsOptions.options}
+        options={availableYearOptions}
         optionKey={yearsOptions.key}
         inputType={"checkbox"}
         selectedOptions={selectedOptions}
         handleSetSelectedOptions={handleSelectYear}
-      />
+      />}
     </div>
   );
 };

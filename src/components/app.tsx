@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { Dropdown } from "./dropdown";
 import classnames from "classnames";
 import { Information } from "./information";
-import { categories, defaultSelectedOptions } from "./constants";
+import { attributeOptions, categories, defaultSelectedOptions, yearsOptions } from "./constants";
 import { IStateOptions } from "./types";
 import { createQueryFromSelections } from "../scripts/api";
 import { connect } from "../scripts/connect";
@@ -13,6 +13,8 @@ import css from "./app.scss";
 function App() {
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const [selectedOptions, setSelectedOptions] = useState<IStateOptions>(defaultSelectedOptions);
+  const [getDataDisabled, setGetDataDisabled] = useState<boolean>(true);
+  const {farmerDemographics, farmDemographics, crops, economicsAndWages} = selectedOptions;
 
   useEffect(() => {
     const init = async () => {
@@ -20,6 +22,17 @@ function App() {
     };
     init();
   }, []);
+
+  useEffect(() => {
+    const {geographicLevel, states, years} = selectedOptions;
+    const attrKeys = attributeOptions.filter((attr) => attr.key !== "cropUnits").map((attr) => attr.key);
+    const selectedAttrKeys = attrKeys.filter((key) => selectedOptions[key].length > 0);
+    if (selectedAttrKeys.length && geographicLevel && states.length && years.length) {
+      setGetDataDisabled(false);
+    } else {
+      setGetDataDisabled(true);
+    }
+  }, [selectedOptions]);
 
   const handleSetSelectedOptions = (option: string, value: string | string[]) => {
     const newSelectedOptions = {...selectedOptions, [option]: value};
@@ -74,7 +87,7 @@ function App() {
       </div>
       <div className={css.summary}>
         <span className={css.statusGraphic}></span>
-        <button className={css.getDataButton} onClick={handleGetData}>Get Data</button>
+        <button className={css.getDataButton} disabled={getDataDisabled} onClick={handleGetData}>Get Data</button>
       </div>
     </div>
 
