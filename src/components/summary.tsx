@@ -37,17 +37,17 @@ export const Summary: React.FC<IProps> = ({category, selectedOptions}) => {
             return null;
           }
         })
-        .filter((item) => item !== null)
+        .filter((item) => item !== null);
         const finalString = resultString.join(", ");
         return finalString;
     } else if (category === "Years") {
-      return selectedOptions.years.join(", ")
+      return selectedOptions.years.join(", ");
     }
-  }
+  };
 
   return (
     <div>
       {getSummaryText()}
     </div>
-  )
-}
+  );
+};

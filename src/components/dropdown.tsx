@@ -28,7 +28,7 @@ export const Dropdown: React.FC<IProps> = (props) => {
   const renderOptions = () => {
     return category === "Place" ? <PlaceOptions {...commonProps}/> :
     category === "Attributes" ? <AttributeOptions {...commonProps}/> :
-    <YearsOptions {...commonProps}/>
+    <YearsOptions {...commonProps}/>;
   };
 
   return (

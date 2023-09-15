@@ -39,11 +39,11 @@ export const YearsOptions: React.FC<IProps> = (props) => {
               console.log({selectedYears});
               // do something if years are not valid
             }
-          })
+          });
         }
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className={css.checkOptions}>

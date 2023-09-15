@@ -12,6 +12,7 @@ export const stateOptions: IAttrOptions = {
   key: "states",
   instructions: "Choose states to include in your dataset from the list below",
   options: [
+    "All States",
     "Alabama",
     "Alaska",
     "Arizona",
@@ -110,17 +111,17 @@ export const yearsOptions: IAttrOptions = {
   label: "Years",
   options: yearsArray,
   instructions: null
-}
+};
 
 export const categories = [
   {header: "Place", options: placeOptions, altText: ""},
   {header: "Attributes", options: attributeOptions, altText: ""},
   {header: "Years", options: yearsOptions, altText: ""}
-]
+];
 
 export const defaultSelectedOptions: IStateOptions = {
-  "geographicLevel": "",
-  "states": [],
+  "geographicLevel": "State",
+  "states": ["All States"],
   "farmerDemographics": [],
   "farmDemographics": [],
   "economicsAndWages": [],

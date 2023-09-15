@@ -4,17 +4,22 @@ import classnames from "classnames";
 import { Information } from "./information";
 import { categories, defaultSelectedOptions } from "./constants";
 import { IStateOptions } from "./types";
+import { createQueryFromSelections } from "../scripts/api";
+import { connect } from "../scripts/connect";
+
 
 import css from "./app.scss";
-import { runTestQuery } from "../scripts/api";
 
 function App() {
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const [selectedOptions, setSelectedOptions] = useState<IStateOptions>(defaultSelectedOptions);
 
   useEffect(() => {
-    runTestQuery();
-  }, [])
+    const init = async () => {
+      await connect.initialize();
+    };
+    init();
+  }, []);
 
   const handleSetSelectedOptions = (option: string, value: string | string[]) => {
     const newSelectedOptions = {...selectedOptions, [option]: value};
@@ -23,6 +28,18 @@ function App() {
 
   const handleInfoClick = () => {
     setShowInfo(true);
+  };
+
+  const handleGetData = () => {
+    createQueryFromSelections(selectedOptions);
+
+    const makeDataSetAndTable = async () => {
+      const dS = await connect.guaranteeDataset(selectedOptions.geographicLevel);
+      if (dS.success) {
+        await connect.makeCaseTableAppear();
+      }
+    };
+    makeDataSetAndTable();
   };
 
   return (
@@ -52,12 +69,12 @@ function App() {
               handleSetSelectedOptions={handleSetSelectedOptions}
               selectedOptions={selectedOptions}
             />
-          )
+          );
         })}
       </div>
       <div className={css.summary}>
         <span className={css.statusGraphic}></span>
-        <button className={css.getDataButton}>Get Data</button>
+        <button className={css.getDataButton} onClick={handleGetData}>Get Data</button>
       </div>
     </div>
 
