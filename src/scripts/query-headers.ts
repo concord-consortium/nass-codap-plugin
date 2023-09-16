@@ -1,6 +1,6 @@
 const areaHarvested = "Area Harvested";
 const yieldInBU = "Yield";
-interface ICropDataItem {
+export interface ICropDataItem {
   [areaHarvested]: string,
   [yieldInBU]: string
 }

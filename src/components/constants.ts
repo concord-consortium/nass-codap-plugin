@@ -92,7 +92,7 @@ const cropUnitOptions: IAttrOptions = {
   options: ["Area Harvested", "Yield"],
   instructions: "(Choose units)"
 };
-const cropOptions: IAttrOptions = {
+export const cropOptions: IAttrOptions = {
   key: "crops",
   label: null,
   options: ["Corn", "Cotton", "Grapes", "Grasses", "Oats", "Soybeans", "Wheat"],

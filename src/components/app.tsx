@@ -4,7 +4,7 @@ import classnames from "classnames";
 import { Information } from "./information";
 import { attributeOptions, categories, defaultSelectedOptions, yearsOptions } from "./constants";
 import { IStateOptions } from "./types";
-import { createQueryFromSelections } from "../scripts/api";
+import { createTableFromSelections } from "../scripts/api";
 import { connect } from "../scripts/connect";
 
 
@@ -43,16 +43,8 @@ function App() {
     setShowInfo(true);
   };
 
-  const handleGetData = () => {
-    createQueryFromSelections(selectedOptions);
-
-    const makeDataSetAndTable = async () => {
-      const dS = await connect.guaranteeDataset(selectedOptions.geographicLevel);
-      if (dS.success) {
-        await connect.makeCaseTableAppear();
-      }
-    };
-    makeDataSetAndTable();
+  const handleGetData = async () => {
+    await createTableFromSelections(selectedOptions);
   };
 
   return (
