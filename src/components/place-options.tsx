@@ -18,7 +18,10 @@ export const PlaceOptions: React.FC<IProps> = (props) => {
         return (
           <>
             <div key={`instructions-${placeOpt.key}`} className={css.instruction}>{placeOpt.instructions}:</div>
-            <div key={`options-container-${placeOpt.key}`} className={placeOpt.key === "geographicLevel" ? css.radioOptions : css.checkOptions}>
+            <div
+              key={`options-container-${placeOpt.key}`}
+              className={placeOpt.key === "geographicLevel" ? css.radioOptions : css.checkOptions}
+            >
               <Options
                 key={`options-${placeOpt.key}`}
                 options={placeOpt.options}

@@ -1,5 +1,5 @@
 import fetchJsonp from "fetch-jsonp";
-import { ICropDataItem, queryData } from "./query-headers";
+import { ICropCategory, ICropDataItem, queryData } from "./query-headers";
 import { IStateOptions } from "../components/types";
 import { connect } from "./connect";
 import { cropOptions } from "../components/constants";
@@ -24,30 +24,41 @@ interface IGetAttrDataParams {
 
 export const createRequest = ({attribute, geographicLevel, location, year, cropCategory}: IRequestParams) => {
   const queryParams = queryData.find((d) => d.plugInAttribute === attribute);
-  const {sector, group, commodity, category, domains, dataItem} = queryParams!;
 
-  let item;
-  let cat;
-  if (cropCategory) {
-    const cropDataItem = queryParams?.dataItem as ICropDataItem;
-    const cropCat = queryParams?.category as ICropDataItem;
-    item = cropDataItem[cropCategory];
-    cat = cropCat[cropCategory];
-  } else {
-    item = dataItem;
-    cat = category;
+  if (!queryParams) {
+    throw new Error("Invalid attribute");
   }
 
-  const baseReq = `${baseURL}&sect_desc=${sector}&group_desc=${group}&commodity_desc=${commodity}&statisticcat_desc=${cat}&domain_desc=${domains}&agg_level_desc=${geographicLevel}&state_name=${location}&year=${year}`;
+  const {
+    sect_desc,
+    group_desc,
+    commodity_desc,
+    statisticcat_desc,
+    domain_desc,
+    short_desc,
+  } = queryParams;
+
+  const item = cropCategory ?
+    (queryParams?.short_desc as ICropDataItem)[cropCategory] :
+    short_desc as string[];
+  const cat = cropCategory ?
+    (queryParams?.statisticcat_desc as ICropCategory)[cropCategory] :
+    statisticcat_desc;
+
+  const baseReq = `${baseURL}` +
+  `&sect_desc=${encodeURIComponent(sect_desc)}` +
+  `&group_desc=${encodeURIComponent(group_desc)}` +
+  `&commodity_desc=${encodeURIComponent(commodity_desc)}` +
+  `&statisticcat_desc=${encodeURIComponent(cat as string)}` +
+  `&domain_desc=${encodeURIComponent(domain_desc)}` +
+  `&agg_level_desc=${geographicLevel}` +
+  `&state_name=${location}` +
+  `&year=${year}`;
+
   let req = baseReq;
-  if (Array.isArray(dataItem)) {
-    dataItem.forEach(dItem => {
-      req = req + `&short_desc=${dItem}`;
-    });
-  } else {
-    req = req + `&short_desc=${item}`;
-  }
-
+  item.forEach(subItem => {
+    req = req + `&short_desc=${encodeURIComponent(subItem)}`;
+  });
   return req;
 };
 
@@ -62,11 +73,14 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions) 
     const selections = subOptions[key as keyof typeof subOptions];
     for (const attribute of selections) {
       const queryParams = queryData.find((d) => d.plugInAttribute === attribute);
-      const {dataItem} = queryParams!;
-      if (Array.isArray(dataItem)) {
-        allAttrs.push(...dataItem);
+      if (!queryParams) {
+        throw new Error("Invalid attribute");
+      }
+      const {short_desc} = queryParams;
+      if (Array.isArray(short_desc)) {
+        allAttrs.push(...short_desc);
       } else {
-        allAttrs.push(dataItem);
+        allAttrs.push(short_desc);
       }
     }
   }
@@ -74,7 +88,7 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions) 
   const items = await getItems(selectedOptions);
   await connect.createItems(items);
   await connect.makeCaseTableAppear();
-}
+};
 
 const getItems = async (selectedOptions: IStateOptions) => {
   const {states, years} = selectedOptions;
@@ -108,7 +122,7 @@ const getDataForSingleYearAndState = async (selectedOptions: IStateOptions, stat
   let item: any = {
     "State": state,
     "Year": year,
-  }
+  };
 
   for (const key in subOptions) {
     const value = subOptions[key as keyof typeof subOptions];
@@ -136,12 +150,12 @@ const getAttrData = async (params: IGetAttrDataParams) => {
     const {data} = res;
     data.forEach((dataItem: any) => {
         values[dataItem.short_desc] = dataItem.Value;
-    })
+    });
   } else {
     console.log("error");
   }
   return values;
-}
+};
 
 export const fetchData = async (req: string) => {
   try {

@@ -15,7 +15,6 @@ interface IProps {
 export const YearsOptions: React.FC<IProps> = (props) => {
   const {handleSetSelectedOptions, selectedOptions} = props;
   const [availableYearOptions, setAvailableYearOptions] = useState<string[]>([]);
-  const {farmerDemographics, farmDemographics, crops, economicsAndWages} = selectedOptions;
 
   useEffect(() => {
     const attrKeys = attributeOptions.filter((attr) => attr.key !== "cropUnits").map((attr) => attr.key);
@@ -37,9 +36,20 @@ export const YearsOptions: React.FC<IProps> = (props) => {
       }
       return years;
     }, new Set());
+    const newSet: string[] = Array.from(newAvailableYears);
+    setAvailableYearOptions(newSet);
 
-    setAvailableYearOptions(Array.from(newAvailableYears));
-  }, [farmerDemographics, farmDemographics, crops, economicsAndWages])
+    // if selected years includes years not in available options, remove them from selection
+    const selectionsNotAvailable = selectedOptions.years.filter(year => !newSet.includes(year));
+    if (selectionsNotAvailable.length) {
+      const newSelectedYears = [...selectedOptions.years];
+      selectionsNotAvailable.forEach((year) => {
+        newSelectedYears.splice(newSelectedYears.indexOf(year), 1);
+      });
+      handleSetSelectedOptions("years", newSelectedYears);
+    }
+
+  }, [selectedOptions, handleSetSelectedOptions]);
 
   const handleSelectYear = (yearKey: string, years: string|string[]) => {
     handleSetSelectedOptions(yearKey, years);

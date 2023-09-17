@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { Dropdown } from "./dropdown";
 import classnames from "classnames";
 import { Information } from "./information";
-import { attributeOptions, categories, defaultSelectedOptions, yearsOptions } from "./constants";
+import { attributeOptions, categories, defaultSelectedOptions } from "./constants";
 import { IStateOptions } from "./types";
 import { createTableFromSelections } from "../scripts/api";
 import { connect } from "../scripts/connect";
@@ -14,7 +14,6 @@ function App() {
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const [selectedOptions, setSelectedOptions] = useState<IStateOptions>(defaultSelectedOptions);
   const [getDataDisabled, setGetDataDisabled] = useState<boolean>(true);
-  const {farmerDemographics, farmDemographics, crops, economicsAndWages} = selectedOptions;
 
   useEffect(() => {
     const init = async () => {

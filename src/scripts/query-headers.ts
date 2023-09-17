@@ -1,19 +1,24 @@
 const areaHarvested = "Area Harvested";
 const yieldInBU = "Yield";
-export interface ICropDataItem {
+
+export interface ICropCategory {
   [areaHarvested]: string,
   [yieldInBU]: string
 }
+export interface ICropDataItem {
+  [areaHarvested]: string[],
+  [yieldInBU]: string[]
+}
 
-interface IQueryHeaders {
+export interface IQueryHeaders {
   plugInAttribute: string,
   numberOfAttributeColumnsInCodap: number|string,
-  sector: string,
-  group: string,
-  commodity: string,
-  category: string|ICropDataItem,
-  dataItem: string|string[]|ICropDataItem,
-  domains: string,
+  sect_desc: string,
+  group_desc: string,
+  commodity_desc: string,
+  statisticcat_desc: string|ICropCategory,
+  short_desc: string[]|ICropDataItem,
+  domain_desc: string,
   geographicLevels?: string,
   years: {
     county: string[]
@@ -22,24 +27,24 @@ interface IQueryHeaders {
 }
 
 const sharedDemographicHeaders = {
-sector: "Demographics",
-group: "Producers",
-commodity: "Producers",
-category: "Producers",
-domains: "Total",
+sect_desc: "Demographics",
+group_desc: "Producers",
+commodity_desc: "Producers",
+statisticcat_desc: "Producers",
+domain_desc: "Total",
 };
 
 const sharedEconomicHeaders = {
-sector: "Economics",
-group: "Farms & Land & Assets",
-commodity: "Farm Operations",
-category: "Operations"
+sect_desc: "Economics",
+group_desc: "Farms & Land & Assets",
+commodity_desc: "Farm Operations",
+statisticcat_desc: "Operations"
 };
 
 const sharedLaborHeaders = {
-sector: "Economics",
-group: "Expenses",
-commodity: "Labor",
+sect_desc: "Economics",
+group_desc: "Expenses",
+commodity_desc: "Labor",
 };
 
 const allYears = [];
@@ -52,7 +57,7 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Total Farmers",
     numberOfAttributeColumnsInCodap: 1,
     ...sharedDemographicHeaders,
-    dataItem: "PRODUCERS, (ALL) - NUMBER OF PRODUCERS",
+    short_desc: ["PRODUCERS, (ALL) - NUMBER OF PRODUCERS"],
     years: {
       county: ["2017"],
       state: ["2017"]
@@ -62,7 +67,7 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Age",
     numberOfAttributeColumnsInCodap: 7,
     ...sharedDemographicHeaders,
-    dataItem: [
+    short_desc: [
       "PRODUCERS, AGE LT 25 - NUMBER OF PRODUCERS",
       "PRODUCERS, AGE 25 TO 34 - NUMBER OF PRODUCERS",
       "PRODUCERS, AGE 35 TO 44 - NUMBER OF PRODUCERS",
@@ -81,7 +86,7 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Gender",
     numberOfAttributeColumnsInCodap: 2,
     ...sharedDemographicHeaders,
-    dataItem: [
+    short_desc: [
       "PRODUCERS, (ALL), FEMALE - NUMBER OF PRODUCERS",
       "PRODUCERS, (ALL), MALE - NUMBER OF PRODUCERS"
     ],
@@ -94,7 +99,7 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Race",
     numberOfAttributeColumnsInCodap: 7,
     ...sharedDemographicHeaders,
-    dataItem: [
+    short_desc: [
       "PRODUCERS, AMERICAN INDIAN OR ALASKAN NATIVE - NUMBER OF PRODUCERS",
       "PRODUCERS, ASIAN - NUMBER OF PRODUCERS",
       "PRODUCERS, BLACK OR AFRICAN AMERICAN - NUMBER OF PRODUCERS",
@@ -112,8 +117,8 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Total Farms",
     numberOfAttributeColumnsInCodap: 1,
     ...sharedEconomicHeaders,
-    dataItem: "Farm Operations - Number of Operations",
-    domains: "Total",
+    short_desc: ["FARM OPERATIONS - NUMBER OF OPERATIONS"],
+    domain_desc: "Total",
     geographicLevels: "State, County",
     years: {
       county: allYears,
@@ -123,30 +128,30 @@ export const queryData: Array<IQueryHeaders> = [
 {
     plugInAttribute: "Organization Type",
     numberOfAttributeColumnsInCodap: 5,
-    sector: "Demographics",
-    group: "Farms & Land & Assets",
-    commodity: "Farm Operations",
-    category: "Operations",
-    dataItem: [
+    sect_desc: "Demographics",
+    group_desc: "Farms & Land & Assets",
+    commodity_desc: "Farm Operations",
+    statisticcat_desc: "Operations",
+    short_desc: [
       "FARM OPERATIONS, ORGANIZATION, TAX PURPOSES, CORPORATION (EXCL FAMILY HELD) - NUMBER OF OPERATIONS",
       "FARM OPERATIONS, ORGANIZATION, TAX PURPOSES, CORPORATION, FAMILY HELD - NUMBER OF OPERATIONS",
       "FARM OPERATIONS, ORGANIZATION, TAX PURPOSES, FAMILY & INDIVIDUAL - NUMBER OF OPERATIONS",
       "FARM OPERATIONS, ORGANIZATION, TAX PURPOSES, INSTITUTIONAL & RESEARCH & RESERVATION & OTHER - NUMBER OF OPERATIONS",
       "FARM OPERATIONS, ORGANIZATION, TAX PURPOSES, PARTNERSHIP - NUMBER OF OPERATIONS"
     ],
-    domains: "Total",
-    geographicLevels: "State, County",
+    domain_desc: "Total",
+    geographicLevels: "County",
     years: {
       county: ["1997", "2002", "2007", "2012", "2017"],
-      state: allYears
+      state: []
     }
 },
 {
     plugInAttribute: "Economic Class",
     numberOfAttributeColumnsInCodap: "3 - 6",
     ...sharedEconomicHeaders,
-    dataItem: "Farm Operations - Number of Operations",
-    domains: "Economic Class",
+    short_desc: ["FARM OPERATIONS - NUMBER OF OPERATIONS"],
+    domain_desc: "Economic Class",
     geographicLevels: "State ",
     years: {
       county: allYears.filter(y => Number(y) >= 1987),
@@ -156,12 +161,12 @@ export const queryData: Array<IQueryHeaders> = [
 {
     plugInAttribute: "Acres Operated",
     numberOfAttributeColumnsInCodap: 14,
-    sector: "Economics",
-    group: "Farms & Land & Assets",
-    commodity: "Farm Operations",
-    category: "Area Operated",
-    dataItem: "Farm Operations - Acres Operated",
-    domains: "Area Operated",
+    sect_desc: "Economics",
+    group_desc: "Farms & Land & Assets",
+    commodity_desc: "Farm Operations",
+    statisticcat_desc: "Area Operated",
+    short_desc: ["FARM OPERATIONS - ACRES OPERATED"],
+    domain_desc: "Area Operated",
     geographicLevels: "State, County",
     years: {
       county: ["1997", "2002", "2007", "2012", "2017"],
@@ -172,8 +177,8 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Organic",
     numberOfAttributeColumnsInCodap: 1,
     ...sharedEconomicHeaders,
-    dataItem: "Farm Operations, Organic - Number of Operations",
-    domains: "Organic Status",
+    short_desc: ["FARM OPERATIONS, ORGANIC - NUMBER OF OPERATIONS"],
+    domain_desc: "Organic Status",
     years: {
       county: ["2008", "2011", "2012", "2014", "2015", "2016", "2017", "2019", "2021"],
       state: ["2008", "2011", "2012", "2014", "2015", "2016", "2017", "2019", "2021"]
@@ -183,13 +188,13 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Labor Status",
     numberOfAttributeColumnsInCodap: 3,
     ...sharedLaborHeaders,
-    category: "Workers",
-    dataItem: [
+    statisticcat_desc: "Workers",
+    short_desc: [
       "LABOR, MIGRANT - NUMBER OF WORKERS",
       "LABOR, UNPAID - NUMBER OF WORKERS",
       "LABOR, HIRED - NUMBER OF WORKERS"
     ],
-    domains: "Total",
+    domain_desc: "Total",
     geographicLevels: "State, County",
     years: {
       county: ["2012", "2017"],
@@ -200,9 +205,9 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Wages",
     numberOfAttributeColumnsInCodap: 1,
     ...sharedLaborHeaders,
-    category: "Wage Rate",
-    dataItem: "LABOR, HIRED - WAGE RATE, MEASURED IN $/HOUR",
-    domains: "Total",
+    statisticcat_desc: "Wage Rate",
+    short_desc: ["LABOR, HIRED - WAGE RATE, MEASURED IN $/HOUR"],
+    domain_desc: "Total",
     geographicLevels: "Region: Multi-state",
     years: {
       county: allYears.filter(y => Number(y) >= 1989),
@@ -213,9 +218,9 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Time Worked",
     numberOfAttributeColumnsInCodap: 1,
     ...sharedLaborHeaders,
-    category: "Wage Rate",
-    dataItem: "Labor, Hired - Time Worked, Measured in Hours/Week",
-    domains: "Total",
+    statisticcat_desc: "Wage Rate",
+    short_desc: ["LABOR, HIRED - TIME WORKED, MEASURED IN HOURS/WEEK"],
+    domain_desc: "Total",
     geographicLevels: "Region: Multi-state",
     years: {
       county: allYears.filter(y => Number(y) >= 1989),
@@ -225,18 +230,18 @@ export const queryData: Array<IQueryHeaders> = [
 {
     plugInAttribute: "Corn",
     numberOfAttributeColumnsInCodap: 1,
-    sector: "Crops",
-    group: "Field Crops",
-    commodity: "Corn",
-    category: {
+    sect_desc: "Crops",
+    group_desc: "Field Crops",
+    commodity_desc: "Corn",
+    statisticcat_desc: {
       [areaHarvested]: "Area Harvested",
       [yieldInBU]: "Yield"
     },
-    dataItem: {
-      [areaHarvested]: "Corn, Grain - Acres Harvested",
-      [yieldInBU]: "Corn, Grain - Yield, measured in BU / acre"
+    short_desc: {
+      [areaHarvested]: ["CORN, GRAIN - ACRES HARVESTED"],
+      [yieldInBU]: ["CORN, GRAIN - YIELD, MEASURED IN BU / ACRE"]
     },
-    domains: "Total",
+    domain_desc: "Total",
     geographicLevels: "State, County",
     years: {
       county: allYears,
@@ -246,18 +251,18 @@ export const queryData: Array<IQueryHeaders> = [
 {
   plugInAttribute: "Cotton",
   numberOfAttributeColumnsInCodap: 1,
-  sector: "Crops",
-  group: "Field Crops",
-  commodity: "Cotton",
-  category: {
+  sect_desc: "Crops",
+  group_desc: "Field Crops",
+  commodity_desc: "Cotton",
+  statisticcat_desc: {
     [areaHarvested]: "Area Harvested",
     [yieldInBU]: "Yield"
   },
-  dataItem: {
-    [areaHarvested]: "Cotton - Acres Harvested",
-    [yieldInBU]: "Cotton - Yield, measured in LB / acre"
+  short_desc: {
+    [areaHarvested]: ["COTTON - ACRES HARVESTED"],
+    [yieldInBU]: ["COTTON - YIELD, MEASURED IN LB / ACRE"]
   },
-  domains: "Total",
+  domain_desc: "Total",
   geographicLevels: "State, County",
   years: {
     county: allYears,
@@ -267,39 +272,18 @@ export const queryData: Array<IQueryHeaders> = [
 {
   plugInAttribute: "Grapes",
   numberOfAttributeColumnsInCodap: 1,
-  sector: "Crops",
-  group: "Fruit & Tree Nuts",
-  commodity: "Grapes",
-  category: {
+  sect_desc: "Crops",
+  group_desc: "Fruit & Tree Nuts",
+  commodity_desc: "Grapes",
+  statisticcat_desc: {
     [areaHarvested]: "Area Harvested",
     [yieldInBU]: "Yield"
   },
-  dataItem: {
-    [areaHarvested]: "Grapes, Organic - Acres Harvested",
-    [yieldInBU]: "Grapes - Yield, measured in tons / acre"
+  short_desc: {
+    [areaHarvested]: ["GRAPES, ORGANIC - ACRES HARVESTED"],
+    [yieldInBU]: ["GRAPES - YIELD, MEASURED IN TONS / ACRE"]
   },
-  domains: "Total",
-  geographicLevels: "State, County",
-  years: {
-    county: allYears,
-    state: allYears
-  }
-},
-{
-  plugInAttribute: "Grasses",
-  numberOfAttributeColumnsInCodap: 1,
-  sector: "Crops",
-  group: "Field Crops",
-  commodity: "Grasses",
-  category: {
-    [areaHarvested]: "Area Harvested",
-    [yieldInBU]: "Yield"
-  },
-  dataItem: {
-    [areaHarvested]: "",
-    [yieldInBU]: ""
-  },
-  domains: "Total",
+  domain_desc: "Total",
   geographicLevels: "State, County",
   years: {
     county: allYears,
@@ -309,18 +293,18 @@ export const queryData: Array<IQueryHeaders> = [
 {
   plugInAttribute: "Oats",
   numberOfAttributeColumnsInCodap: 1,
-  sector: "Crops",
-  group: "Field Crops",
-  commodity: "Oats",
-  category: {
+  sect_desc: "Crops",
+  group_desc: "Field Crops",
+  commodity_desc: "Oats",
+  statisticcat_desc: {
     [areaHarvested]: "Area Harvested",
     [yieldInBU]: "Yield"
   },
-  dataItem: {
-    [areaHarvested]: "Oats - Acres Harvested",
-    [yieldInBU]: "Oats - Yield, measured in BU / acre"
+  short_desc: {
+    [areaHarvested]: ["Oats - Acres Harvested"],
+    [yieldInBU]: ["Oats - Yield, measured in BU / acre"]
   },
-  domains: "Total",
+  domain_desc: "Total",
   geographicLevels: "State, County",
   years: {
     county: allYears,
@@ -330,18 +314,18 @@ export const queryData: Array<IQueryHeaders> = [
 {
   plugInAttribute: "Soybeans",
   numberOfAttributeColumnsInCodap: 1,
-  sector: "Crops",
-  group: "Field Crops",
-  commodity: "Soybeans",
-  category: {
+  sect_desc: "Crops",
+  group_desc: "Field Crops",
+  commodity_desc: "Soybeans",
+  statisticcat_desc: {
     [areaHarvested]: "Area Harvested",
     [yieldInBU]: "Yield"
   },
-  dataItem: {
-    [areaHarvested]: "Soybeans - Acres Harvested",
-    [yieldInBU]: "Soybeans - Yield, measured in BU / acre"
+  short_desc: {
+    [areaHarvested]: ["Soybeans - Acres Harvested"],
+    [yieldInBU]: ["Soybeans - Yield, measured in BU / acre"]
   },
-  domains: "Total",
+  domain_desc: "Total",
   geographicLevels: "State, County",
   years: {
     county: allYears,
@@ -351,18 +335,18 @@ export const queryData: Array<IQueryHeaders> = [
 {
   plugInAttribute: "Wheat",
   numberOfAttributeColumnsInCodap: 1,
-  sector: "Crops",
-  group: "Field Crops",
-  commodity: "Wheat",
-  category: {
+  sect_desc: "Crops",
+  group_desc: "Field Crops",
+  commodity_desc: "Wheat",
+  statisticcat_desc: {
     [areaHarvested]: "Area Harvested",
     [yieldInBU]: "Yield"
   },
-  dataItem: {
-    [areaHarvested]: "Wheat - Acres Harvested",
-    [yieldInBU]: "Wheat - Yield, measured in BU / acre"
+  short_desc: {
+    [areaHarvested]: ["Wheat - Acres Harvested"],
+    [yieldInBU]: ["Wheat - Yield, measured in BU / acre"]
   },
-  domains: "Total",
+  domain_desc: "Total",
   geographicLevels: "State, County",
   years: {
     county: allYears,

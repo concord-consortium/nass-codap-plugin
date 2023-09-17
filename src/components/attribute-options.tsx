@@ -34,8 +34,12 @@ export const AttributeOptions: React.FC<IProps> = (props) => {
         attributeOptions.map((attr) => {
           return (
             <>
-            {attr.label && <div key={`header-${attr.key}`} className={css.category}>{attr.label}</div>}
-            {attr.instructions && <div key={`instructions-${attr.key}`} className={css.instructions}>{attr.instructions}</div>}
+            {attr.label && <div key={`header-${attr.key}`} className={css.statisticcat_desc}>{attr.label}</div>}
+            {attr.instructions &&
+              <div key={`instructions-${attr.key}`} className={css.instructions}>
+                {attr.instructions}
+              </div>
+            }
             <div key={`options-container-${attr.key}`} className={classnames(getClasses(attr.key))}>
               <Options
                 key={`options-${attr.key}`}
