@@ -1,8 +1,8 @@
 import React from "react";
 import { Options } from "./options";
-import { attributeOptions } from "./constants";
+import { attributeOptions } from "../constants/constants";
 import classnames from "classnames";
-import { IStateOptions } from "./types";
+import { IStateOptions } from "../constants/types";
 
 import css from "./options.scss";
 

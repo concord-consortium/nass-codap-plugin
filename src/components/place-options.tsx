@@ -1,6 +1,6 @@
 import React from "react";
-import { placeOptions } from "./constants";
-import { IStateOptions } from "./types";
+import { placeOptions } from "../constants/constants";
+import { IStateOptions } from "../constants/types";
 import { Options } from "./options";
 
 import css from "./options.scss";

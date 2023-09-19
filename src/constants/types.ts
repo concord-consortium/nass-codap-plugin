@@ -1,6 +1,10 @@
+import { fiftyStates } from "./constants";
+
+
+
 export interface IStateOptions {
-  geographicLevel: string,
-  states: string[]
+  geographicLevel: "County"|"State",
+  states: string[],
   farmerDemographics: string[],
   farmDemographics: string[],
   economicsAndWages: string[],
@@ -58,4 +62,29 @@ export interface IResData {
   week_ending: string;
   year: number;
   zip_5: string;
+};
+
+export interface ICropCategory {
+  ["Area Harvested"]: string,
+  ["Yield"]: string
+};
+
+export interface ICropDataItem {
+  ["Area Harvested"]: string[],
+  ["Yield"]: string[]
+};
+
+export interface IQueryHeaders {
+  plugInAttribute: string,
+  sect_desc: string,
+  group_desc: string,
+  commodity_desc: string,
+  statisticcat_desc: string|ICropCategory,
+  short_desc: string[]|ICropDataItem,
+  domain_desc: string,
+  geographicAreas: string[],
+  years: {
+    "County": string[]
+    "State": string[]
+  }
 };

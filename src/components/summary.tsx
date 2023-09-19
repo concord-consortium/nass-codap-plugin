@@ -1,6 +1,6 @@
 import React from "react";
-import { IStateOptions } from "./types";
-import { attributeOptions } from "./constants";
+import { IStateOptions } from "../constants/types";
+import { attributeOptions } from "../constants/constants";
 
 interface IProps {
   category: string;

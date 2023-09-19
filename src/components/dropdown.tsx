@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import classnames from "classnames";
 import { PlaceOptions } from "./place-options";
-import { defaultSelectedOptions } from "./constants";
+import { defaultSelectedOptions } from "../constants/constants";
 import { AttributeOptions } from "./attribute-options";
 
 import css from "./dropdown.scss";

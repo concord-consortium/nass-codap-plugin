@@ -2,8 +2,8 @@ import React, {useEffect, useState} from "react";
 import { Dropdown } from "./dropdown";
 import classnames from "classnames";
 import { Information } from "./information";
-import { attributeOptions, categories, defaultSelectedOptions } from "./constants";
-import { IStateOptions } from "./types";
+import { attributeOptions, categories, defaultSelectedOptions } from "../constants/constants";
+import { IStateOptions } from "../constants/types";
 import { createTableFromSelections } from "../scripts/api";
 import { connect } from "../scripts/connect";
 

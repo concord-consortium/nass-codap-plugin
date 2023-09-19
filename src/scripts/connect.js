@@ -48,19 +48,20 @@ export const connect = {
       return res;
     },
 
-    createTopCollection: async function() {
+    createTopCollection: async function(geoLevel) {
+      const plural = geoLevel === "State" ? "States" : "Counties";
       const message = {
         "action": "create",
         "resource": `dataContext[${dataSetName}].collection`,
         "values": {
-          "name": "States",
+          "name": plural,
           "parent": "_root_",
           "attributes": [{
-            "name": "State",
+            "name": geoLevel,
           },
           {
             "name": "Boundary",
-            "formula": "lookupBoundary(US_state_boundaries, State)",
+            "formula": `lookupBoundary(US_${geoLevel.toLowerCase()}_boundaries, ${geoLevel})`,
             "formulaDependents": "State"
           }]
         }
@@ -68,13 +69,14 @@ export const connect = {
       await codapInterface.sendRequest(message);
     },
 
-    createSubCollection: async function(attrs) {
+    createSubCollection: async function(geoLevel, attrs) {
+      const plural = geoLevel === "State" ? "States" : "Counties";
       const message = {
         "action": "create",
         "resource": `dataContext[${dataSetName}].collection`,
         "values": {
           "name": "Data",
-          "parent": "States",
+          "parent": plural,
           "attributes": attrs.map((attr) => this.makeCODAPAttributeDef(attr))
         }
       };

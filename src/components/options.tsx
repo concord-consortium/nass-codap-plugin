@@ -1,5 +1,5 @@
 import React from "react";
-import { IStateOptions, OptionKey } from "./types";
+import { IStateOptions, OptionKey } from "../constants/types";
 
 import css from "./options.scss";
 

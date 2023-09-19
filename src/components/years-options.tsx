@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { attributeOptions, yearsOptions } from "./constants";
-import { IStateOptions } from "./types";
+import { attributeOptions, yearsOptions } from "../constants/constants";
+import { IStateOptions } from "../constants/types";
 import { Options } from "./options";
-import { queryData } from "../scripts/query-headers";
-import { flatten } from "./utils";
+import { queryData } from "../constants/query-headers";
+import { flatten } from "../scripts/utils";
 
 import css from "./options.scss";
 
@@ -24,11 +24,10 @@ export const YearsOptions: React.FC<IProps> = (props) => {
       return;
     }
 
-    const yearKeyToUse = selectedOptions.geographicLevel === "County" ? "county" : "state";
     const allSelectedAttrs = flatten(selectedAttrKeys.map((key) => selectedOptions[key]));
     const newAvailableYears = allSelectedAttrs.reduce((years, attr) => {
       const subAttrData = queryData.find((d) => d.plugInAttribute === attr);
-      const availableYears = subAttrData?.years[yearKeyToUse];
+      const availableYears = subAttrData?.years[selectedOptions.geographicLevel];
       if (availableYears) {
         availableYears.forEach((y) => {
           years.add(y);
