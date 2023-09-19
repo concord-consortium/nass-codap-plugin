@@ -12,6 +12,15 @@ interface IProps {
 
 export const PlaceOptions: React.FC<IProps> = (props) => {
   const {handleSetSelectedOptions, selectedOptions} = props;
+
+  const isAllStatesSelected = () => {
+    return selectedOptions.states[0] === "All States";
+  };
+
+  const handleSelectAllStates = () => {
+    handleSetSelectedOptions("states", ["All States"]);
+  };
+
   return (
     <>
       {placeOptions.map((placeOpt) => {
@@ -22,6 +31,22 @@ export const PlaceOptions: React.FC<IProps> = (props) => {
               key={`options-container-${placeOpt.key}`}
               className={placeOpt.key === "geographicLevel" ? css.radioOptions : css.checkOptions}
             >
+              {placeOpt.key === "states" &&
+                <div key={`radio-option-All-States`} className={css.option}>
+                  <input
+                    id={"All States"}
+                    className={css.radio}
+                    type={"radio"}
+                    key={`radio-All-States`}
+                    value={"All States"}
+                    checked={isAllStatesSelected()}
+                    onChange={handleSelectAllStates}
+                  />
+                  <label className={css.label} htmlFor={"All States"} key={`label-${"All States"}`}>
+                    {"All States"}
+                  </label>
+                </div>
+              }
               <Options
                 key={`options-${placeOpt.key}`}
                 options={placeOpt.options}

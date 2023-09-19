@@ -3282,4 +3282,4 @@ export const countyData: {[state: string]: string[]} = {
     "WASHAKIE",
     "WESTON"
 ]
-}
+};

@@ -15,7 +15,6 @@ export const AttributeOptions: React.FC<IProps> = (props) => {
   const {handleSetSelectedOptions, selectedOptions} = props;
 
   const commonProps = {
-    inputType: "checkbox" as "checkbox"|"radio",
     handleSetSelectedOptions,
     selectedOptions
   };
@@ -43,6 +42,7 @@ export const AttributeOptions: React.FC<IProps> = (props) => {
             <div key={`options-container-${attr.key}`} className={classnames(getClasses(attr.key))}>
               <Options
                 key={`options-${attr.key}`}
+                inputType={attr.key === "cropUnits" ? "radio" : "checkbox"}
                 options={attr.options}
                 optionKey={attr.key}
                 {...commonProps}

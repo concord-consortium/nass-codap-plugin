@@ -1,10 +1,11 @@
 import fetchJsonp from "fetch-jsonp";
-import { multiRegions, queryData } from "../constants/query-headers";
 import { ICropCategory, ICropDataItem, IStateOptions } from "../constants/types";
+import { multiRegions } from "../constants/regionData";
 import { connect } from "./connect";
-import { cropOptions } from "../constants/constants";
+import { cropOptions, fiftyStates } from "../constants/constants";
 import { countyData } from "../constants/counties";
 import { getQueryParams } from "./utils";
+import { attrToCODAPColumnName } from "../constants/codapMetadata";
 
 const baseURL = `https://quickstats.nass.usda.gov/api/api_GET/?key=9ED0BFB8-8DDD-3609-9940-A2341ED6A9E3`;
 
@@ -26,15 +27,30 @@ interface IGetAttrDataParams {
   state?: string
 }
 
-export const fetchData = async (req: string) => {
-  try {
-    const response = await fetchJsonp(req, {timeout: 10000});
-    const json = await response.json();
-    return json;
-  } catch (error) {
-    console.log("parsing failed", error);
-    throw error;
+// export const fetchData = async (req: string) => {
+//   try {
+//     const response = await fetchJsonp(req, {timeout: 10000});
+//     const json = await response.json();
+//     return json;
+//   } catch (error) {
+//     console.log("parsing failed", error);
+//     throw error;
+//   }
+// };
+
+export const fetchDataWithRetry = async (req: string, maxRetries = 3) => {
+  let retries = 0;
+  while (retries < maxRetries) {
+    try {
+      const response = await fetchJsonp(req, { timeout: 30000 }); // Increase the timeout
+      const json = await response.json();
+      return json;
+    } catch (error) {
+      console.log(`Request attempt ${retries + 1} failed:`, error);
+      retries++;
+    }
   }
+  throw new Error(`Request failed after ${maxRetries} attempts`);
 };
 
 export const createRequest = ({attribute, geographicLevel, location, year, cropCategory, state}: IRequestParams) => {
@@ -76,7 +92,7 @@ export const createRequest = ({attribute, geographicLevel, location, year, cropC
 
   // if we are creating a request at the county level, we need to also pass in a state
   if (state) {
-    req += `&state_name=${state}`
+    req += `&state_name=${state}`;
   }
 
   item.forEach(subItem => {
@@ -91,6 +107,7 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions) 
   await connect.createTopCollection(geographicLevel);
 
   const allAttrs: Array<string|ICropDataItem> = ["Year"];
+
   for (const key in subOptions) {
     const selections = subOptions[key as keyof typeof subOptions];
     for (const attribute of selections) {
@@ -100,26 +117,35 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions) 
       }
       const {short_desc} = queryParams;
       if (Array.isArray(short_desc)) {
-        allAttrs.push(...short_desc);
-      } else {
-        allAttrs.push(short_desc);
+        for (const desc of short_desc) {
+          console.log({desc});
+          const codapColumnName = attrToCODAPColumnName[desc].attributeNameInCodapTable;
+          allAttrs.push(codapColumnName);
+        }
+      } else if (typeof short_desc === "object" && cropUnits) {
+        const attr = short_desc[cropUnits as keyof ICropDataItem][0];
+        allAttrs.push(attrToCODAPColumnName[attr].attributeNameInCodapTable);
       }
     }
   }
+
   await connect.createSubCollection(geographicLevel, allAttrs);
   const items = await getItems(selectedOptions);
   await connect.createItems(items);
   await connect.makeCaseTableAppear();
-  // await connect.createItems(items);
 };
 
 const getItems = async (selectedOptions: IStateOptions) => {
-  const {states, years} = selectedOptions;
+  let {states, years} = selectedOptions;
   const multipleStatesSelected = states.length > 1 || states[0] === "All States";
   const multipleYearsSelected = years.length > 1;
   const countySelected = selectedOptions.geographicLevel === "County";
 
-  const items = [];
+  if (states[0] === "All States") {
+    states = fiftyStates;
+  }
+
+  const promises = [];
 
   if (multipleStatesSelected) {
     for (const state of states) {
@@ -128,32 +154,32 @@ const getItems = async (selectedOptions: IStateOptions) => {
           if (countySelected) {
             const allCounties = countyData[state];
             for (const county of allCounties) {
-              const item = await getDataForSingleYearAndState(selectedOptions, county, year, state);
-              items.push(item);
+              const item = getDataForSingleYearAndState(selectedOptions, county, year, state);
+              promises.push(item);
             }
           } else {
-            const item = await getDataForSingleYearAndState(selectedOptions, state, year);
-            items.push(item);
+            const item = getDataForSingleYearAndState(selectedOptions, state, year);
+            promises.push(item);
           }
         }
       } else {
-        const item = await getDataForSingleYearAndState(selectedOptions, state, years[0]);
-        items.push(item);
+        const item = getDataForSingleYearAndState(selectedOptions, state, years[0]);
+        promises.push(item);
       }
     }
   } else {
     if (countySelected) {
       const allCounties = countyData[states[0]];
       for (const county of allCounties) {
-        const item = await getDataForSingleYearAndState(selectedOptions, county, years[0], states[0]);
-        items.push(item);
+        const item = getDataForSingleYearAndState(selectedOptions, county, years[0], states[0]);
+        promises.push(item);
       }
     } else {
-      const item = await getDataForSingleYearAndState(selectedOptions, states[0], years[0]);
-      items.push(item);
+      const item = getDataForSingleYearAndState(selectedOptions, states[0], years[0]);
+      promises.push(item);
     }
   }
-  return items;
+  return await Promise.all(promises);
 };
 
 const getDataForSingleYearAndState = async (selectedOptions: IStateOptions, countyOrState: string, year: string, state?: string) => {
@@ -176,7 +202,8 @@ const getDataForSingleYearAndState = async (selectedOptions: IStateOptions, coun
           let location = countyOrState;
           if (isMultiStateRegion) {
             const itemToCheck = state ? state : countyOrState;
-            location = multiRegions.find((region) => region.States.includes(itemToCheck))!.Region;
+            const regData = multiRegions.find((region) => region.States.includes(itemToCheck));
+            location = regData?.Region ? regData.Region : countyOrState;
           }
           const params: IGetAttrDataParams = {attribute, geographicLevel: geoLevel, location, year, cropUnits};
           if (geoLevel === "County") {
@@ -199,12 +226,13 @@ const getAttrData = async (params: IGetAttrDataParams) => {
     reqParams.cropCategory = cropUnits as keyof ICropDataItem;
   }
   const req = createRequest(reqParams);
-  const res = await fetchData(req);
+  const res = await fetchDataWithRetry(req);
   const values: any = {};
   if (res) {
     const {data} = res;
     data.map((dataItem: any) => {
-       return values[dataItem.short_desc] = dataItem.Value;
+       const codapColumnName = attrToCODAPColumnName[dataItem.short_desc].attributeNameInCodapTable;
+       return values[codapColumnName] = dataItem.Value;
     });
   } else {
     console.log("error");

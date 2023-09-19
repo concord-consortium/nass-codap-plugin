@@ -1,4 +1,4 @@
-import { queryData } from "../constants/query-headers";
+import { queryData } from "../constants/queryHeaders";
 
 export const flatten = (arr: any[]): any[] => {
   return arr.reduce((acc: any[], val: any) =>
@@ -7,4 +7,4 @@ export const flatten = (arr: any[]): any[] => {
 
 export const getQueryParams = (attribute: string) => {
   return queryData.find((d) => d.plugInAttribute === attribute);
-}
+};

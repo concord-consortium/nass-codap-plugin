@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { attributeOptions, yearsOptions } from "../constants/constants";
 import { IStateOptions } from "../constants/types";
 import { Options } from "./options";
-import { queryData } from "../constants/query-headers";
+import { queryData } from "../constants/queryHeaders";
 import { flatten } from "../scripts/utils";
 
 import css from "./options.scss";

@@ -1,11 +1,9 @@
-import { fiftyStates } from "./constants";
 import { IQueryHeaders } from "./types";
 
 const allYears = [];
 for (let year = 2022; year >= 1910; year--) {
   allYears.push(`${year}`);
 }
-
 
 const sharedDemographicHeaders = {
   sect_desc: "Demographics",
@@ -41,7 +39,7 @@ const sharedCropHeaders = {
     "County": allYears,
     "State": allYears
   }
-}
+};
 
 export const queryData: Array<IQueryHeaders> = [
   {
@@ -198,8 +196,8 @@ export const queryData: Array<IQueryHeaders> = [
   {
       plugInAttribute: "Time Worked",
       ...sharedLaborHeaders,
-      statisticcat_desc: "Wage Rate",
-      short_desc: ["LABOR, HIRED - TIME WORKED, MEASURED IN HOURS/WEEK"],
+      statisticcat_desc: "Time Worked",
+      short_desc: ["LABOR, HIRED - TIME WORKED, MEASURED IN HOURS / WEEK"],
       domain_desc: "Total",
       geographicAreas: ["REGION : MULTI-STATE"],
       years: {
@@ -242,8 +240,8 @@ export const queryData: Array<IQueryHeaders> = [
     group_desc: "Field Crops",
     commodity_desc: "Oats",
     short_desc: {
-      ["Area Harvested"]: ["Oats - Acres Harvested"],
-      ["Yield"]: ["Oats - Yield, measured in BU / acre"]
+      ["Area Harvested"]: ["OATS - ACRES HARVESTED"],
+      ["Yield"]: ["OATS - YIELD, MEASURED IN BU / ACRE"]
     },
     ...sharedCropHeaders
   },
@@ -252,8 +250,8 @@ export const queryData: Array<IQueryHeaders> = [
     group_desc: "Field Crops",
     commodity_desc: "Soybeans",
     short_desc: {
-      ["Area Harvested"]: ["Soybeans - Acres Harvested"],
-      ["Yield"]: ["Soybeans - Yield, measured in BU / acre"]
+      ["Area Harvested"]: ["SOYBEANS - ACRES HARVESTED"],
+      ["Yield"]: ["SOYBEANS - YIELD MEASURED IN BU / ACRE"]
     },
     ...sharedCropHeaders
   },
@@ -263,90 +261,9 @@ export const queryData: Array<IQueryHeaders> = [
     commodity_desc: "Wheat",
 
     short_desc: {
-      ["Area Harvested"]: ["Wheat - Acres Harvested"],
-      ["Yield"]: ["Wheat - Yield, measured in BU / acre"]
+      ["Area Harvested"]: ["WHEAT - ACRES HARVESTED"],
+      ["Yield"]: ["WHEAT - YIELD MEASURED IN BU / ACRE"]
     },
     ...sharedCropHeaders
-  }
-];
-
-interface IRegion {
-  "Region": string
-  "States": string[]
-}
-
-
-export const multiRegions: IRegion[] = [
-  {
-    "Region": "Pacific",
-    "States": ["Washington", "Oregon"]
-  },
-  {
-    "Region": "Mountain I",
-    "States": ["Montana", "Idaho", "Wyoming"]
-  },
-  {
-    "Region": "Mountain II",
-    "States": ["Nevada", "Utah", "Colorado"]
-  },
-  {
-    "Region": "Mountain III",
-    "States": ["Arizona", "New Mexico"]
-  },
-  {
-    "Region": "Northern Plains",
-    "States": ["North Dakota", "South Dakota", "Kansas", "Nebraska"]
-  },
-  {
-    "Region": "Southern Plains",
-    "States": ["Oklahoma", "Texas"]
-  },
-  {
-    "Region": "Lake",
-    "States": ["Minnesota", "Wisconsin", "Michigan"]
-  },
-  {
-    "Region": "Cornbelt I",
-    "States": ["Illinois", "Indiana", "Ohio"]
-  },
-  {
-    "Region": "Cornbelt II",
-    "States": ["Iowa", "Missouri"]
-  },
-  {
-    "Region": "Delta",
-    "States": ["Mississippi", "Louisiana", "Arkansas"]
-  },
-  {
-    "Region": "Appalachian I",
-    "States": ["Virginia", "North Carolina"]
-  },
-  {
-    "Region": "Appalachian II",
-    "States": ["West Virginia", "Kentucky", "Tennessee"]
-  },
-  {
-    "Region": "Southeast",
-    "States": ["South Carolina", "Alabama", "Georgia"]
-  },
-  {
-    "Region": "Northeast I",
-    "States": ["Maine", "New Hampshire", "Vermont", "Massachusetts", "Connecticut", "Rhode Island", "New York"]
-  },
-  {
-    "Region": "Northeast II",
-    "States": ["Pennsylvania", "New Jersey", "Delaware", "Maryland"]
-  },
-  {
-    "Region": "California",
-    "States": ["California"]
-  },
-  {
-    "Region": "Florida",
-    "States": ["Florida"]
-  },
-  {
-    "Region": "Hawaii",
-    "States": ["Hawaii"]
   }
 ];

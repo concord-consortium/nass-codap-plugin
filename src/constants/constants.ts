@@ -58,14 +58,13 @@ export const fiftyStates = [
   "West Virginia",
   "Wisconsin",
   "Wyoming"
-]
+];
 
 export const stateOptions: IAttrOptions = {
   label: null,
   key: "states",
   instructions: "Choose states to include in your dataset from the list below",
   options: [
-    "All States",
     ...fiftyStates
   ]
 };
@@ -99,7 +98,7 @@ const cropUnitOptions: IAttrOptions = {
 export const cropOptions: IAttrOptions = {
   key: "crops",
   label: null,
-  options: ["Corn", "Cotton", "Grapes", "Grasses", "Oats", "Soybeans", "Wheat"],
+  options: ["Corn", "Cotton", "Grapes", "Oats", "Soybeans", "Wheat"],
   instructions: "(Choose crops)"
 };
 

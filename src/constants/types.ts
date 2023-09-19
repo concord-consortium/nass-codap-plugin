@@ -1,7 +1,3 @@
-import { fiftyStates } from "./constants";
-
-
-
 export interface IStateOptions {
   geographicLevel: "County"|"State",
   states: string[],
@@ -62,17 +58,17 @@ export interface IResData {
   week_ending: string;
   year: number;
   zip_5: string;
-};
+}
 
 export interface ICropCategory {
   ["Area Harvested"]: string,
   ["Yield"]: string
-};
+}
 
 export interface ICropDataItem {
   ["Area Harvested"]: string[],
   ["Yield"]: string[]
-};
+}
 
 export interface IQueryHeaders {
   plugInAttribute: string,
@@ -87,4 +83,4 @@ export interface IQueryHeaders {
     "County": string[]
     "State": string[]
   }
-};
+}
