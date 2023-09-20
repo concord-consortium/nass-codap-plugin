@@ -35,6 +35,7 @@ export const fetchDataWithRetry = async (req: string, maxRetries = 3) => {
       const json = await response.json();
       return json;
     } catch (error) {
+      // eslint-disable-next-line
       console.log(`Request attempt ${retries + 1} failed:`, error);
       retries++;
     }
@@ -108,7 +109,6 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions) 
         const {short_desc} = queryParams;
         if (Array.isArray(short_desc)) {
           for (const desc of short_desc) {
-            console.log({desc});
             const codapColumnName = attrToCODAPColumnName[desc].attributeNameInCodapTable;
             allAttrs.push(codapColumnName);
           }
@@ -229,7 +229,7 @@ const getAttrData = async (params: IGetAttrDataParams) => {
        return values[codapColumnName] = dataItem.Value;
     });
   } else {
-    console.log("error");
+    console.log(`Error: did not receive response for item with these params: ${params}`);
   }
   return values;
 };

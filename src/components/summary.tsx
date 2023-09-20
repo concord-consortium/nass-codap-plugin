@@ -29,7 +29,7 @@ export const Summary: React.FC<IProps> = ({category, selectedOptions}) => {
           const valueIsDefined = typeof value === "string" && value;
           const label = attr.label && (valueIsArrayWithLength || valueIsDefined) ? `${attr.label}: ` : "";
 
-          if (Array.isArray(value) && value.length > 0) {
+          if (valueIsArrayWithLength) {
             return `${label}${value.join(", ")}`;
           } else if (value) {
             return `${attr.label}: ${value}`;

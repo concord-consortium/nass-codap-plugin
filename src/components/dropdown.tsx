@@ -3,10 +3,10 @@ import classnames from "classnames";
 import { PlaceOptions } from "./place-options";
 import { defaultSelectedOptions } from "../constants/constants";
 import { AttributeOptions } from "./attribute-options";
-
-import css from "./dropdown.scss";
 import { YearsOptions } from "./years-options";
 import { Summary } from "./summary";
+
+import css from "./dropdown.scss";
 
 interface IProps {
   category: string
