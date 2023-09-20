@@ -1,6 +1,6 @@
 import React from "react";
-import { placeOptions, stateOptions } from "./constants";
-import { IStateOptions } from "./types";
+import { placeOptions } from "../constants/constants";
+import { IStateOptions } from "../constants/types";
 import { Options } from "./options";
 
 import css from "./options.scss";
@@ -13,28 +13,52 @@ interface IProps {
 export const PlaceOptions: React.FC<IProps> = (props) => {
   const {handleSetSelectedOptions, selectedOptions} = props;
 
-  const commonProps = {selectedOptions, handleSetSelectedOptions};
+  const isAllStatesSelected = () => {
+    return selectedOptions.states[0] === "All States";
+  };
+
+  const handleSelectAllStates = () => {
+    handleSetSelectedOptions("states", ["All States"]);
+  };
 
   return (
     <>
-      <div className={css.instruction}>{placeOptions.label}:</div>
-      <div className={css.radioOptions}>
-        <Options
-          options={placeOptions.options}
-          optionKey="geographicLevel"
-          inputType="radio"
-          { ...commonProps}
-        />
-      </div>
-      <div className={css.instruction}>{stateOptions.label}:</div>
-      <div className={css.checkOptions}>
-        <Options
-          options={stateOptions.options}
-          optionKey="states"
-          inputType="checkbox"
-          {...commonProps}
-        />
-      </div>
+      {placeOptions.map((placeOpt) => {
+        return (
+          <>
+            <div key={`instructions-${placeOpt.key}`} className={css.instruction}>{placeOpt.instructions}:</div>
+            <div
+              key={`options-container-${placeOpt.key}`}
+              className={placeOpt.key === "geographicLevel" ? css.radioOptions : css.checkOptions}
+            >
+              {placeOpt.key === "states" &&
+                <div key={`radio-option-All-States`} className={css.option}>
+                  <input
+                    id={"All States"}
+                    className={css.radio}
+                    type={"radio"}
+                    key={`radio-All-States`}
+                    value={"All States"}
+                    checked={isAllStatesSelected()}
+                    onChange={handleSelectAllStates}
+                  />
+                  <label className={css.label} htmlFor={"All States"} key={`label-${"All States"}`}>
+                    {"All States"}
+                  </label>
+                </div>
+              }
+              <Options
+                key={`options-${placeOpt.key}`}
+                options={placeOpt.options}
+                optionKey={placeOpt.key}
+                inputType={placeOpt.key === "geographicLevel" ? "radio" : "checkbox"}
+                selectedOptions={selectedOptions}
+                handleSetSelectedOptions={handleSetSelectedOptions}
+              />
+            </div>
+          </>
+        );
+      })}
     </>
   );
 };
