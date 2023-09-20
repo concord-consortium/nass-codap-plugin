@@ -1,91 +1,64 @@
 import React from "react";
-import { placeOptions, stateOptions } from "./constants";
+import { placeOptions } from "../constants/constants";
+import { IStateOptions } from "../constants/types";
+import { Options } from "./options";
 
 import css from "./options.scss";
 
 interface IProps {
   handleSetSelectedOptions: (option: string, value: string|string[]) => void;
-  selectedPlace: string|null;
-  selectedStates: string[];
+  selectedOptions: IStateOptions;
 }
 
 export const PlaceOptions: React.FC<IProps> = (props) => {
-  const {handleSetSelectedOptions, selectedPlace, selectedStates} = props;
+  const {handleSetSelectedOptions, selectedOptions} = props;
 
-  const isStateSelected = (state: string) => {
-    return selectedStates.indexOf(state) > - 1;
+  const isAllStatesSelected = () => {
+    return selectedOptions.states[0] === "All States";
   };
 
-  const handleSelectPlace = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleSetSelectedOptions("place", e.target.value);
-  };
-
-  const handleSelectState = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let newSelectedStates = [...selectedStates];
-    if (e.currentTarget.checked) {
-      newSelectedStates.push(e.target.value);
-      newSelectedStates.sort();
-
-    } else {
-      if (isStateSelected(e.target.value)) {
-        newSelectedStates = newSelectedStates.filter((s) => s !== e.target.value);
-      }
-    }
-    handleSetSelectedOptions("states", newSelectedStates);
-  };
-
-  const createPlaceOptions = (options: string[]) => {
-    return (
-      <>
-      {options.map((o) => {
-        return (
-          <div key={`radio-option-${o}`} className={css.option}>
-            <input
-              className={css.radio}
-              id={o}
-              type="radio"
-              key={`radio-${o}`}
-              value={o}
-              checked={selectedPlace === o}
-              onChange={handleSelectPlace}
-            />
-            <label className={css.label} htmlFor={o} key={`label-${o}`}>{o}</label>
-          </div>
-        );
-      })}
-      </>
-    );
-  };
-
-  const createStateOptions = (options: string[]) => {
-    return (
-      <>
-      {options.map((o) => {
-        return (
-          <div key={`checkbox-option-${o}`} className={css.option}>
-            <input
-              id={o}
-              className={css.checkbox}
-              type="checkbox"
-              key={`checkbox-${o}`}
-              value={o}
-              checked={isStateSelected(o)}
-              onChange={handleSelectState}
-            />
-            <label className={css.label} htmlFor={o} key={`label-${o}`}>{o}</label>
-          </div>
-        );
-      })}
-      </>
-    );
+  const handleSelectAllStates = () => {
+    handleSetSelectedOptions("states", ["All States"]);
   };
 
   return (
     <>
-      <div className={css.instruction}>{placeOptions.label}:</div>
-      <div className={css.radioOptions}>{createPlaceOptions(placeOptions.options)}</div>
-      <div className={css.instruction}>{stateOptions.label}:</div>
-      <div className={css.checkOptions}>{createStateOptions(stateOptions.options)}</div>
+      {placeOptions.map((placeOpt) => {
+        return (
+          <>
+            <div key={`instructions-${placeOpt.key}`} className={css.instruction}>{placeOpt.instructions}:</div>
+            <div
+              key={`options-container-${placeOpt.key}`}
+              className={placeOpt.key === "geographicLevel" ? css.radioOptions : css.checkOptions}
+            >
+              {placeOpt.key === "states" &&
+                <div key={`radio-option-All-States`} className={css.option}>
+                  <input
+                    id={"All States"}
+                    className={css.radio}
+                    type={"radio"}
+                    key={`radio-All-States`}
+                    value={"All States"}
+                    checked={isAllStatesSelected()}
+                    onChange={handleSelectAllStates}
+                  />
+                  <label className={css.label} htmlFor={"All States"} key={`label-${"All States"}`}>
+                    {"All States"}
+                  </label>
+                </div>
+              }
+              <Options
+                key={`options-${placeOpt.key}`}
+                options={placeOpt.options}
+                optionKey={placeOpt.key}
+                inputType={placeOpt.key === "geographicLevel" ? "radio" : "checkbox"}
+                selectedOptions={selectedOptions}
+                handleSetSelectedOptions={handleSetSelectedOptions}
+              />
+            </div>
+          </>
+        );
+      })}
     </>
   );
 };

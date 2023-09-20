@@ -86,7 +86,7 @@ button {
   font-family: 'Montserrat', sans-serif;
   font-size: 12px;
   font-weight: 500;
-  &:hover {
+  &:hover:not(:disabled) {
     cursor: pointer;
     background: $teal-light-12;
   }
