@@ -35,7 +35,7 @@ export const fetchDataWithRetry = async (req: string, maxRetries = 3) => {
       const json = await response.json();
       return json;
     } catch (error) {
-      // eslint-disable-next-line
+      // eslint-disable-next-line no-console
       console.log(`Request attempt ${retries + 1} failed:`, error);
       retries++;
     }
@@ -93,12 +93,15 @@ export const createRequest = ({attribute, geographicLevel, location, year, cropC
 
 export const createTableFromSelections = async (selectedOptions: IStateOptions) => {
   const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
-
-  await connect.getNewDataContext();
-  await connect.createTopCollection(geographicLevel);
-  const allAttrs: Array<string|ICropDataItem> = ["Year"];
-
   try {
+    const items = await getItems(selectedOptions);
+    if (items.length > 4000) {
+
+    }
+    await connect.getNewDataContext();
+    await connect.createTopCollection(geographicLevel);
+    const allAttrs: Array<string|ICropDataItem> = ["Year"];
+
     for (const key in subOptions) {
       const selections = subOptions[key as keyof typeof subOptions];
       for (const attribute of selections) {
@@ -120,7 +123,6 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions) 
     }
 
     await connect.createSubCollection(geographicLevel, allAttrs);
-    const items = await getItems(selectedOptions);
     await connect.createItems(items);
     await connect.makeCaseTableAppear();
     return "success";
@@ -229,6 +231,7 @@ const getAttrData = async (params: IGetAttrDataParams) => {
        return values[codapColumnName] = dataItem.Value;
     });
   } else {
+    // eslint-disable-next-line no-console
     console.log(`Error: did not receive response for item with these params: ${params}`);
   }
   return values;
