@@ -6,7 +6,9 @@ import { attributeOptions, categories, defaultSelectedOptions } from "../constan
 import { IStateOptions } from "../constants/types";
 import { createTableFromSelections } from "../scripts/api";
 import { connect } from "../scripts/connect";
-
+import ProgressIndicator from "../assets/progress-indicator.svg";
+import Checkmark from "../assets/done.svg";
+import Error from "../assets/warning.svg";
 
 import css from "./app.scss";
 
@@ -14,6 +16,8 @@ function App() {
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const [selectedOptions, setSelectedOptions] = useState<IStateOptions>(defaultSelectedOptions);
   const [getDataDisabled, setGetDataDisabled] = useState<boolean>(true);
+  const [statusMessage, setStatusMessage] = useState<string>("");
+  const [statusGraphic, setStatusGraphic] = useState<React.ReactElement>();
 
   useEffect(() => {
     const init = async () => {
@@ -43,7 +47,16 @@ function App() {
   };
 
   const handleGetData = async () => {
-    await createTableFromSelections(selectedOptions);
+    setStatusMessage("Fetching data...");
+    setStatusGraphic(<ProgressIndicator/>);
+    const res = await createTableFromSelections(selectedOptions);
+    if (res !== "success") {
+      setStatusMessage("Fetch Error. Please retry.");
+      setStatusGraphic(<Error/>)
+    } else {
+      setStatusMessage("Fetched data.");
+      setStatusGraphic(<Checkmark/>);
+    }
   };
 
   return (
@@ -77,7 +90,10 @@ function App() {
         })}
       </div>
       <div className={css.summary}>
-        <span className={css.statusGraphic}></span>
+        <div className={css.status}>
+          <div>{statusGraphic}</div>
+          <div>{statusMessage}</div>
+        </div>
         <button className={css.getDataButton} disabled={getDataDisabled} onClick={handleGetData}>Get Data</button>
       </div>
     </div>

@@ -27,17 +27,6 @@ interface IGetAttrDataParams {
   state?: string
 }
 
-// export const fetchData = async (req: string) => {
-//   try {
-//     const response = await fetchJsonp(req, {timeout: 10000});
-//     const json = await response.json();
-//     return json;
-//   } catch (error) {
-//     console.log("parsing failed", error);
-//     throw error;
-//   }
-// };
-
 export const fetchDataWithRetry = async (req: string, maxRetries = 3) => {
   let retries = 0;
   while (retries < maxRetries) {
@@ -103,36 +92,41 @@ export const createRequest = ({attribute, geographicLevel, location, year, cropC
 
 export const createTableFromSelections = async (selectedOptions: IStateOptions) => {
   const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
+
   await connect.getNewDataContext();
   await connect.createTopCollection(geographicLevel);
-
   const allAttrs: Array<string|ICropDataItem> = ["Year"];
 
-  for (const key in subOptions) {
-    const selections = subOptions[key as keyof typeof subOptions];
-    for (const attribute of selections) {
-      const queryParams = getQueryParams(attribute);
-      if (!queryParams) {
-        throw new Error("Invalid attribute");
-      }
-      const {short_desc} = queryParams;
-      if (Array.isArray(short_desc)) {
-        for (const desc of short_desc) {
-          console.log({desc});
-          const codapColumnName = attrToCODAPColumnName[desc].attributeNameInCodapTable;
-          allAttrs.push(codapColumnName);
+  try {
+    for (const key in subOptions) {
+      const selections = subOptions[key as keyof typeof subOptions];
+      for (const attribute of selections) {
+        const queryParams = getQueryParams(attribute);
+        if (!queryParams) {
+          throw new Error("Invalid attribute");
         }
-      } else if (typeof short_desc === "object" && cropUnits) {
-        const attr = short_desc[cropUnits as keyof ICropDataItem][0];
-        allAttrs.push(attrToCODAPColumnName[attr].attributeNameInCodapTable);
+        const {short_desc} = queryParams;
+        if (Array.isArray(short_desc)) {
+          for (const desc of short_desc) {
+            console.log({desc});
+            const codapColumnName = attrToCODAPColumnName[desc].attributeNameInCodapTable;
+            allAttrs.push(codapColumnName);
+          }
+        } else if (typeof short_desc === "object" && cropUnits) {
+          const attr = short_desc[cropUnits as keyof ICropDataItem][0];
+          allAttrs.push(attrToCODAPColumnName[attr].attributeNameInCodapTable);
+        }
       }
     }
-  }
 
-  await connect.createSubCollection(geographicLevel, allAttrs);
-  const items = await getItems(selectedOptions);
-  await connect.createItems(items);
-  await connect.makeCaseTableAppear();
+    await connect.createSubCollection(geographicLevel, allAttrs);
+    const items = await getItems(selectedOptions);
+    await connect.createItems(items);
+    await connect.makeCaseTableAppear();
+    return "success";
+  } catch (error) {
+    return error;
+  }
 };
 
 const getItems = async (selectedOptions: IStateOptions) => {

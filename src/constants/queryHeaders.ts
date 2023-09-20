@@ -136,8 +136,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Economic Class",
       geographicAreas: ["State"],
       years: {
-        "County": allYears.filter(y => Number(y) >= 1987),
-        "State": allYears.filter(y => Number(y) >= 1987)
+        "County": allYears.filter(y => Number(y) >= 1998),
+        "State": allYears.filter(y => Number(y) >= 1998)
       }
   },
   {
