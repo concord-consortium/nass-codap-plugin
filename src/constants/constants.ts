@@ -7,61 +7,65 @@ export const geographicLevelOptions: IAttrOptions = {
   options : ["State", "County"]
 };
 
+export const fiftyStates = [
+  "Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming"
+];
+
 export const stateOptions: IAttrOptions = {
   label: null,
   key: "states",
   instructions: "Choose states to include in your dataset from the list below",
   options: [
-    "Alabama",
-    "Alaska",
-    "Arizona",
-    "Arkansas",
-    "California",
-    "Colorado",
-    "Connecticut",
-    "Delaware",
-    "Florida",
-    "Georgia",
-    "Hawaii",
-    "Idaho",
-    "Illinois",
-    "Indiana",
-    "Iowa",
-    "Kansas",
-    "Kentucky",
-    "Louisiana",
-    "Maine",
-    "Maryland",
-    "Massachusetts",
-    "Michigan",
-    "Minnesota",
-    "Mississippi",
-    "Missouri",
-    "Montana",
-    "Nebraska",
-    "Nevada",
-    "New Hampshire",
-    "New Jersey",
-    "New Mexico",
-    "New York",
-    "North Carolina",
-    "North Dakota",
-    "Ohio",
-    "Oklahoma",
-    "Oregon",
-    "Pennsylvania",
-    "Rhode Island",
-    "South Carolina",
-    "South Dakota",
-    "Tennessee",
-    "Texas",
-    "Utah",
-    "Vermont",
-    "Virginia",
-    "Washington",
-    "West Virginia",
-    "Wisconsin",
-    "Wyoming"
+    ...fiftyStates
   ]
 };
 
@@ -91,10 +95,10 @@ const cropUnitOptions: IAttrOptions = {
   options: ["Area Harvested", "Yield"],
   instructions: "(Choose units)"
 };
-const cropOptions: IAttrOptions = {
+export const cropOptions: IAttrOptions = {
   key: "crops",
   label: null,
-  options: ["Corn", "Cotton", "Grapes", "Grasses", "Oats", "Soybeans", "Wheat"],
+  options: ["Corn", "Cotton", "Grapes", "Oats", "Soybeans", "Wheat"],
   instructions: "(Choose crops)"
 };
 
@@ -110,21 +114,21 @@ export const yearsOptions: IAttrOptions = {
   label: "Years",
   options: yearsArray,
   instructions: null
-}
+};
 
 export const categories = [
   {header: "Place", options: placeOptions, altText: ""},
   {header: "Attributes", options: attributeOptions, altText: ""},
   {header: "Years", options: yearsOptions, altText: ""}
-]
+];
 
 export const defaultSelectedOptions: IStateOptions = {
-  "geographicLevel": "",
-  "states": [],
-  "farmerDemographics": [],
-  "farmDemographics": [],
-  "economicsAndWages": [],
-  "cropUnits": "",
-  "crops": [],
-  "years": []
+  geographicLevel: "State",
+  states: ["All States"],
+  farmerDemographics: [],
+  farmDemographics: [],
+  economicsAndWages: [],
+  cropUnits: "",
+  crops: [],
+  years: []
 };

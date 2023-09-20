@@ -1,5 +1,5 @@
 import React from "react";
-import { IStateOptions, OptionKey } from "./types";
+import { IStateOptions, OptionKey } from "../constants/types";
 
 import css from "./options.scss";
 
@@ -28,13 +28,30 @@ export const Options: React.FC<IOptions> = (props) => {
       let newArray = [...selectedOptions[optionKey]];
       if (e.currentTarget.checked) {
         newArray.push(e.target.value);
+        // If user selects "Age", "Gender", or "Race", auto-select "Total Farmers" as well
+        if (optionKey === "farmerDemographics" && !newArray.includes("Total Farmers")) {
+          newArray.push("Total Farmers");
+        }
+        // If user selects a state, de-select "All States"
+        if (optionKey === "states" && newArray.includes("All States")) {
+            newArray = newArray.filter((state) => state !== "All States");
+        }
         newArray.sort();
         if (optionKey === "years") {
           newArray.reverse();
         }
       } else {
         if (isOptionSelected(e.target.value)) {
-          newArray = newArray.filter((o) => o !== e.target.value);
+          const includes = (opt: string) => selectedOptions.farmerDemographics.includes(opt);
+          // "Total Farmers" can only be unselected if race, gender, and age are unselected
+          if (optionKey === "farmerDemographics" && e.target.value === "Total Farmers") {
+            const shouldFilter = !includes("Race") && !includes("Gender") && !includes("Age");
+            if (shouldFilter) {
+              newArray = newArray.filter((o) => o !== e.target.value);
+            }
+          } else {
+            newArray = newArray.filter((o) => o !== e.target.value);
+          }
         }
       }
       handleSetSelectedOptions(optionKey, newArray);
