@@ -1,0 +1,46 @@
+@import "./vars.scss";
+
+.popUp {
+  position: absolute;
+  z-index: 2;
+  left: calc(50% - 175px);
+  top: calc(50% - 125px);
+  width: 350px;
+  height: 250;
+  .popUpContent {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 35px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+    background-color: white;
+    border: 0 solid $teal-dark;
+    border-radius: 6px;
+    border-width: 1px;
+    .header {
+      display: flex;
+      justify-content: center;
+      padding: 5px;
+      background-color: $teal-dark;
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      gap: 5px;
+    }
+    .popUpBody {
+      background-color: white;
+      padding: 12px;
+    }
+    .popUpFooter {
+      justify-content: space-around;
+      display: flex;
+    }
+  }
+}
+
+
+
+

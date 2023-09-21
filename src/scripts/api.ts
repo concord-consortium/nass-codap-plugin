@@ -4,7 +4,7 @@ import { multiRegions } from "../constants/regionData";
 import { connect } from "./connect";
 import { cropOptions, fiftyStates } from "../constants/constants";
 import { countyData } from "../constants/counties";
-import { getQueryParams } from "./utils";
+import { flatten, getQueryParams } from "./utils";
 import { attrToCODAPColumnName } from "../constants/codapMetadata";
 
 const baseURL = `https://quickstats.nass.usda.gov/api/api_GET/?key=9ED0BFB8-8DDD-3609-9940-A2341ED6A9E3`;
@@ -91,42 +91,59 @@ export const createRequest = ({attribute, geographicLevel, location, year, cropC
   return req;
 };
 
+export const getAllAttrs = (selectedOptions: IStateOptions) => {
+  const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
+  const allAttrs: Array<string|ICropDataItem> = ["Year"];
+
+  for (const key in subOptions) {
+    const selections = subOptions[key as keyof typeof subOptions];
+    for (const attribute of selections) {
+      const queryParams = getQueryParams(attribute);
+      if (!queryParams) {
+        throw new Error("Invalid attribute");
+      }
+      const {short_desc} = queryParams;
+      if (Array.isArray(short_desc)) {
+        for (const desc of short_desc) {
+          const codapColumnName = attrToCODAPColumnName[desc].attributeNameInCodapTable;
+          allAttrs.push(codapColumnName);
+        }
+      } else if (typeof short_desc === "object" && cropUnits) {
+        const attr = short_desc[cropUnits as keyof ICropDataItem][0];
+        allAttrs.push(attrToCODAPColumnName[attr].attributeNameInCodapTable);
+      }
+    }
+  }
+  return allAttrs;
+}
+
+export const getNumberOfItems = (selectedOptions: IStateOptions) => {
+  let {states, years} = selectedOptions;
+  const countySelected = selectedOptions.geographicLevel === "County";
+  if (states[0] === "All States") {
+    states = fiftyStates;
+  }
+  if (countySelected) {
+    return flatten(states.map((state: string) => countyData[state])).length * years.length;
+  } else {
+    return states.length * years.length;
+  }
+}
+
 export const createTableFromSelections = async (selectedOptions: IStateOptions) => {
   const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
   try {
+    const allAttrs = getAllAttrs(selectedOptions);
     const items = await getItems(selectedOptions);
-    if (items.length > 4000) {
-
-    }
     await connect.getNewDataContext();
     await connect.createTopCollection(geographicLevel);
-    const allAttrs: Array<string|ICropDataItem> = ["Year"];
-
-    for (const key in subOptions) {
-      const selections = subOptions[key as keyof typeof subOptions];
-      for (const attribute of selections) {
-        const queryParams = getQueryParams(attribute);
-        if (!queryParams) {
-          throw new Error("Invalid attribute");
-        }
-        const {short_desc} = queryParams;
-        if (Array.isArray(short_desc)) {
-          for (const desc of short_desc) {
-            const codapColumnName = attrToCODAPColumnName[desc].attributeNameInCodapTable;
-            allAttrs.push(codapColumnName);
-          }
-        } else if (typeof short_desc === "object" && cropUnits) {
-          const attr = short_desc[cropUnits as keyof ICropDataItem][0];
-          allAttrs.push(attrToCODAPColumnName[attr].attributeNameInCodapTable);
-        }
-      }
-    }
-
     await connect.createSubCollection(geographicLevel, allAttrs);
     await connect.createItems(items);
     await connect.makeCaseTableAppear();
     return "success";
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log("Error creating CODAP Table from API data:", error);
     return error;
   }
 };

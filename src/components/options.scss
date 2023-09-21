@@ -58,6 +58,12 @@
       padding: 0px;
     }
   }
+  &.years {
+    padding: 0px;
+    .option {
+      flex-basis: 60px;
+    }
+  }
   &.narrow {
     margin: 0px;
     .option {
