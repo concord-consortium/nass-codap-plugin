@@ -54,12 +54,12 @@ function App() {
     const res = await createTableFromSelections(selectedOptions);
     if (res !== "success") {
       setStatusMessage("Fetch Error. Please retry.");
-      setStatusGraphic(<Error/>)
+      setStatusGraphic(<Error/>);
     } else {
       setStatusMessage("Fetched data.");
       setStatusGraphic(<Checkmark/>);
     }
-  }
+  };
 
   const handleGetData = async () => {
     const numberOfRows = getNumberOfItems(selectedOptions);
@@ -75,7 +75,7 @@ function App() {
     if (getDataAnyway) {
       await getData();
     }
-  }
+  };
 
   return (
     <div className={css.pluginContent}>

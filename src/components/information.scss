@@ -2,8 +2,8 @@
 
 .popUpContent {
   position: absolute;
-  left: 12px;
-  right: 12px;
+  width: 310px;
+  left: calc(50% - 155px);
   top: 35px;
   z-index: 3;
 
@@ -17,6 +17,11 @@
 
   max-height: 1000px;
   border-width: 1px;
+  .popUpBody {
+    background-color: white;
+    padding: 12px;
+    font-size: 13px;
+  }
 }
 
 .popUpFooter {
@@ -35,9 +40,4 @@
   left: 0;
   right: 0;
   bottom: 0;
-}
-
-.popUpBody {
-  background-color: white;
-  padding: 12px;
 }
