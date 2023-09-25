@@ -1,0 +1,111 @@
+@import "./vars.scss";
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-y: hidden;
+}
+
+/* remove Chrome blue halo */
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+}
+
+/* basic page style */
+.pluginContent {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: $text;
+  background-color: white;
+  padding: 8px 12px;
+  height: 95vh;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: stretch;
+}
+
+.hide {
+  display: none;
+}
+
+.sectionHeaderLine {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 6px 0;
+  .sectionHeaderText {
+    width: 88%;
+  }
+}
+
+.infoButton {
+  display: inline-block;
+  min-width: 20px;
+  height: 20px;
+  background-image: url("../assets/info.svg");
+  cursor: pointer;
+}
+
+.scrollArea {
+  border-bottom: thin solid $teal-light;
+  flex-basis: 300px;
+  flex-grow: 10;
+  overflow-y: scroll;
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.summary {
+  flex-basis: 56px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.introSection {
+  flex-basis: 47px;
+  flex-grow: 0;
+  flex-shrink: 10;
+  border-bottom: thin solid $text;
+}
+
+button {
+  margin: 6px;
+  padding: 6px;
+  border-radius: 3px;
+  border: solid 1px $teal-light;
+  background-color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  &:hover:not(:disabled) {
+    cursor: pointer;
+    background: $teal-light-12;
+  }
+}
+
+a {
+  color: $teal-dark;
+}
+
+.scrollArea {
+  .dropdown {
+    border-bottom: thin #dddddd solid;
+    :last-child {
+      border-bottom: none;
+    }
+  }
+}
