@@ -4,6 +4,7 @@ import { IStateOptions } from "../constants/types";
 import { Options } from "./options";
 import { queryData } from "../constants/queryHeaders";
 import { flatten } from "../scripts/utils";
+import classnames from "classnames";
 
 import css from "./options.scss";
 
@@ -55,7 +56,7 @@ export const YearsOptions: React.FC<IProps> = (props) => {
   };
 
   return (
-    <div className={css.checkOptions}>
+    <div className={classnames(css.checkOptions, css.years)}>
       {availableYearOptions.length === 0 ?
       <div>Please select attributes to see available years.</div>
       :

@@ -2,9 +2,10 @@ import React, {useEffect, useState} from "react";
 import { Dropdown } from "./dropdown";
 import classnames from "classnames";
 import { Information } from "./information";
+import { Warning } from "./warning";
 import { attributeOptions, categories, defaultSelectedOptions } from "../constants/constants";
 import { IStateOptions } from "../constants/types";
-import { createTableFromSelections } from "../scripts/api";
+import { createTableFromSelections, getNumberOfItems } from "../scripts/api";
 import { connect } from "../scripts/connect";
 import ProgressIndicator from "../assets/progress-indicator.svg";
 import Checkmark from "../assets/done.svg";
@@ -18,6 +19,7 @@ function App() {
   const [getDataDisabled, setGetDataDisabled] = useState<boolean>(true);
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [statusGraphic, setStatusGraphic] = useState<React.ReactElement>();
+  const [showWarning, setShowWarning] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async () => {
@@ -46,16 +48,32 @@ function App() {
     setShowInfo(true);
   };
 
-  const handleGetData = async () => {
+  const getData = async () => {
     setStatusMessage("Fetching data...");
     setStatusGraphic(<ProgressIndicator/>);
     const res = await createTableFromSelections(selectedOptions);
     if (res !== "success") {
       setStatusMessage("Fetch Error. Please retry.");
-      setStatusGraphic(<Error/>)
+      setStatusGraphic(<Error/>);
     } else {
       setStatusMessage("Fetched data.");
       setStatusGraphic(<Checkmark/>);
+    }
+  };
+
+  const handleGetData = async () => {
+    const numberOfRows = getNumberOfItems(selectedOptions);
+    if (numberOfRows > 4000) {
+      setShowWarning(true);
+    } else {
+      await getData();
+    }
+  };
+
+  const handleCloseWarning = async (getDataAnyway: boolean) => {
+    setShowWarning(false);
+    if (getDataAnyway) {
+      await getData();
     }
   };
 
@@ -96,6 +114,9 @@ function App() {
         </div>
         <button className={css.getDataButton} disabled={getDataDisabled} onClick={handleGetData}>Get Data</button>
       </div>
+      { showWarning &&
+        <Warning handleCloseWarning={handleCloseWarning}/>
+      }
     </div>
 
   );
