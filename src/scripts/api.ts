@@ -113,7 +113,7 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
     }
   }
   return allAttrs;
-}
+};
 
 export const getNumberOfItems = (selectedOptions: IStateOptions) => {
   let {states, years} = selectedOptions;
@@ -126,10 +126,10 @@ export const getNumberOfItems = (selectedOptions: IStateOptions) => {
   } else {
     return states.length * years.length;
   }
-}
+};
 
 export const createTableFromSelections = async (selectedOptions: IStateOptions) => {
-  const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
+  const {geographicLevel} = selectedOptions;
   try {
     const allAttrs = getAllAttrs(selectedOptions);
     const requests = getAllRequests(selectedOptions);

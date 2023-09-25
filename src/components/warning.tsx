@@ -21,8 +21,16 @@ export const Warning: React.FC<IProps> = (props) => {
         </div>
         <div className={css.popUpFooter}>
           <div className={css.controlRow}>
-            <span><button className={css.button} onClick={() => handleCloseWarning(false)}>Change Attribute Selection</button></span>
-            <span><button className={css.button} onClick={() => handleCloseWarning(true)}>Get Data Anyway</button></span>
+            <span>
+              <button className={css.button} onClick={() => handleCloseWarning(false)}>
+                Change Attribute Selection
+              </button>
+            </span>
+            <span>
+              <button className={css.button} onClick={() => handleCloseWarning(true)}>
+                Get Data Anyway
+              </button>
+            </span>
           </div>
         </div>
       </div>
