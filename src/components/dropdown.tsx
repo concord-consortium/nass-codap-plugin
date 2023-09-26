@@ -7,11 +7,12 @@ import { YearsOptions } from "./years-options";
 import { Summary } from "./summary";
 
 import css from "./dropdown.scss";
+import { IStateOptions } from "../constants/types";
 
 interface IProps {
   category: string
   sectionAltText: string
-  handleSetSelectedOptions: (option: string, value: string|string[]) => void
+  handleSetSelectedOptions: (newState: Partial<IStateOptions>) => void
   selectedOptions: typeof defaultSelectedOptions;
 }
 

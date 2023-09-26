@@ -6,7 +6,7 @@ import { Options } from "./options";
 import css from "./options.scss";
 
 interface IProps {
-  handleSetSelectedOptions: (option: string, value: string|string[]) => void;
+  handleSetSelectedOptions: (newState: Partial<IStateOptions>) => void;
   selectedOptions: IStateOptions;
 }
 
@@ -18,7 +18,7 @@ export const PlaceOptions: React.FC<IProps> = (props) => {
   };
 
   const handleSelectAllStates = () => {
-    handleSetSelectedOptions("states", ["All States"]);
+    handleSetSelectedOptions({states: ["All States"]});
   };
 
   return (

@@ -39,8 +39,8 @@ function App() {
     }
   }, [selectedOptions]);
 
-  const handleSetSelectedOptions = (option: string, value: string | string[]) => {
-    const newSelectedOptions = {...selectedOptions, [option]: value};
+  const handleSetSelectedOptions = (newState: Partial<IStateOptions>) => {
+    const newSelectedOptions = {...selectedOptions, ...newState};
     setSelectedOptions(newSelectedOptions);
   };
 

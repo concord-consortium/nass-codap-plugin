@@ -9,7 +9,7 @@ import classnames from "classnames";
 import css from "./options.scss";
 
 interface IProps {
-  handleSetSelectedOptions: (option: string, value: string|string[]) => void;
+  handleSetSelectedOptions: (newState: Partial<IStateOptions>) => void;
   selectedOptions: IStateOptions;
 }
 
@@ -46,14 +46,14 @@ export const YearsOptions: React.FC<IProps> = (props) => {
       selectionsNotAvailable.forEach((year) => {
         newSelectedYears.splice(newSelectedYears.indexOf(year), 1);
       });
-      handleSetSelectedOptions("years", newSelectedYears);
+      handleSetSelectedOptions({years: newSelectedYears});
     }
 
   }, [selectedOptions, handleSetSelectedOptions]);
 
-  const handleSelectYear = (yearKey: string, years: string|string[]) => {
-    handleSetSelectedOptions(yearKey, years);
-  };
+  // const handleSelectYear: typeof handleSetSelectedOptions = (years: {["years"]: Array<string>}) => {
+  //   handleSetSelectedOptions(years);
+  // };
 
   return (
     <div className={classnames(css.checkOptions, css.years)}>
@@ -65,7 +65,7 @@ export const YearsOptions: React.FC<IProps> = (props) => {
         optionKey={yearsOptions.key}
         inputType={"checkbox"}
         selectedOptions={selectedOptions}
-        handleSetSelectedOptions={handleSelectYear}
+        handleSetSelectedOptions={handleSetSelectedOptions}
       />}
     </div>
   );
