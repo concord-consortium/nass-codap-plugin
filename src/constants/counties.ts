@@ -53,7 +53,7 @@ export const countyData: {[state: string]: string[]} = {
     "MONTGOMERY",
     "MORGAN",
 
-    "OTHER COUNTIES",
+
     "PERRY",
     "PICKENS",
     "PIKE",
@@ -77,7 +77,7 @@ export const countyData: {[state: string]: string[]} = {
     "JUNEAU",
     "KENAI PENINSULA",
 
-    "OTHER COUNTIES"
+
   ],
   "Arizona": [
     "APACHE",
@@ -91,7 +91,7 @@ export const countyData: {[state: string]: string[]} = {
     "MOHAVE",
     "NAVAJO",
 
-    "OTHER COUNTIES",
+
     "PIMA",
     "PINAL",
     "SANTA CRUZ",
@@ -151,7 +151,7 @@ export const countyData: {[state: string]: string[]} = {
     "NEVADA",
     "NEWTON",
 
-    "OTHER COUNTIES",
+
     "OUACHITA",
     "PERRY",
     "PHILLIPS",
@@ -209,7 +209,7 @@ export const countyData: {[state: string]: string[]} = {
     "NEVADA",
     "ORANGE",
 
-    "OTHER COUNTIES",
+
     "PLACER",
     "PLUMAS",
     "RIVERSIDE",
@@ -287,7 +287,7 @@ export const countyData: {[state: string]: string[]} = {
     "MORGAN",
     "OTERO",
 
-    "OTHER COUNTIES",
+
     "OURAY",
     "PARK",
     "PHILLIPS",
@@ -315,14 +315,14 @@ export const countyData: {[state: string]: string[]} = {
     "NEW HAVEN",
     "NEW LONDON",
 
-    "OTHER COUNTIES",
+
     "TOLLAND",
     "WINDHAM"
 ],
   "Delaware": [
     "KENT",
     "NEW CASTLE",
-    "OTHER COUNTIES",
+
     "SUSSEX"
 ],
   "Florida": [
@@ -376,7 +376,7 @@ export const countyData: {[state: string]: string[]} = {
     "ORANGE",
     "OSCEOLA",
 
-    "OTHER COUNTIES",
+
     "PALM BEACH",
     "PASCO",
     "PINELLAS",
@@ -507,7 +507,7 @@ export const countyData: {[state: string]: string[]} = {
     "OCONEE",
     "OGLETHORPE",
 
-    "OTHER COUNTIES",
+
     "PAULDING",
     "PEACH",
     "PICKENS",
@@ -565,7 +565,7 @@ export const countyData: {[state: string]: string[]} = {
     "KAUAI",
     "MAUI & KALWAO",
 
-    "OTHER COUNTIES"
+
 ],
   "Idaho": [
     "ADA",
@@ -605,7 +605,7 @@ export const countyData: {[state: string]: string[]} = {
     "NEZ PERCE",
     "ONEIDA",
 
-    "OTHER COUNTIES",
+
     "OWYHEE",
     "PAYETTE",
     "POWER",
@@ -688,7 +688,7 @@ export const countyData: {[state: string]: string[]} = {
     "MOULTRIE",
     "OGLE",
 
-    "OTHER COUNTIES",
+
     "PEORIA",
     "PERRY",
     "PIATT",
@@ -782,7 +782,7 @@ export const countyData: {[state: string]: string[]} = {
     "OHIO",
     "ORANGE",
 
-    "OTHER COUNTIES",
+
     "OWEN",
     "PARKE",
     "PERRY",
@@ -891,7 +891,7 @@ export const countyData: {[state: string]: string[]} = {
     "O BRIEN",
     "OSCEOLA",
 
-    "OTHER COUNTIES",
+
     "PAGE",
     "PALO ALTO",
     "PLYMOUTH",
@@ -993,7 +993,7 @@ export const countyData: {[state: string]: string[]} = {
     "OSAGE",
     "OSBORNE",
 
-    "OTHER COUNTIES",
+
     "OTTAWA",
     "PAWNEE",
     "PHILLIPS",
@@ -1124,7 +1124,7 @@ export const countyData: {[state: string]: string[]} = {
     "OHIO",
     "OLDHAM",
 
-    "OTHER COUNTIES",
+
     "OWEN",
     "OWSLEY",
     "PENDLETON",
@@ -1191,7 +1191,7 @@ export const countyData: {[state: string]: string[]} = {
     "NATCHITOCHES",
     "ORLEANS",
 
-    "OTHER COUNTIES",
+
     "OUACHITA",
     "PLAQUEMINES",
     "POINTE COUPEE",
@@ -1231,7 +1231,7 @@ export const countyData: {[state: string]: string[]} = {
     "KNOX",
     "LINCOLN",
 
-    "OTHER COUNTIES",
+
     "OXFORD",
     "PENOBSCOT",
     "PISCATAQUIS",
@@ -1258,7 +1258,7 @@ export const countyData: {[state: string]: string[]} = {
     "KENT",
     "MONTGOMERY",
 
-    "OTHER COUNTIES",
+
     "PRINCE GEORGES",
     "QUEEN ANNES",
     "SOMERSET",
@@ -1281,7 +1281,7 @@ export const countyData: {[state: string]: string[]} = {
     "NANTUCKET",
     "NORFOLK",
 
-    "OTHER COUNTIES",
+
     "PLYMOUTH",
     "SUFFOLK",
     "WORCESTER"
@@ -1356,7 +1356,7 @@ export const countyData: {[state: string]: string[]} = {
     "OSCEOLA",
     "OSCODA",
 
-    "OTHER COUNTIES",
+
     "OTSEGO",
     "OTTAWA",
     "PRESQUE ISLE",
@@ -1430,7 +1430,7 @@ export const countyData: {[state: string]: string[]} = {
     "NORMAN",
     "OLMSTED",
 
-    "OTHER COUNTIES",
+
     "OTTER TAIL",
     "PENNINGTON",
     "PINE",
@@ -1519,7 +1519,7 @@ export const countyData: {[state: string]: string[]} = {
     "NOXUBEE",
     "OKTIBBEHA",
 
-    "OTHER COUNTIES",
+
     "PANOLA",
     "PEARL RIVER",
     "PERRY",
@@ -1628,7 +1628,7 @@ export const countyData: {[state: string]: string[]} = {
     "OREGON",
     "OSAGE",
 
-    "OTHER COUNTIES",
+
     "OZARK",
     "PEMISCOT",
     "PERRY",
@@ -1704,7 +1704,7 @@ export const countyData: {[state: string]: string[]} = {
     "MISSOULA",
     "MUSSELSHELL",
 
-    "OTHER COUNTIES",
+
     "PARK",
     "PETROLEUM",
     "PHILLIPS",
@@ -1796,7 +1796,7 @@ export const countyData: {[state: string]: string[]} = {
     "NEMAHA",
     "NUCKOLLS",
 
-    "OTHER COUNTIES",
+
     "OTOE",
     "PAWNEE",
     "PERKINS",
@@ -1842,7 +1842,7 @@ export const countyData: {[state: string]: string[]} = {
     "NYE",
     "ORMSBY",
 
-    "OTHER COUNTIES",
+
     "PERSHING",
     "STOREY",
     "WASHOE",
@@ -1857,7 +1857,7 @@ export const countyData: {[state: string]: string[]} = {
     "HILLSBOROUGH",
     "MERRIMACK",
 
-    "OTHER COUNTIES",
+
     "ROCKINGHAM",
     "STRAFFORD",
     "SULLIVAN"
@@ -1879,7 +1879,7 @@ export const countyData: {[state: string]: string[]} = {
     "MORRIS",
     "OCEAN",
 
-    "OTHER COUNTIES",
+
     "PASSAIC",
     "SALEM",
     "SOMERSET",
@@ -1909,7 +1909,7 @@ export const countyData: {[state: string]: string[]} = {
     "MORA",
     "OTERO",
 
-    "OTHER COUNTIES",
+
     "QUAY",
     "RIO ARRIBA",
     "ROOSEVELT",
@@ -1964,7 +1964,7 @@ export const countyData: {[state: string]: string[]} = {
     "ORLEANS",
     "OSWEGO",
 
-    "OTHER COUNTIES",
+
     "OTSEGO",
     "PUTNAM",
     "QUEENS",
@@ -2060,7 +2060,7 @@ export const countyData: {[state: string]: string[]} = {
     "ONSLOW",
     "ORANGE",
 
-    "OTHER COUNTIES",
+
     "PAMLICO",
     "PASQUOTANK",
     "PENDER",
@@ -2129,7 +2129,7 @@ export const countyData: {[state: string]: string[]} = {
     "NELSON",
     "OLIVER",
 
-    "OTHER COUNTIES",
+
     "PEMBINA",
     "PIERCE",
     "RAMSEY",
@@ -2214,7 +2214,7 @@ export const countyData: {[state: string]: string[]} = {
     "MUSKINGUM",
     "NOBLE",
 
-    "OTHER COUNTIES",
+
     "OTTAWA",
     "PAULDING",
     "PERRY",
@@ -2302,7 +2302,7 @@ export const countyData: {[state: string]: string[]} = {
     "OKMULGEE",
     "OSAGE",
 
-    "OTHER COUNTIES",
+
     "OTTAWA",
     "PAWNEE",
     "PAYNE",
@@ -2352,7 +2352,7 @@ export const countyData: {[state: string]: string[]} = {
     "MORROW",
     "MULTNOMAH",
 
-    "OTHER COUNTIES",
+
     "POLK",
     "SHERMAN",
     "TILLAMOOK",
@@ -2415,7 +2415,7 @@ export const countyData: {[state: string]: string[]} = {
     "NORTHAMPTON",
     "NORTHUMBERLAND",
 
-    "OTHER COUNTIES",
+
     "PERRY",
     "PHILADELPHIA",
     "PIKE",
@@ -2482,7 +2482,7 @@ export const countyData: {[state: string]: string[]} = {
     "OCONEE",
     "ORANGEBURG",
 
-    "OTHER COUNTIES",
+
     "PICKENS",
     "RICHLAND",
     "SALUDA",
@@ -2545,7 +2545,7 @@ export const countyData: {[state: string]: string[]} = {
     "MOODY",
     "OGLALA LAKOTA",
 
-    "OTHER COUNTIES",
+
     "PENNINGTON",
     "PERKINS",
     "POTTER",
@@ -2632,7 +2632,7 @@ export const countyData: {[state: string]: string[]} = {
     "MORGAN",
     "OBION",
 
-    "OTHER COUNTIES",
+
     "OVERTON",
     "PERRY",
     "PICKETT",
@@ -2846,7 +2846,7 @@ export const countyData: {[state: string]: string[]} = {
     "OLDHAM",
     "ORANGE",
 
-    "OTHER COUNTIES",
+
     "PALO PINTO",
     "PANOLA",
     "PARKER",
@@ -2938,7 +2938,7 @@ export const countyData: {[state: string]: string[]} = {
     "MILLARD",
     "MORGAN",
 
-    "OTHER COUNTIES",
+
     "PIUTE",
     "RICH",
     "SALT LAKE",
@@ -2966,7 +2966,7 @@ export const countyData: {[state: string]: string[]} = {
     "ORANGE",
     "ORLEANS",
 
-    "OTHER COUNTIES",
+
     "RUTLAND",
     "WASHINGTON",
     "WINDHAM",
@@ -3044,7 +3044,7 @@ export const countyData: {[state: string]: string[]} = {
     "NOTTOWAY",
     "ORANGE",
 
-    "OTHER COUNTIES",
+
     "PAGE",
     "PATRICK",
     "PITTSYLVANIA",
@@ -3103,7 +3103,7 @@ export const countyData: {[state: string]: string[]} = {
     "MASON",
     "OKANOGAN",
 
-    "OTHER COUNTIES",
+
     "PACIFIC",
     "PEND OREILLE",
     "PIERCE",
@@ -3157,7 +3157,7 @@ export const countyData: {[state: string]: string[]} = {
     "NICHOLAS",
     "OHIO",
 
-    "OTHER COUNTIES",
+
     "PENDLETON",
     "PLEASANTS",
     "POCAHONTAS",
@@ -3225,7 +3225,7 @@ export const countyData: {[state: string]: string[]} = {
     "OCONTO",
     "ONEIDA",
 
-    "OTHER COUNTIES",
+
     "OUTAGAMIE",
     "OZAUKEE",
     "PEPIN",
@@ -3271,7 +3271,7 @@ export const countyData: {[state: string]: string[]} = {
     "NATRONA",
     "NIOBRARA",
 
-    "OTHER COUNTIES",
+
     "PARK",
     "PLATTE",
     "SHERIDAN",

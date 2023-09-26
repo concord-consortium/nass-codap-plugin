@@ -47,8 +47,8 @@ export const queryData: Array<IQueryHeaders> = [
       ...sharedDemographicHeaders,
       short_desc: ["PRODUCERS, (ALL) - NUMBER OF PRODUCERS"],
       years: {
-        "County": ["2017"],
-        "State": ["2017"]
+        "County": ["2017", "2012", "2007", "2002"],
+        "State": ["2017", "2012", "2007", "2002"]
       }
   },
   {
