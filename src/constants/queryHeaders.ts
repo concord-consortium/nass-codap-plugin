@@ -251,7 +251,7 @@ export const queryData: Array<IQueryHeaders> = [
     commodity_desc: "Soybeans",
     short_desc: {
       ["Area Harvested"]: ["SOYBEANS - ACRES HARVESTED"],
-      ["Yield"]: ["SOYBEANS - YIELD MEASURED IN BU / ACRE"]
+      ["Yield"]: ["SOYBEANS - YIELD, MEASURED IN BU / ACRE"]
     },
     ...sharedCropHeaders
   },
@@ -262,7 +262,7 @@ export const queryData: Array<IQueryHeaders> = [
 
     short_desc: {
       ["Area Harvested"]: ["WHEAT - ACRES HARVESTED"],
-      ["Yield"]: ["WHEAT - YIELD MEASURED IN BU / ACRE"]
+      ["Yield"]: ["WHEAT - YIELD, MEASURED IN BU / ACRE"]
     },
     ...sharedCropHeaders
   }

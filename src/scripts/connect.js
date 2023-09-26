@@ -10,7 +10,8 @@ export const connect = {
 
     makeCODAPAttributeDef: function (attr) {
       return {
-        name: attr
+        name: attr,
+        type: "numeric"
       }
     },
 
@@ -107,7 +108,6 @@ export const connect = {
     },
 
     createItems: async function(items) {
-      console.log({items});
       for (const item of items) {
         const message = {
           "action": "create",
