@@ -29,7 +29,6 @@ export const Options: React.FC<IOptions> = (props) => {
       const newSelection: any = {[optionKey]: newArray};
       if (e.currentTarget.checked) {
         newSelection[optionKey].push(e.target.value);
-        console.log(newSelection);
         // If user selects "Age", "Gender", or "Race", auto-select "Total Farmers" as well
         if (optionKey === "farmerDemographics" && !newArray.includes("Total Farmers")) {
           newSelection.farmDemographics.push("Total Farmers");
