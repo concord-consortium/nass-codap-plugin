@@ -140,7 +140,7 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Corn Area Harvested",
     "unitInCodapTable": "Acres Harvested"
   },
-  "COTTON, - YIELD, MEASURED IN LB / ACRE": {
+  "COTTON - YIELD, MEASURED IN LB / ACRE": {
     "attributeNameInCodapTable": "Cotton Yield",
     "unitInCodapTable": "LB/Acre"
   },
@@ -164,7 +164,7 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Oats Area Harvested",
     "unitInCodapTable": "Acres Harvested"
   },
-  "SOYBEANS - YIELD MEASURED IN BU / ACRE": {
+  "SOYBEANS - YIELD, MEASURED IN BU / ACRE": {
     "attributeNameInCodapTable": "Soybeans Yield",
     "unitInCodapTable": "BU/Acre"
   },
@@ -172,7 +172,7 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Soybeans Area Harvested",
     "unitInCodapTable": "Acres Harvested"
   },
-  "WHEAT - YIELD MEASURED IN BU / ACRE": {
+  "WHEAT - YIELD, MEASURED IN BU / ACRE": {
     "attributeNameInCodapTable": "Wheat Yield",
     "unitInCodapTable": "BU/Acre"
   },

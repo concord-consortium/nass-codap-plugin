@@ -7,7 +7,7 @@ import { IStateOptions } from "../constants/types";
 import css from "./options.scss";
 
 interface IProps {
-  handleSetSelectedOptions: (option: string, value: string|string[]) => void;
+  handleSetSelectedOptions: (newState: Partial<IStateOptions>) => void;
   selectedOptions: IStateOptions;
 }
 

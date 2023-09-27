@@ -47,8 +47,8 @@ export const queryData: Array<IQueryHeaders> = [
       ...sharedDemographicHeaders,
       short_desc: ["PRODUCERS, (ALL) - NUMBER OF PRODUCERS"],
       years: {
-        "County": ["2017"],
-        "State": ["2017"]
+        "County": ["2017", "2012", "2007", "2002"],
+        "State": ["2017", "2012", "2007", "2002"]
       }
   },
   {
@@ -251,7 +251,7 @@ export const queryData: Array<IQueryHeaders> = [
     commodity_desc: "Soybeans",
     short_desc: {
       ["Area Harvested"]: ["SOYBEANS - ACRES HARVESTED"],
-      ["Yield"]: ["SOYBEANS - YIELD MEASURED IN BU / ACRE"]
+      ["Yield"]: ["SOYBEANS - YIELD, MEASURED IN BU / ACRE"]
     },
     ...sharedCropHeaders
   },
@@ -262,7 +262,7 @@ export const queryData: Array<IQueryHeaders> = [
 
     short_desc: {
       ["Area Harvested"]: ["WHEAT - ACRES HARVESTED"],
-      ["Yield"]: ["WHEAT - YIELD MEASURED IN BU / ACRE"]
+      ["Yield"]: ["WHEAT - YIELD, MEASURED IN BU / ACRE"]
     },
     ...sharedCropHeaders
   }

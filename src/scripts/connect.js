@@ -10,7 +10,8 @@ export const connect = {
 
     makeCODAPAttributeDef: function (attr) {
       return {
-        name: attr
+        name: attr,
+        type: "numeric"
       }
     },
 
@@ -48,20 +49,43 @@ export const connect = {
       return res;
     },
 
-    createTopCollection: async function(geoLevel) {
-      const plural = geoLevel === "State" ? "States" : "Counties";
+    createStateCollection: async function (createBoundaries) {
+      const attrs = [{"name": "State"}];
+
+      if (createBoundaries) {
+        attrs.push({
+          "name": "Boundary",
+          "formula": `lookupBoundary(US_state_boundaries, State)`,
+          "formulaDependents": "State"
+        });
+      }
+
       const message = {
         "action": "create",
         "resource": `dataContext[${dataSetName}].collection`,
         "values": {
-          "name": plural,
+          "name": "States",
           "parent": "_root_",
+          "attributes": attrs
+        }
+      };
+
+      await codapInterface.sendRequest(message);
+    },
+
+    createCountyCollection: async function() {
+      const message = {
+        "action": "create",
+        "resource": `dataContext[${dataSetName}].collection`,
+        "values": {
+          "name": "Counties",
+          "parent": "States",
           "attributes": [{
-            "name": geoLevel,
+            "name": "County",
           },
           {
             "name": "Boundary",
-            "formula": `lookupBoundary(US_${geoLevel.toLowerCase()}_boundaries, ${geoLevel})`,
+            "formula": `lookupBoundary(US_county_boundaries, County, State)`,
             "formulaDependents": "State"
           }]
         }

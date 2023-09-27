@@ -9,20 +9,13 @@ import { attrToCODAPColumnName } from "../constants/codapMetadata";
 
 const baseURL = `https://quickstats.nass.usda.gov/api/api_GET/?key=9ED0BFB8-8DDD-3609-9940-A2341ED6A9E3`;
 
-interface IRequestParams {
+interface IGetAttrDataParams {
   attribute: string,
   geographicLevel: string,
+  cropUnits?: keyof ICropDataItem,
   location: string,
-  year: string,
-  cropCategory?: keyof ICropDataItem,
-  state?: string
-}
-
-interface IGetItemParams {
-  requestString: string,
-  countyOrState: string,
-  geographicLevel: string,
   year: string
+  state?: string
 }
 
 export const fetchDataWithRetry = async (req: string, maxRetries = 3) => {
@@ -41,7 +34,7 @@ export const fetchDataWithRetry = async (req: string, maxRetries = 3) => {
   throw new Error(`Request failed after ${maxRetries} attempts`);
 };
 
-export const createRequest = ({attribute, geographicLevel, location, year, cropCategory, state}: IRequestParams) => {
+export const createRequest = ({attribute, geographicLevel, location, year, cropUnits, state}: IGetAttrDataParams) => {
   const queryParams = getQueryParams(attribute);
 
   if (!queryParams) {
@@ -57,11 +50,11 @@ export const createRequest = ({attribute, geographicLevel, location, year, cropC
     short_desc,
   } = queryParams;
 
-  const item = cropCategory ?
-    (queryParams?.short_desc as ICropDataItem)[cropCategory] :
+  const item = cropUnits ?
+    (queryParams?.short_desc as ICropDataItem)[cropUnits] :
     short_desc as string[];
-  const cat = cropCategory ?
-    (queryParams?.statisticcat_desc as ICropCategory)[cropCategory] :
+  const cat = cropUnits ?
+    (queryParams?.statisticcat_desc as ICropCategory)[cropUnits] :
     statisticcat_desc;
 
   const locationHeader = geographicLevel === "REGION : MULTI-STATE" ? "region_desc" : geographicLevel === "County" ? "county_name" : "state_name";
@@ -78,14 +71,29 @@ export const createRequest = ({attribute, geographicLevel, location, year, cropC
 
   let req = baseReq;
 
+  item.forEach(subItem => {
+    req = req + `&short_desc=${encodeURIComponent(subItem)}`;
+  });
+
+  // hacky but we need to custom-build the req in this one case
+  if (attribute === "Total Farmers" && year !== "2017") {
+    req = `${baseURL}` +
+    `&sect_desc=${encodeURIComponent("DEMOGRAPHICS")}` +
+    `&group_desc=${encodeURIComponent("OPERATORS")}` +
+    `&commodity_desc=${encodeURIComponent("OPERATORS")}` +
+    `&statisticcat_desc=${encodeURIComponent("OPERATORS")}` +
+    `&domain_desc=${encodeURIComponent("TOTAL")}` +
+    `&agg_level_desc=${encodeURIComponent(geographicLevel)}` +
+    `&${locationHeader}=${encodeURIComponent(location)}` +
+    `&year=${year}` +
+    `&short_desc=${encodeURIComponent("OPERATORS, (ALL) - NUMBER OF OPERATORS")}`;
+  }
+
   // if we are creating a request at the county level, we need to also pass in a state
   if (state) {
     req += `&state_name=${state}`;
   }
 
-  item.forEach(subItem => {
-    req = req + `&short_desc=${encodeURIComponent(subItem)}`;
-  });
   return req;
 };
 
@@ -132,16 +140,12 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions) 
   const {geographicLevel} = selectedOptions;
   try {
     const allAttrs = getAllAttrs(selectedOptions);
-    const requests = getAllRequests(selectedOptions);
-    const promises = [];
-    for (const req of requests) {
-      const {requestString, year, countyOrState} = req;
-      const res = getItem({requestString, year, countyOrState, geographicLevel: req.geographicLevel});
-      promises.push(res);
-    }
-    const items = await Promise.all(promises);
+    const items = await Promise.all(getItems(selectedOptions));
     await connect.getNewDataContext();
-    await connect.createTopCollection(geographicLevel);
+    await connect.createStateCollection(geographicLevel === "State");
+    if (geographicLevel === "County") {
+      await connect.createCountyCollection();
+    }
     await connect.createSubCollection(geographicLevel, allAttrs);
     await connect.createItems(items);
     await connect.makeCaseTableAppear();
@@ -153,7 +157,7 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions) 
   }
 };
 
-const getAllRequests = (selectedOptions: IStateOptions) => {
+const getItems = (selectedOptions: IStateOptions) => {
   let {states, years} = selectedOptions;
   const countySelected = selectedOptions.geographicLevel === "County";
 
@@ -161,36 +165,29 @@ const getAllRequests = (selectedOptions: IStateOptions) => {
     states = fiftyStates;
   }
 
-  const requests = [];
+  const items = [];
 
   for (const state of states) {
     const locations = countySelected ? countyData[state] : [state];
     for (const year of years) {
       for (const location of locations) {
-        const req = getRequest(selectedOptions, location, year, state);
-        if (req) {
-          requests.push(req);
-        }
+        const item = getDataForSingleYearAndState(selectedOptions, location, year, state);
+        items.push(item);
       }
     }
   }
 
-  return requests;
+  return items;
 };
 
-const getItem = async ({requestString, countyOrState, geographicLevel, year}: IGetItemParams) => {
-  const attrData = await getAttrData(requestString);
-  if (Object.keys(attrData).length) {
-    return {
-      [geographicLevel]: countyOrState,
-      "Year": year,
-      ...attrData
-    };
-  }
-};
-
-const getRequest = (selectedOptions: IStateOptions, countyOrState: string, year: string, state?: string) => {
+const getDataForSingleYearAndState = async (selectedOptions: IStateOptions, countyOrState: string, year: string, state?: string) => {
   const {geographicLevel, states, years, cropUnits, ...subOptions} = selectedOptions;
+
+  let item: any = {
+    [geographicLevel]: countyOrState,
+    "Year": year,
+  };
+
   for (const key in subOptions) {
     const value = subOptions[key as keyof typeof subOptions];
     for (const attribute of value) {
@@ -199,33 +196,45 @@ const getRequest = (selectedOptions: IStateOptions, countyOrState: string, year:
       const isMultiStateRegion = queryParams?.geographicAreas[0] === "REGION : MULTI-STATE";
       const geoLevel = isMultiStateRegion ? "REGION : MULTI-STATE" : geographicLevel;
       if (yearAvailable) {
+
         let location = countyOrState;
+
         if (isMultiStateRegion) {
           const itemToCheck = state ? state : countyOrState;
           const regData = multiRegions.find((region) => region.States.includes(itemToCheck));
           location = regData?.Region ? regData.Region : countyOrState;
         }
-        const params: IRequestParams = {attribute, geographicLevel: geoLevel, location, year};
-        if (geoLevel === "County") {
-          params.state = state;
-        }
+
+        const params: IGetAttrDataParams = {attribute, geographicLevel: geoLevel, location, year};
+
         if (cropOptions.options.includes(attribute) && cropUnits) {
-          params.cropCategory = cropUnits as keyof ICropDataItem;
+          params.cropUnits = cropUnits as keyof ICropDataItem;
         }
-        return {
-          requestString: createRequest(params),
-          countyOrState,
-          geographicLevel,
-          year
-        };
+
+        if (geoLevel === "County") {
+          item.State = state;
+        }
+
+        const attrData = await getAttrData(params);
+        item = {...item, ...attrData};
       }
     }
 
   }
+
+  return item;
 };
 
 
-const getAttrData = async (req: string) => {
+const getAttrData = async (params: IGetAttrDataParams) => {
+  const {attribute, geographicLevel, location, year, cropUnits, state} = params;
+  const reqParams: IGetAttrDataParams = {attribute, geographicLevel, location, year, state};
+
+  if (cropOptions.options.includes(attribute) && cropUnits) {
+    reqParams.cropUnits = cropUnits;
+  }
+
+  const req = createRequest(reqParams);
   const res = await fetchDataWithRetry(req);
   const values: any = {};
   if (res) {

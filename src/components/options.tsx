@@ -7,7 +7,7 @@ export interface IOptions {
   options: string[],
   selectedOptions: IStateOptions,
   inputType: "radio" | "checkbox",
-  handleSetSelectedOptions: (option: string, value: string|string[]) => void,
+  handleSetSelectedOptions: (newState: Partial<IStateOptions>) => void
   optionKey: OptionKey
 }
 
@@ -25,20 +25,21 @@ export const Options: React.FC<IOptions> = (props) => {
 
   const handleSelectState = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (Array.isArray(selectedOptions[optionKey])) {
-      let newArray = [...selectedOptions[optionKey]];
+      const newArray = [...selectedOptions[optionKey]];
+      const newSelection: any = {[optionKey]: newArray};
       if (e.currentTarget.checked) {
-        newArray.push(e.target.value);
+        newSelection[optionKey].push(e.target.value);
         // If user selects "Age", "Gender", or "Race", auto-select "Total Farmers" as well
         if (optionKey === "farmerDemographics" && !newArray.includes("Total Farmers")) {
-          newArray.push("Total Farmers");
+          newSelection.farmDemographics.push("Total Farmers");
         }
         // If user selects a state, de-select "All States"
         if (optionKey === "states" && newArray.includes("All States")) {
-            newArray = newArray.filter((state) => state !== "All States");
+          newSelection.states = newArray.filter((state) => state !== "All States");
         }
         newArray.sort();
         if (optionKey === "years") {
-          newArray.reverse();
+          newSelection.years.reverse();
         }
       } else {
         if (isOptionSelected(e.target.value)) {
@@ -47,16 +48,23 @@ export const Options: React.FC<IOptions> = (props) => {
           if (optionKey === "farmerDemographics" && e.target.value === "Total Farmers") {
             const shouldFilter = !includes("Race") && !includes("Gender") && !includes("Age");
             if (shouldFilter) {
-              newArray = newArray.filter((o) => o !== e.target.value);
+              newSelection[optionKey] = newArray.filter((o) => o !== e.target.value);
+            }
+          } else if (selectedOptions.crops.includes(e.target.value)) {
+            // If user is de-selecting a crop, check that there are crops still selected -
+            // Otherwise deselect crop units, too
+            newSelection.crops = newArray.filter((o) => o !== e.target.value);
+            if (newSelection.crops.length === 0) {
+              newSelection.cropUnits = "";
             }
           } else {
-            newArray = newArray.filter((o) => o !== e.target.value);
+            newSelection[optionKey] = newArray.filter((o) => o !== e.target.value);
           }
         }
       }
-      handleSetSelectedOptions(optionKey, newArray);
+      handleSetSelectedOptions(newSelection);
     } else if (optionKey === "geographicLevel" || optionKey === "cropUnits") {
-      handleSetSelectedOptions(optionKey, e.target.value);
+      handleSetSelectedOptions({[optionKey]: e.target.value});
     }
   };
 
