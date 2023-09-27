@@ -51,10 +51,6 @@ export const YearsOptions: React.FC<IProps> = (props) => {
 
   }, [selectedOptions, handleSetSelectedOptions]);
 
-  // const handleSelectYear: typeof handleSetSelectedOptions = (years: {["years"]: Array<string>}) => {
-  //   handleSetSelectedOptions(years);
-  // };
-
   return (
     <div className={classnames(css.checkOptions, css.years)}>
       {availableYearOptions.length === 0 ?
