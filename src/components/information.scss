@@ -4,18 +4,15 @@
   position: absolute;
   width: 310px;
   left: calc(50% - 155px);
-  top: 35px;
+  top: 2.5vh;
   z-index: 3;
-
+  overflow: scroll;
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
   background-color: white;
-
   border: 0 solid $teal-dark;
   border-radius: 6px;
-
-  max-height: 1000px;
+  max-height: 95vh;
   border-width: 1px;
   .popUpBody {
     background-color: white;
