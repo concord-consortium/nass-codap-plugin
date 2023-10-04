@@ -10,6 +10,9 @@ import { connect } from "../scripts/connect";
 import ProgressIndicator from "../assets/progress-indicator.svg";
 import Checkmark from "../assets/done.svg";
 import Error from "../assets/warning.svg";
+import { flatten } from "../scripts/utils";
+import { queryData } from "../constants/queryHeaders";
+import { strings } from "../constants/strings";
 
 import css from "./app.scss";
 
@@ -20,6 +23,7 @@ function App() {
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [statusGraphic, setStatusGraphic] = useState<React.ReactElement>();
   const [showWarning, setShowWarning] = useState<boolean>(false);
+  const [warningMessage, setWarningMessage] = useState<string>("");
 
   useEffect(() => {
     const init = async () => {
@@ -49,21 +53,43 @@ function App() {
   };
 
   const getData = async () => {
-    setStatusMessage("Fetching data...");
+    setStatusMessage(strings.fetchingMsg);
     setStatusGraphic(<ProgressIndicator/>);
     const res = await createTableFromSelections(selectedOptions);
     if (res !== "success") {
-      setStatusMessage("Fetch Error. Please retry.");
+      setStatusMessage(strings.fetchSuccess);
       setStatusGraphic(<Error/>);
     } else {
-      setStatusMessage("Fetched data.");
+      setStatusMessage(strings.fetchError);
       setStatusGraphic(<Checkmark/>);
     }
   };
 
   const handleGetData = async () => {
     const numberOfRows = getNumberOfItems(selectedOptions);
+
+    const attrKeys = attributeOptions.filter((attr) => attr.key !== "cropUnits").map((attr) => attr.key);
+    const selectedAttrKeys = attrKeys.filter((key) => selectedOptions[key].length > 0);
+    const allSelectedAttrs = flatten(selectedAttrKeys.map((key) => selectedOptions[key]));
+    const selectedYears = selectedOptions.years;
+
+    allSelectedAttrs.map((attr) => {
+      const attrInfo = queryData.find((q) => q.plugInAttribute === attr);
+      if (attrInfo) {
+        const availableYears = attrInfo.years[selectedOptions.geographicLevel];
+        for (let i = 0; i < selectedYears.length; i ++) {
+          const y = selectedYears[i];
+          if (!availableYears.includes(y)) {
+            setWarningMessage(strings.yearsWarning);
+            setShowWarning(true);
+            break;
+          }
+        }
+      }
+    });
+
     if (numberOfRows > 4000) {
+      setWarningMessage(strings.rowsWarning);
       setShowWarning(true);
     } else {
       await getData();
@@ -71,6 +97,7 @@ function App() {
   };
 
   const handleCloseWarning = async (getDataAnyway: boolean) => {
+    setWarningMessage("");
     setShowWarning(false);
     if (getDataAnyway) {
       await getData();
@@ -85,10 +112,10 @@ function App() {
       <div className={css.introSection}>
         <div className={css.sectionHeaderLine}>
         <span className={css.sectionHeaderText}>
-          Retrieve data on U.S. agricultural statistics at the state or county level.
+          {strings.appDescription}
         </span>
         <span
-          title="Further information about this CODAP plugin"
+          title={strings.infoTitle}
           className={classnames(css.infoButton, {[css.disabled]: showInfo})}
           onClick={handleInfoClick}
         />
@@ -112,10 +139,15 @@ function App() {
           <div>{statusGraphic}</div>
           <div>{statusMessage}</div>
         </div>
-        <button className={css.getDataButton} disabled={getDataDisabled} onClick={handleGetData}>Get Data</button>
+        <button className={css.getDataButton} disabled={getDataDisabled} onClick={handleGetData}>
+          {strings.getData}
+        </button>
       </div>
       { showWarning &&
-        <Warning handleCloseWarning={handleCloseWarning}/>
+        <Warning
+          handleCloseWarning={handleCloseWarning}
+          message={warningMessage}
+        />
       }
     </div>
 

@@ -1,13 +1,13 @@
 import React from "react";
-import WarningIcon from "../assets/warning.svg";
 import css from "./warning.scss";
 
 interface IProps {
-  handleCloseWarning: (getDataAnyway: boolean) => void
+  handleCloseWarning: (getDataAnyway: boolean) => void;
+  message: string;
 }
 
 export const Warning: React.FC<IProps> = (props) => {
-  const {handleCloseWarning} = props;
+  const {handleCloseWarning, message} = props;
   return (
     <div className={css.popUp}>
       <div className={css.popUpContent}>
@@ -16,7 +16,7 @@ export const Warning: React.FC<IProps> = (props) => {
         </div>
         <div className={css.popUpBody}>
           <div className={css.text}>
-          The number of attributes you have selected is over 4000 rows and may lead to the program running slowly.
+            {message}
           </div>
         </div>
         <div className={css.popUpFooter}>
