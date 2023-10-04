@@ -93,7 +93,7 @@ const cropUnitOptions: IAttrOptions = {
   key: "cropUnits",
   label: "Crop Production",
   options: ["Area Harvested", "Yield"],
-  instructions: "(Choose units)"
+  instructions: "(Choose unit)"
 };
 export const cropOptions: IAttrOptions = {
   key: "crops",

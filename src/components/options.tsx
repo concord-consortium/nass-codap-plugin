@@ -37,6 +37,10 @@ export const Options: React.FC<IOptions> = (props) => {
         if (optionKey === "farmDemographics" && !newArray.includes("Total Farms")) {
           newSelection.farmDemographics.push("Total Farms");
         }
+        // If user selects a crop and no unit is selected, auto-select Yield
+        if (optionKey === "crops" && !selectedOptions.cropUnits) {
+          newSelection.cropUnits = "Yield";
+        }
         // If user selects a state, de-select "All States"
         if (optionKey === "states" && newArray.includes("All States")) {
           newSelection.states = newArray.filter((state) => state !== "All States");
