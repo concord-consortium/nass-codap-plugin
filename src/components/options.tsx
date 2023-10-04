@@ -33,6 +33,10 @@ export const Options: React.FC<IOptions> = (props) => {
         if (optionKey === "farmerDemographics" && !newArray.includes("Total Farmers")) {
           newSelection.farmerDemographics.push("Total Farmers");
         }
+        // If user selects any option under Farm Demographics, auto-select "Total Farms" as well
+        if (optionKey === "farmDemographics" && !newArray.includes("Total Farms")) {
+          newSelection.farmDemographics.push("Total Farms");
+        }
         // If user selects a state, de-select "All States"
         if (optionKey === "states" && newArray.includes("All States")) {
           newSelection.states = newArray.filter((state) => state !== "All States");
@@ -43,10 +47,15 @@ export const Options: React.FC<IOptions> = (props) => {
         }
       } else {
         if (isOptionSelected(e.target.value)) {
-          const includes = (opt: string) => selectedOptions.farmerDemographics.includes(opt);
+          const includesAny = (opts: string[], key: keyof IStateOptions) => opts.some(opt => selectedOptions[key].includes(opt));
           // "Total Farmers" can only be unselected if race, gender, and age are unselected
           if (optionKey === "farmerDemographics" && e.target.value === "Total Farmers") {
-            const shouldFilter = !includes("Race") && !includes("Gender") && !includes("Age");
+            const shouldFilter = !includesAny(["Race", "Gender", "Age"], "farmerDemographics");
+            if (shouldFilter) {
+              newSelection[optionKey] = newArray.filter((o) => o !== e.target.value);
+            }
+          } else if (optionKey === "farmDemographics" && e.target.value === "Total Farms") {
+            const shouldFilter = !includesAny(["Economic Class", "Acres Operated", "Organic", "Organization Type"], "farmDemographics");
             if (shouldFilter) {
               newSelection[optionKey] = newArray.filter((o) => o !== e.target.value);
             }
