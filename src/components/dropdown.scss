@@ -50,14 +50,13 @@
   flex-grow: 0;
   flex-shrink: 0;
   background-image: url("../assets/arrow-drop-down.svg");
+  cursor: pointer;
   &.up {
     transform: rotate(180deg);
   }
 }
 
-.dropdownHeader {
-  cursor: pointer;
-}
+
 
 .userSelection {
   font-family: 'Montserrat', sans-serif;
