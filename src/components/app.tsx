@@ -85,7 +85,7 @@ function App() {
       <div className={css.introSection}>
         <div className={css.sectionHeaderLine}>
         <span className={css.sectionHeaderText}>
-          Retrieve data on U.S. agricultural statitistics at the state or county level.
+          Retrieve data on U.S. agricultural statistics at the state or county level.
         </span>
         <span
           title="Further information about this CODAP plugin"
