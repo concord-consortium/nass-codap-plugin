@@ -22,6 +22,7 @@ export const YearsOptions: React.FC<IProps> = (props) => {
     const selectedAttrKeys = attrKeys.filter((key) => selectedOptions[key].length > 0);
 
     if (!selectedAttrKeys.length) {
+      setAvailableYearOptions([]);
       return;
     }
 
