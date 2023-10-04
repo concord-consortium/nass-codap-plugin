@@ -29,6 +29,9 @@ export const AttributeOptions: React.FC<IProps> = (props) => {
 
   return (
     <>
+    <div className={css.header}>
+      Choose attributes to include in your dataset from the list below.
+    </div>
       {
         attributeOptions.map((attr) => {
           return (
