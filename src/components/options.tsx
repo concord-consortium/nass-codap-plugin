@@ -31,7 +31,7 @@ export const Options: React.FC<IOptions> = (props) => {
         newSelection[optionKey].push(e.target.value);
         // If user selects "Age", "Gender", or "Race", auto-select "Total Farmers" as well
         if (optionKey === "farmerDemographics" && !newArray.includes("Total Farmers")) {
-          newSelection.farmDemographics.push("Total Farmers");
+          newSelection.farmerDemographics.push("Total Farmers");
         }
         // If user selects a state, de-select "All States"
         if (optionKey === "states" && newArray.includes("All States")) {
