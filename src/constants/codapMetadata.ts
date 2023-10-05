@@ -179,5 +179,38 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
   "WHEAT - ACRES HARVESTED": {
     "attributeNameInCodapTable": "Wheat Area Harvested",
     "unitInCodapTable": "Acres Harvested"
-  }
+  },
+  "ECONOMIC CLASS: (1,000 TO 9,999 $)": {
+    "attributeNameInCodapTable": "Small Farm ($1,000 - $9,999)",
+    "unitInCodapTable": ""
+  },
+  "ECONOMIC CLASS: (10,000 TO 99,999 $)": {
+    "attributeNameInCodapTable": "Small Medium Farm ($10,000 - $99,000)",
+    "unitInCodapTable": "# of Farms"
+  },
+  "ECONOMIC CLASS: (100,000 TO 249,999 $)": {
+    "attributeNameInCodapTable": "Medium Farm ($100,000 - $249,000)",
+    "unitInCodapTable": "# of Farms"
+  },
+  "ECONOMIC CLASS: (250,000 TO 499,999 $)": {
+    "attributeNameInCodapTable": "Medium Large Farm ($250,000 - $499,999)",
+    "unitInCodapTable": "# of Farms"
+  },
+  "ECONOMIC CLASS: (500,000 TO 999,999 $)": {
+    "attributeNameInCodapTable": "Large Farm ($500,000 - $999,999)",
+    "unitInCodapTable": "# of Farms"
+  },
+  "ECONOMIC CLASS: (1,000,000 OR MORE $)": {
+    "attributeNameInCodapTable": "Very Large Farm ($1 million or more)",
+    "unitInCodapTable": "# of Farms"
+  },
 };
+
+export const economicClassAttirbutes = [
+  "ECONOMIC CLASS: (1,000 TO 9,999 $)",
+  "ECONOMIC CLASS: (10,000 TO 99,999 $)",
+  "ECONOMIC CLASS: (100,000 TO 249,999 $)",
+  "ECONOMIC CLASS: (250,000 TO 499,999 $)",
+  "ECONOMIC CLASS: (500,000 TO 999,999 $)",
+  "ECONOMIC CLASS: (1,000,000 OR MORE $)"
+];

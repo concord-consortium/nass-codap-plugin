@@ -5,7 +5,7 @@ import { connect } from "./connect";
 import { cropOptions, fiftyStates } from "../constants/constants";
 import { countyData } from "../constants/counties";
 import { flatten, getQueryParams } from "./utils";
-import { attrToCODAPColumnName } from "../constants/codapMetadata";
+import { attrToCODAPColumnName, economicClassAttirbutes } from "../constants/codapMetadata";
 
 const baseURL = `https://quickstats.nass.usda.gov/api/api_GET/?key=9ED0BFB8-8DDD-3609-9940-A2341ED6A9E3`;
 
@@ -109,7 +109,12 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
         throw new Error("Invalid attribute");
       }
       const {short_desc} = queryParams;
-      if (Array.isArray(short_desc)) {
+      if (attribute === "Economic Class") {
+        for (const econAttr of economicClassAttirbutes) {
+          const codapColumnName = attrToCODAPColumnName[econAttr].attributeNameInCodapTable;
+          allAttrs.push(codapColumnName);
+        }
+      } else if (Array.isArray(short_desc)) {
         for (const desc of short_desc) {
           const codapColumnName = attrToCODAPColumnName[desc].attributeNameInCodapTable;
           allAttrs.push(codapColumnName);
@@ -240,8 +245,13 @@ const getAttrData = async (params: IGetAttrDataParams) => {
   if (res) {
     const {data} = res;
     data.map((dataItem: any) => {
-       const codapColumnName = attrToCODAPColumnName[dataItem.short_desc].attributeNameInCodapTable;
-       return values[codapColumnName] = dataItem.Value;
+      let codapColumnName;
+      if (attribute === "Economic Class") {
+        codapColumnName = attrToCODAPColumnName[dataItem.domaincat_desc].attributeNameInCodapTable;
+      } else {
+       codapColumnName = attrToCODAPColumnName[dataItem.short_desc].attributeNameInCodapTable;
+      }
+      return values[codapColumnName] = dataItem.Value;
     });
   } else {
     // eslint-disable-next-line no-console

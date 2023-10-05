@@ -57,10 +57,10 @@ function App() {
     setStatusGraphic(<ProgressIndicator/>);
     const res = await createTableFromSelections(selectedOptions);
     if (res !== "success") {
-      setStatusMessage(strings.fetchSuccess);
+      setStatusMessage(strings.fetchError);
       setStatusGraphic(<Error/>);
     } else {
-      setStatusMessage(strings.fetchError);
+      setStatusMessage(strings.fetchSuccess);
       setStatusGraphic(<Checkmark/>);
     }
   };
