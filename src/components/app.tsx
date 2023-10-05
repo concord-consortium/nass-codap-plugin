@@ -82,7 +82,7 @@ function App() {
           if (!availableYears.includes(y)) {
             setWarningMessage(strings.yearsWarning);
             setShowWarning(true);
-            break;
+            return;
           }
         }
       }
