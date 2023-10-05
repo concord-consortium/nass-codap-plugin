@@ -3,7 +3,7 @@ import css from "./warning.scss";
 
 interface IProps {
   handleCloseWarning: (getDataAnyway: boolean) => void;
-  message: string;
+  message: JSX.Element;
 }
 
 export const Warning: React.FC<IProps> = (props) => {
