@@ -38,8 +38,7 @@ export const YearsOptions: React.FC<IProps> = (props) => {
       return years;
     }, new Set());
     const newSet: string[] = Array.from(newAvailableYears);
-    const sorted = newSet.sort().reverse();
-    setAvailableYearOptions(sorted);
+    setAvailableYearOptions(newSet);
 
     // if selected years includes years not in available options, remove them from selection
     const selectionsNotAvailable = selectedOptions.years.filter(year => !newSet.includes(year));
