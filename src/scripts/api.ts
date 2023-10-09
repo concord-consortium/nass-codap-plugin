@@ -5,7 +5,7 @@ import { connect } from "./connect";
 import { cropOptions, fiftyStates } from "../constants/constants";
 import { countyData } from "../constants/counties";
 import { flatten, getQueryParams } from "./utils";
-import { attrToCODAPColumnName, economicClassAttirbutes } from "../constants/codapMetadata";
+import { acresOperatedAttributes, attrToCODAPColumnName, economicClassAttirbutes } from "../constants/codapMetadata";
 
 const baseURL = `https://quickstats.nass.usda.gov/api/api_GET/?key=9ED0BFB8-8DDD-3609-9940-A2341ED6A9E3`;
 
@@ -16,6 +16,12 @@ interface IGetAttrDataParams {
   location: string,
   year: string
   state?: string
+}
+
+interface IAcreTotals {
+  [key: string]: {
+    [key: string]: number | null
+  }
 }
 
 export const fetchDataWithRetry = async (req: string, maxRetries = 3) => {
@@ -112,6 +118,11 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
       if (attribute === "Economic Class") {
         for (const econAttr of economicClassAttirbutes) {
           const codapColumnName = attrToCODAPColumnName[econAttr].attributeNameInCodapTable;
+          allAttrs.push(codapColumnName);
+        }
+      } else if (attribute === "Acres Operated") {
+        for (const acresAttr of acresOperatedAttributes) {
+          const codapColumnName = attrToCODAPColumnName[acresAttr].attributeNameInCodapTable;
           allAttrs.push(codapColumnName);
         }
       } else if (Array.isArray(short_desc)) {
@@ -230,7 +241,6 @@ const getDataForSingleYearAndState = async (selectedOptions: IStateOptions, coun
   return item;
 };
 
-
 const getAttrData = async (params: IGetAttrDataParams) => {
   const {attribute, geographicLevel, location, year, cropUnits, state} = params;
   const reqParams: IGetAttrDataParams = {attribute, geographicLevel, location, year, state};
@@ -244,15 +254,56 @@ const getAttrData = async (params: IGetAttrDataParams) => {
   const values: any = {};
   if (res) {
     const {data} = res;
-    data.map((dataItem: any) => {
-      let codapColumnName;
-      if (attribute === "Economic Class") {
-        codapColumnName = attrToCODAPColumnName[dataItem.domaincat_desc].attributeNameInCodapTable;
-      } else {
-       codapColumnName = attrToCODAPColumnName[dataItem.short_desc].attributeNameInCodapTable;
+    if (attribute === "Acres Operated") {
+      const acreTotals: IAcreTotals = {
+        "AREA OPERATED: (1.0 TO 9.9 ACRES)": {
+          "AREA OPERATED: (1.0 TO 9.9 ACRES)": 0
+        },
+        "AREA OPERATED: (10.0 TO 49.9 ACRES)": {
+          "AREA OPERATED: (10.0 TO 49.9 ACRES)": 0
+        },
+        "AREA OPERATED: (50.0 TO 100 ACRES)": {
+          "AREA OPERATED: (50.0 TO 69.9 ACRES)": 0,
+          "AREA OPERATED: (70.0 TO 99.9 ACRES)": 0
+        },
+        "AREA OPERATED: (100 TO 500 ACRES)": {
+          "AREA OPERATED: (100 TO 139 ACRES)": 0,
+          "AREA OPERATED: (140 TO 179 ACRES)": 0,
+          "AREA OPERATED: (180 TO 219 ACRES)": 0,
+          "AREA OPERATED: (220 TO 259 ACRES)": 0,
+          "AREA OPERATED: (260 TO 499 ACRES)": 0
+        },
+        "AREA OPERATED: (500 TO 999 ACRES)": {
+          "AREA OPERATED: (500 TO 999 ACRES)": 0
+        },
+        "AREA OPERATED: (1,000 TO 5,000 ACRES)": {
+          "AREA OPERATED: (1,000 TO 1,999 ACRES)": 0,
+          "AREA OPERATED: (2,000 TO 4,999 ACRES)": 0
+        },
+        "AREA OPERATED: (5,000 OR MORE ACRES)": {
+          "AREA OPERATED: (5,000 OR MORE ACRES)": 0
+        }
+      };
+      const totalKeys = Object.keys(acreTotals);
+      for (const total of totalKeys) {
+        const subTotalKeys = Object.keys(acreTotals[total]);
+        const dataItems = data.filter((dataItem: any) => subTotalKeys.includes(dataItem.domaincat_desc));
+        dataItems.forEach((dataItem: any) => {
+          acreTotals[total][dataItem.domaincat_desc] = dataItem.Value.replace(/,/g, "");
+        });
+        const codapColumnName = attrToCODAPColumnName[total].attributeNameInCodapTable;
+        // sum up all the values of acreTotals[total]
+        const onlyNumbers = subTotalKeys.map((key) => Number(acreTotals[total][key]));
+        const sum = onlyNumbers.reduce((acc, cur) => acc + cur);
+        values[codapColumnName] = sum;
       }
-      return values[codapColumnName] = dataItem.Value;
-    });
+    } else {
+      data.forEach((dataItem: any) => {
+        const dataItemDesc = attribute === "Economic Class" ? dataItem.domaincat_desc : dataItem.short_desc;
+        const codapColumnName = attrToCODAPColumnName[dataItemDesc].attributeNameInCodapTable;
+        values[codapColumnName] = dataItem.Value;
+      });
+    }
   } else {
     // eslint-disable-next-line no-console
     console.log(`Error: did not receive response for this request:`, req);

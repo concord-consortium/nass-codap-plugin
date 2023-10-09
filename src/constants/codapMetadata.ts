@@ -204,6 +204,34 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Very Large Farm ($1 million or more)",
     "unitInCodapTable": "# of Farms"
   },
+  "AREA OPERATED: (1.0 TO 9.9 ACRES)": {
+    "attributeNameInCodapTable": "Less than 10 Acres",
+    "unitInCodapTable": "# of Farms"
+  },
+  "AREA OPERATED: (10.0 TO 49.9 ACRES)": {
+    "attributeNameInCodapTable": "10 - 50 Acres",
+    "unitInCodapTable": "# of Farms"
+  },
+  "AREA OPERATED: (50.0 TO 100 ACRES)": {
+    "attributeNameInCodapTable": "50 - 100 Acres",
+    "unitInCodapTable": "# of Farms"
+  },
+  "AREA OPERATED: (100 TO 500 ACRES)": {
+    "attributeNameInCodapTable": "100 - 500 Acres",
+    "unitInCodapTable": "# of Farms"
+  },
+  "AREA OPERATED: (500 TO 999 ACRES)": {
+    "attributeNameInCodapTable": "500 - 1,000 Acres",
+    "unitInCodapTable": "# of Farms"
+  },
+  "AREA OPERATED: (1,000 TO 5,000 ACRES)": {
+    "attributeNameInCodapTable": "1,000 - 5,000 Acres",
+    "unitInCodapTable": "# of Farms"
+  },
+  "AREA OPERATED: (5,000 OR MORE ACRES)": {
+    "attributeNameInCodapTable": "5,000 Acres or More",
+    "unitInCodapTable": "# of Farms"
+  }
 };
 
 export const economicClassAttirbutes = [
@@ -213,4 +241,14 @@ export const economicClassAttirbutes = [
   "ECONOMIC CLASS: (250,000 TO 499,999 $)",
   "ECONOMIC CLASS: (500,000 TO 999,999 $)",
   "ECONOMIC CLASS: (1,000,000 OR MORE $)"
+];
+
+export const acresOperatedAttributes = [
+  "AREA OPERATED: (1.0 TO 9.9 ACRES)",
+  "AREA OPERATED: (10.0 TO 49.9 ACRES)",
+  "AREA OPERATED: (50.0 TO 100 ACRES)",
+  "AREA OPERATED: (100 TO 500 ACRES)",
+  "AREA OPERATED: (500 TO 999 ACRES)",
+  "AREA OPERATED: (1,000 TO 5,000 ACRES)",
+  "AREA OPERATED: (5,000 OR MORE ACRES)"
 ];
