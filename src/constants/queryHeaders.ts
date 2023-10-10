@@ -145,8 +145,8 @@ export const queryData: Array<IQueryHeaders> = [
       sect_desc: "Economics",
       group_desc: "Farms & Land & Assets",
       commodity_desc: "Farm Operations",
-      statisticcat_desc: "Area Operated",
-      short_desc: ["FARM OPERATIONS - ACRES OPERATED"],
+      statisticcat_desc: "Operations",
+      short_desc: ["FARM OPERATIONS - NUMBER OF OPERATIONS"],
       domain_desc: "Area Operated",
       geographicAreas: ["State", "County"],
       years: {
