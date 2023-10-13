@@ -84,7 +84,7 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Total Number of Farms",
     "unitInCodapTable": "# of Farms"
   },
-  "FARM OPERATIONS, ORGANIZATION, TAX PURPOSES, CORPORATION (EXCL FAMILY HELD) - NUMBER OF OPERATIONS": {
+  "FARM OPERATIONS, ORGANIZATION, TAX PURPOSES, CORPORATION, (EXCL FAMILY HELD) - NUMBER OF OPERATIONS": {
     "attributeNameInCodapTable": "Corporate",
     "unitInCodapTable": "# of Farms"
   },
