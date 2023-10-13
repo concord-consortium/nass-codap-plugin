@@ -24,6 +24,7 @@ function App() {
   const [statusGraphic, setStatusGraphic] = useState<React.ReactElement>();
   const [showWarning, setShowWarning] = useState<boolean>(false);
   const [warningMessage, setWarningMessage] = useState<JSX.Element>(<p/>);
+  const {farmDemographics, farmerDemographics, crops} = selectedOptions;
 
   useEffect(() => {
     const init = async () => {
@@ -42,6 +43,14 @@ function App() {
       setGetDataDisabled(true);
     }
   }, [selectedOptions]);
+
+  useEffect(() => {
+    if (!farmDemographics.length && !farmerDemographics.length && !crops.length) {
+      setSelectedOptions(prevOptions => {
+        return {...prevOptions, years: []};
+      });
+    }
+  }, [farmerDemographics, farmDemographics, crops]);
 
   const handleSetSelectedOptions = (newState: Partial<IStateOptions>) => {
     const newSelectedOptions = {...selectedOptions, ...newState};
