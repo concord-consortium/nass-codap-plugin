@@ -13,9 +13,14 @@ interface IGetAttrDataParams {
   attribute: string,
   geographicLevel: string,
   cropUnits?: keyof ICropDataItem,
-  location: string,
-  year: string
-  state?: string
+}
+
+interface ICreateRequestParams {
+  attribute: string,
+  geographicLevel: string,
+  cropUnits?: keyof ICropDataItem,
+  years: Array<string>,
+  states: Array<string>
 }
 
 interface IAcreTotals {
@@ -24,24 +29,8 @@ interface IAcreTotals {
   }
 }
 
-export const fetchDataWithRetry = async (req: string, setReqCount: ISetReqCount, maxRetries = 3,) => {
-  let retries = 0;
-  while (retries < maxRetries) {
-    try {
-      const response = await fetchJsonp(req, { timeout: 30000 }); // Increase the timeout
-      const json = await response.json();
-      setReqCount((prevState) => { return {...prevState, completed: prevState.completed + 1}; });
-      return json;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(`Request attempt ${retries + 1} failed:`, error);
-      retries++;
-    }
-  }
-  throw new Error(`Request failed after ${maxRetries} attempts`);
-};
 
-export const createRequest = ({attribute, geographicLevel, location, year, cropUnits, state}: IGetAttrDataParams) => {
+export const createRequest = ({attribute, geographicLevel, years, states, cropUnits}: ICreateRequestParams) => {
   const queryParams = getQueryParams(attribute);
 
   if (!queryParams) {
@@ -64,26 +53,11 @@ export const createRequest = ({attribute, geographicLevel, location, year, cropU
     (queryParams?.statisticcat_desc as ICropCategory)[cropUnits] :
     statisticcat_desc;
 
-  const locationHeader = geographicLevel === "REGION : MULTI-STATE" ? "region_desc" : geographicLevel === "County" ? "county_name" : "state_name";
+  const locationHeader = geographicLevel === "REGION : MULTI-STATE" ? "region_desc" : "state_name";
 
-  const baseReq = `${baseURL}` +
-  `&sect_desc=${encodeURIComponent(sect_desc)}` +
-  `&group_desc=${encodeURIComponent(group_desc)}` +
-  `&commodity_desc=${encodeURIComponent(commodity_desc)}` +
-  `&statisticcat_desc=${encodeURIComponent(cat as string)}` +
-  `&domain_desc=${encodeURIComponent(domain_desc)}` +
-  `&agg_level_desc=${encodeURIComponent(geographicLevel)}` +
-  `&${locationHeader}=${encodeURIComponent(location)}` +
-  `&year=${year}`;
-
-  let req = baseReq;
-
-  item.forEach(subItem => {
-    req = req + `&short_desc=${encodeURIComponent(subItem)}`;
-  });
-
-  // hacky but we need to custom-build the req in this one case
-  if (attribute === "Total Farmers" && year !== "2017") {
+  let req = "";
+  if (attribute === "Total Farmers" && !years.includes("2017")) {
+    // we need to custom-build the req in this one case
     req = `${baseURL}` +
     `&sect_desc=${encodeURIComponent("DEMOGRAPHICS")}` +
     `&group_desc=${encodeURIComponent("OPERATORS")}` +
@@ -91,16 +65,32 @@ export const createRequest = ({attribute, geographicLevel, location, year, cropU
     `&statisticcat_desc=${encodeURIComponent("OPERATORS")}` +
     `&domain_desc=${encodeURIComponent("TOTAL")}` +
     `&agg_level_desc=${encodeURIComponent(geographicLevel)}` +
-    `&${locationHeader}=${encodeURIComponent(location)}` +
-    `&year=${year}` +
+    `&${locationHeader}=${encodeURIComponent(geographicLevel)}` +
     `&short_desc=${encodeURIComponent("OPERATORS, (ALL) - NUMBER OF OPERATORS")}`;
+  } else {
+    req = `${baseURL}` +
+    `&sect_desc=${encodeURIComponent(sect_desc)}` +
+    `&group_desc=${encodeURIComponent(group_desc)}` +
+    `&commodity_desc=${encodeURIComponent(commodity_desc)}` +
+    `&statisticcat_desc=${encodeURIComponent(cat as string)}` +
+    `&domain_desc=${encodeURIComponent(domain_desc)}` +
+    `&agg_level_desc=${encodeURIComponent(geographicLevel)}` +
+    `&${locationHeader}=${encodeURIComponent(geographicLevel)}`;
   }
 
-  // if we are creating a request at the county level, we need to also pass in a state
-  if (state) {
-    req += `&state_name=${state}`;
-  }
+  years.forEach((year) => {
+    req = req + `&year=${year}`;
+  });
 
+  states.forEach((state) => {
+    req = req + `&state_name=${encodeURIComponent(state)}`;
+  });
+
+  item.forEach(subItem => {
+    req = req + `&short_desc=${encodeURIComponent(subItem)}`;
+  });
+
+  console.log({req});
   return req;
 };
 
@@ -147,18 +137,17 @@ export const getNumberOfItems = (selectedOptions: IStateOptions) => {
     states = fiftyStates;
   }
   if (countySelected) {
-    return flatten(states.map((state: string) => countyData[state])).length * years.length * getAllAttrs(selectedOptions).filter(a => a !== "Year").length;
+    return flatten(states.map((state: string) => countyData[state])).length * years.length;
   } else {
-    return states.length * years.length * getAllAttrs(selectedOptions).filter(a => a !== "Year").length;
+    return states.length * years.length;
   }
 };
 
 export const createTableFromSelections = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
   const {geographicLevel} = selectedOptions;
   try {
-    setReqCount((prevState) => { return {...prevState, total: getNumberOfItems(selectedOptions)}; });
     const allAttrs = getAllAttrs(selectedOptions);
-    const items = await Promise.all(getItems(selectedOptions, setReqCount));
+    const items = await getItems(selectedOptions, setReqCount);
     await connect.getNewDataContext();
     await connect.createStateCollection(geographicLevel === "State");
     if (geographicLevel === "County") {
@@ -175,78 +164,129 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions, 
   }
 };
 
-const getItems = (selectedOptions: IStateOptions, setReqCount:  ISetReqCount) => {
-  let {states, years} = selectedOptions;
-  const countySelected = selectedOptions.geographicLevel === "County";
+const getItems = async (selectedOptions: IStateOptions, setReqCount:  ISetReqCount) => {
+  let {states} = selectedOptions;
 
   if (states[0] === "All States") {
     states = fiftyStates;
   }
 
-  const items = [];
-
-  for (const state of states) {
-    const locations = countySelected ? countyData[state] : [state];
-    for (const year of years) {
-      for (const location of locations) {
-        const item = getDataForSingleYearAndState(selectedOptions, location, year, state, setReqCount);
-        items.push(item);
-      }
-    }
-  }
-
+  const items = await getDataForAttribute(selectedOptions, setReqCount);
   return items;
 };
 
-const getDataForSingleYearAndState = async (selectedOptions: IStateOptions, countyOrState: string, year: string, state: string, setReqCount:  ISetReqCount) => {
+const getDataForAttribute = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
   const {geographicLevel, states, years, cropUnits, ...subOptions} = selectedOptions;
+  const items: any = [];
 
-  let item: any = {
-    [geographicLevel]: countyOrState,
-    "Year": year,
-  };
+  const subOptionsKeys = Object.keys(subOptions);
+  const numAttributes = subOptionsKeys.reduce((acc, cur) => acc + subOptions[cur as keyof typeof subOptions].length, 0);
+  setReqCount((prevState) => { return {...prevState, total: numAttributes };});
 
   for (const key in subOptions) {
     const value = subOptions[key as keyof typeof subOptions];
     for (const attribute of value) {
       const queryParams = getQueryParams(attribute);
-      const yearAvailable = queryParams?.years[geographicLevel].includes(year);
       const isMultiStateRegion = queryParams?.geographicAreas[0] === "REGION : MULTI-STATE";
       const geoLevel = isMultiStateRegion ? "REGION : MULTI-STATE" : geographicLevel;
-      if (yearAvailable) {
+      const params: IGetAttrDataParams = {attribute, geographicLevel: geoLevel};
 
-        let location = countyOrState;
-
-        if (isMultiStateRegion) {
-          const itemToCheck = state ? state : countyOrState;
-          const regData = multiRegions.find((region) => region.States.includes(itemToCheck));
-          location = regData?.Region ? regData.Region : countyOrState;
-        }
-
-        const params: IGetAttrDataParams = {attribute, geographicLevel: geoLevel, location, year};
-
-        if (cropOptions.options.includes(attribute) && cropUnits) {
-          params.cropUnits = cropUnits as keyof ICropDataItem;
-        }
-
-        if (geoLevel === "County") {
-          item.State = state;
-          params.state = state;
-        }
-
-        const attrData = await getAttrData(params, setReqCount);
-        item = {...item, ...attrData};
+      if (cropOptions.options.includes(attribute) && cropUnits) {
+        params.cropUnits = cropUnits as keyof ICropDataItem;
       }
+
+      const data = await getAttrData(params, selectedOptions, setReqCount);
+
+      data.forEach((dataItem: any) => {
+        const {state_name, year} = dataItem;
+
+        const itemAlreadyExists = items.find((item: any) => {
+          const isSameGeoLevel = geographicLevel === "County" ? item.County === dataItem.county_name : item.State === state_name;
+          return isSameGeoLevel && item.Year === year;
+        });
+
+        if (!itemAlreadyExists) {
+          const newItem: any = {State: state_name, Year: year};
+          if (geographicLevel === "County") {
+            newItem.County = dataItem.county_name;
+          }
+          items.push(newItem);
+        }
+      });
+
+      items.forEach((item: any) => {
+        // find all the data items that match this item's state and year
+        const matchingData = data.filter((dataItem: any) => {
+          const {state_name, year} = dataItem;
+          const isSameGeoLevel = geographicLevel === "County" ? item.County === dataItem.county_name : item.State === state_name;
+          return isSameGeoLevel && item.Year === year;
+        });
+        // special case for handling acres operated, where we have to sum up the values of several data items
+        if (attribute === "Acres Operated") {
+          const acreTotals: IAcreTotals = {
+            "AREA OPERATED: (1.0 TO 9.9 ACRES)": {
+              "AREA OPERATED: (1.0 TO 9.9 ACRES)": 0
+            },
+            "AREA OPERATED: (10.0 TO 49.9 ACRES)": {
+              "AREA OPERATED: (10.0 TO 49.9 ACRES)": 0
+            },
+            "AREA OPERATED: (50.0 TO 100 ACRES)": {
+              "AREA OPERATED: (50.0 TO 69.9 ACRES)": 0,
+              "AREA OPERATED: (70.0 TO 99.9 ACRES)": 0
+            },
+            "AREA OPERATED: (100 TO 500 ACRES)": {
+              "AREA OPERATED: (100 TO 139 ACRES)": 0,
+              "AREA OPERATED: (140 TO 179 ACRES)": 0,
+              "AREA OPERATED: (180 TO 219 ACRES)": 0,
+              "AREA OPERATED: (220 TO 259 ACRES)": 0,
+              "AREA OPERATED: (260 TO 499 ACRES)": 0
+            },
+            "AREA OPERATED: (500 TO 999 ACRES)": {
+              "AREA OPERATED: (500 TO 999 ACRES)": 0
+            },
+            "AREA OPERATED: (1,000 TO 5,000 ACRES)": {
+              "AREA OPERATED: (1,000 TO 1,999 ACRES)": 0,
+              "AREA OPERATED: (2,000 TO 4,999 ACRES)": 0
+            },
+            "AREA OPERATED: (5,000 OR MORE ACRES)": {
+              "AREA OPERATED: (5,000 OR MORE ACRES)": 0
+            }
+          };
+          const totalKeys = Object.keys(acreTotals);
+          for (const total of totalKeys) {
+            const subTotalKeys = Object.keys(acreTotals[total]);
+            const dataItems = matchingData.filter((dataItem: any) => subTotalKeys.includes(dataItem.domaincat_desc));
+            dataItems.forEach((dataItem: any) => {
+              acreTotals[total][dataItem.domaincat_desc] = dataItem.Value.replace(/,/g, "");
+            });
+            const codapColumnName = attrToCODAPColumnName[total].attributeNameInCodapTable;
+            // sum up all the values of acreTotals[total]
+            const onlyNumbers = subTotalKeys.map((k) => Number(acreTotals[total][k]));
+            const sum = onlyNumbers.reduce((acc, cur) => acc + cur);
+            item[codapColumnName] = sum;
+          }
+        } else {
+          matchingData.forEach((dataItem: any) => {
+            const dataItemDesc = attribute === "Economic Class" ? dataItem.domaincat_desc : dataItem.short_desc;
+            const codapColumnName = attrToCODAPColumnName[dataItemDesc].attributeNameInCodapTable;
+            item[codapColumnName] = dataItem.Value;
+          });
+        }
+      });
     }
-
   }
-
-  return item;
+  return items;
 };
 
-const getAttrData = async (params: IGetAttrDataParams, setReqCount: ISetReqCount) => {
-  const {attribute, geographicLevel, location, year, cropUnits, state} = params;
-  const reqParams: IGetAttrDataParams = {attribute, geographicLevel, location, year, state};
+
+const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
+  const {attribute, geographicLevel, cropUnits} = params;
+  const {states, years} = selectedOptions;
+  const queryParams = getQueryParams(attribute);
+  const yearsAvailable = years.filter(year => queryParams?.years[selectedOptions.geographicLevel].includes(year));
+  const stateArray = states[0] === "All States" ? fiftyStates : states;
+
+  const reqParams: ICreateRequestParams = {attribute, geographicLevel, years: yearsAvailable, states: stateArray};
 
   if (cropOptions.options.includes(attribute) && cropUnits) {
     reqParams.cropUnits = cropUnits;
@@ -254,62 +294,32 @@ const getAttrData = async (params: IGetAttrDataParams, setReqCount: ISetReqCount
 
   const req = createRequest(reqParams);
   const res = await fetchDataWithRetry(req, setReqCount);
-  const values: any = {};
+
+  const items: Array<any> = [];
+
   if (res) {
-    const {data} = res;
-    if (attribute === "Acres Operated") {
-      const acreTotals: IAcreTotals = {
-        "AREA OPERATED: (1.0 TO 9.9 ACRES)": {
-          "AREA OPERATED: (1.0 TO 9.9 ACRES)": 0
-        },
-        "AREA OPERATED: (10.0 TO 49.9 ACRES)": {
-          "AREA OPERATED: (10.0 TO 49.9 ACRES)": 0
-        },
-        "AREA OPERATED: (50.0 TO 100 ACRES)": {
-          "AREA OPERATED: (50.0 TO 69.9 ACRES)": 0,
-          "AREA OPERATED: (70.0 TO 99.9 ACRES)": 0
-        },
-        "AREA OPERATED: (100 TO 500 ACRES)": {
-          "AREA OPERATED: (100 TO 139 ACRES)": 0,
-          "AREA OPERATED: (140 TO 179 ACRES)": 0,
-          "AREA OPERATED: (180 TO 219 ACRES)": 0,
-          "AREA OPERATED: (220 TO 259 ACRES)": 0,
-          "AREA OPERATED: (260 TO 499 ACRES)": 0
-        },
-        "AREA OPERATED: (500 TO 999 ACRES)": {
-          "AREA OPERATED: (500 TO 999 ACRES)": 0
-        },
-        "AREA OPERATED: (1,000 TO 5,000 ACRES)": {
-          "AREA OPERATED: (1,000 TO 1,999 ACRES)": 0,
-          "AREA OPERATED: (2,000 TO 4,999 ACRES)": 0
-        },
-        "AREA OPERATED: (5,000 OR MORE ACRES)": {
-          "AREA OPERATED: (5,000 OR MORE ACRES)": 0
-        }
-      };
-      const totalKeys = Object.keys(acreTotals);
-      for (const total of totalKeys) {
-        const subTotalKeys = Object.keys(acreTotals[total]);
-        const dataItems = data.filter((dataItem: any) => subTotalKeys.includes(dataItem.domaincat_desc));
-        dataItems.forEach((dataItem: any) => {
-          acreTotals[total][dataItem.domaincat_desc] = dataItem.Value.replace(/,/g, "");
-        });
-        const codapColumnName = attrToCODAPColumnName[total].attributeNameInCodapTable;
-        // sum up all the values of acreTotals[total]
-        const onlyNumbers = subTotalKeys.map((key) => Number(acreTotals[total][key]));
-        const sum = onlyNumbers.reduce((acc, cur) => acc + cur);
-        values[codapColumnName] = sum;
-      }
-    } else {
-      data.forEach((dataItem: any) => {
-        const dataItemDesc = attribute === "Economic Class" ? dataItem.domaincat_desc : dataItem.short_desc;
-        const codapColumnName = attrToCODAPColumnName[dataItemDesc].attributeNameInCodapTable;
-        values[codapColumnName] = dataItem.Value;
-      });
-    }
+    return res.data;
   } else {
     // eslint-disable-next-line no-console
     console.log(`Error: did not receive response for this request:`, req);
   }
-  return values;
+
+  return items;
+};
+
+export const fetchDataWithRetry = async (req: string, setReqCount: ISetReqCount, maxRetries = 3,) => {
+  let retries = 0;
+  while (retries < maxRetries) {
+    try {
+      const response = await fetchJsonp(req, { timeout: 30000 }); // Increase the timeout
+      const json = await response.json();
+      setReqCount((prevState) => { return {...prevState, completed: prevState.completed + 1}; });
+      return json;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(`Request attempt ${retries + 1} failed:`, error);
+      retries++;
+    }
+  }
+  throw new Error(`Request failed after ${maxRetries} attempts`);
 };

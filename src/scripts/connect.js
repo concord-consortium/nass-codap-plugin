@@ -85,7 +85,7 @@ export const connect = {
           },
           {
             "name": "Boundary",
-            "formula": `lookupBoundary(US_county_boundaries, County, State)`,
+            "formula": `lookupBoundary(US_county_boundaries, County + ', ' + State)`,
             "formulaDependents": "State"
           }]
         }
