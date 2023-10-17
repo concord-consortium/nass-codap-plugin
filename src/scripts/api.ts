@@ -1,5 +1,5 @@
 import fetchJsonp from "fetch-jsonp";
-import { ICropCategory, ICropDataItem, IStateOptions } from "../constants/types";
+import { ICropCategory, ICropDataItem, ISetReqCount, IStateOptions } from "../constants/types";
 import { multiRegions } from "../constants/regionData";
 import { connect } from "./connect";
 import { cropOptions, fiftyStates } from "../constants/constants";
@@ -24,12 +24,13 @@ interface IAcreTotals {
   }
 }
 
-export const fetchDataWithRetry = async (req: string, maxRetries = 3) => {
+export const fetchDataWithRetry = async (req: string, setReqCount: ISetReqCount, maxRetries = 3,) => {
   let retries = 0;
   while (retries < maxRetries) {
     try {
       const response = await fetchJsonp(req, { timeout: 30000 }); // Increase the timeout
       const json = await response.json();
+      setReqCount((prevState) => { return {...prevState, completed: prevState.completed + 1}; });
       return json;
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -146,17 +147,18 @@ export const getNumberOfItems = (selectedOptions: IStateOptions) => {
     states = fiftyStates;
   }
   if (countySelected) {
-    return flatten(states.map((state: string) => countyData[state])).length * years.length;
+    return flatten(states.map((state: string) => countyData[state])).length * years.length * getAllAttrs(selectedOptions).filter(a => a !== "Year").length;
   } else {
-    return states.length * years.length;
+    return states.length * years.length * getAllAttrs(selectedOptions).filter(a => a !== "Year").length;
   }
 };
 
-export const createTableFromSelections = async (selectedOptions: IStateOptions) => {
+export const createTableFromSelections = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
   const {geographicLevel} = selectedOptions;
   try {
+    setReqCount((prevState) => { return {...prevState, total: getNumberOfItems(selectedOptions)}; });
     const allAttrs = getAllAttrs(selectedOptions);
-    const items = await Promise.all(getItems(selectedOptions));
+    const items = await Promise.all(getItems(selectedOptions, setReqCount));
     await connect.getNewDataContext();
     await connect.createStateCollection(geographicLevel === "State");
     if (geographicLevel === "County") {
@@ -173,7 +175,7 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions) 
   }
 };
 
-const getItems = (selectedOptions: IStateOptions) => {
+const getItems = (selectedOptions: IStateOptions, setReqCount:  ISetReqCount) => {
   let {states, years} = selectedOptions;
   const countySelected = selectedOptions.geographicLevel === "County";
 
@@ -187,7 +189,7 @@ const getItems = (selectedOptions: IStateOptions) => {
     const locations = countySelected ? countyData[state] : [state];
     for (const year of years) {
       for (const location of locations) {
-        const item = getDataForSingleYearAndState(selectedOptions, location, year, state);
+        const item = getDataForSingleYearAndState(selectedOptions, location, year, state, setReqCount);
         items.push(item);
       }
     }
@@ -196,7 +198,7 @@ const getItems = (selectedOptions: IStateOptions) => {
   return items;
 };
 
-const getDataForSingleYearAndState = async (selectedOptions: IStateOptions, countyOrState: string, year: string, state?: string) => {
+const getDataForSingleYearAndState = async (selectedOptions: IStateOptions, countyOrState: string, year: string, state: string, setReqCount:  ISetReqCount) => {
   const {geographicLevel, states, years, cropUnits, ...subOptions} = selectedOptions;
 
   let item: any = {
@@ -232,7 +234,7 @@ const getDataForSingleYearAndState = async (selectedOptions: IStateOptions, coun
           params.state = state;
         }
 
-        const attrData = await getAttrData(params);
+        const attrData = await getAttrData(params, setReqCount);
         item = {...item, ...attrData};
       }
     }
@@ -242,7 +244,7 @@ const getDataForSingleYearAndState = async (selectedOptions: IStateOptions, coun
   return item;
 };
 
-const getAttrData = async (params: IGetAttrDataParams) => {
+const getAttrData = async (params: IGetAttrDataParams, setReqCount: ISetReqCount) => {
   const {attribute, geographicLevel, location, year, cropUnits, state} = params;
   const reqParams: IGetAttrDataParams = {attribute, geographicLevel, location, year, state};
 
@@ -251,7 +253,7 @@ const getAttrData = async (params: IGetAttrDataParams) => {
   }
 
   const req = createRequest(reqParams);
-  const res = await fetchDataWithRetry(req);
+  const res = await fetchDataWithRetry(req, setReqCount);
   const values: any = {};
   if (res) {
     const {data} = res;

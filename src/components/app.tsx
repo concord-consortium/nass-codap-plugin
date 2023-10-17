@@ -24,6 +24,7 @@ function App() {
   const [statusGraphic, setStatusGraphic] = useState<React.ReactElement>();
   const [showWarning, setShowWarning] = useState<boolean>(false);
   const [warningMessage, setWarningMessage] = useState<JSX.Element>(<p/>);
+  const [reqCount, setReqCount] = useState({total: 0, completed: 0});
   const {farmDemographics, farmerDemographics, crops} = selectedOptions;
 
   useEffect(() => {
@@ -52,6 +53,17 @@ function App() {
     }
   }, [farmerDemographics, farmDemographics, crops]);
 
+  useEffect(() => {
+    const {total, completed} = reqCount;
+    if (total === 0) {
+      setStatusMessage("");
+      setStatusGraphic(<div/>);
+    } else if (total > 0 && total !== completed) {
+      setStatusMessage(`${completed} of ${total} requests complete`);
+      setStatusGraphic(<ProgressIndicator/>);
+    }
+  }, [reqCount]);
+
   const handleSetSelectedOptions = (newState: Partial<IStateOptions>) => {
     const newSelectedOptions = {...selectedOptions, ...newState};
     setSelectedOptions(newSelectedOptions);
@@ -62,15 +74,16 @@ function App() {
   };
 
   const getData = async () => {
-    setStatusMessage(strings.fetchingMsg);
-    setStatusGraphic(<ProgressIndicator/>);
-    const res = await createTableFromSelections(selectedOptions);
+    setReqCount({total: 0, completed: 0});
+    const res = await createTableFromSelections(selectedOptions, setReqCount);
     if (res !== "success") {
       setStatusMessage(strings.fetchError);
       setStatusGraphic(<Error/>);
+      setReqCount({total: 0, completed: 0});
     } else {
       setStatusMessage(strings.fetchSuccess);
       setStatusGraphic(<Checkmark/>);
+      setReqCount({total: 0, completed: 0});
     }
   };
 
