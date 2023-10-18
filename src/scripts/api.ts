@@ -4,18 +4,13 @@ import { multiRegions } from "../constants/regionData";
 import { connect } from "./connect";
 import { cropOptions, fiftyStates } from "../constants/constants";
 import { countyData } from "../constants/counties";
-import { flatten, getQueryParams } from "./utils";
+import { getQueryParams } from "./utils";
 import { acresOperatedAttributes, attrToCODAPColumnName, economicClassAttirbutes } from "../constants/codapMetadata";
+import { strings } from "../constants/strings";
 
 const baseURL = `https://quickstats.nass.usda.gov/api/api_GET/?key=9ED0BFB8-8DDD-3609-9940-A2341ED6A9E3`;
 
 interface IGetAttrDataParams {
-  attribute: string,
-  geographicLevel: string,
-  cropUnits?: keyof ICropDataItem,
-}
-
-interface ICreateRequestParams {
   attribute: string,
   geographicLevel: string,
   cropUnits?: keyof ICropDataItem,
@@ -30,7 +25,7 @@ interface IAcreTotals {
 }
 
 
-export const createRequest = ({attribute, geographicLevel, years, states, cropUnits}: ICreateRequestParams) => {
+export const createRequest = ({attribute, geographicLevel, years, states, cropUnits}: IGetAttrDataParams) => {
   const queryParams = getQueryParams(attribute);
 
   if (!queryParams) {
@@ -53,8 +48,6 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     (queryParams?.statisticcat_desc as ICropCategory)[cropUnits] :
     statisticcat_desc;
 
-  const locationHeader = geographicLevel === "REGION : MULTI-STATE" ? "region_desc" : "state_name";
-
   let req = "";
   if (attribute === "Total Farmers" && !years.includes("2017")) {
     // we need to custom-build the req in this one case
@@ -65,7 +58,6 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     `&statisticcat_desc=${encodeURIComponent("OPERATORS")}` +
     `&domain_desc=${encodeURIComponent("TOTAL")}` +
     `&agg_level_desc=${encodeURIComponent(geographicLevel)}` +
-    `&${locationHeader}=${encodeURIComponent(geographicLevel)}` +
     `&short_desc=${encodeURIComponent("OPERATORS, (ALL) - NUMBER OF OPERATORS")}`;
   } else {
     req = `${baseURL}` +
@@ -74,8 +66,7 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     `&commodity_desc=${encodeURIComponent(commodity_desc)}` +
     `&statisticcat_desc=${encodeURIComponent(cat as string)}` +
     `&domain_desc=${encodeURIComponent(domain_desc)}` +
-    `&agg_level_desc=${encodeURIComponent(geographicLevel)}` +
-    `&${locationHeader}=${encodeURIComponent(geographicLevel)}`;
+    `&agg_level_desc=${encodeURIComponent(geographicLevel)}`;
   }
 
   years.forEach((year) => {
@@ -83,12 +74,24 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
   });
 
   states.forEach((state) => {
-    req = req + `&state_name=${encodeURIComponent(state)}`;
+    if (geographicLevel === "REGION : MULTI-STATE") {
+      if (state !== "Alaska") {
+        const region = multiRegions.find((r) => r.States.includes(state));
+        req = req + `&region_desc=${encodeURIComponent(region?.Region as string)}`;
+      }
+    } else {
+      req = req + `&state_name=${encodeURIComponent(state)}`;
+
+    }
   });
 
   item.forEach(subItem => {
     req = req + `&short_desc=${encodeURIComponent(subItem)}`;
   });
+
+  if (geographicLevel === "REGION : MULTI-STATE") {
+    req = req + `&freq_desc=ANNUAL`;
+  }
 
   console.log({req});
   return req;
@@ -130,19 +133,6 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
   return allAttrs;
 };
 
-export const getNumberOfItems = (selectedOptions: IStateOptions) => {
-  let {states, years} = selectedOptions;
-  const countySelected = selectedOptions.geographicLevel === "County";
-  if (states[0] === "All States") {
-    states = fiftyStates;
-  }
-  if (countySelected) {
-    return flatten(states.map((state: string) => countyData[state])).length * years.length;
-  } else {
-    return states.length * years.length;
-  }
-};
-
 export const createTableFromSelections = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
   const {geographicLevel} = selectedOptions;
   try {
@@ -164,20 +154,24 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions, 
   }
 };
 
-const getItems = async (selectedOptions: IStateOptions, setReqCount:  ISetReqCount) => {
-  let {states} = selectedOptions;
 
-  if (states[0] === "All States") {
-    states = fiftyStates;
-  }
-
-  const items = await getDataForAttribute(selectedOptions, setReqCount);
-  return items;
-};
-
-const getDataForAttribute = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
+const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
   const {geographicLevel, states, years, cropUnits, ...subOptions} = selectedOptions;
   const items: any = [];
+  const stateArray = states[0] === "All States" ? fiftyStates : states;
+
+  stateArray.forEach((state: string) => {
+    years.forEach((year: string) => {
+      if (geographicLevel === "County") {
+        const countyDataForState = countyData[state];
+          countyDataForState.forEach((county: string) => {
+            items.push({County: county, State: state, Year: year});
+          });
+      } else {
+        items.push({State: state, Year: year});
+      }
+    });
+  });
 
   const subOptionsKeys = Object.keys(subOptions);
   const numAttributes = subOptionsKeys.reduce((acc, cur) => acc + subOptions[cur as keyof typeof subOptions].length, 0);
@@ -189,122 +183,133 @@ const getDataForAttribute = async (selectedOptions: IStateOptions, setReqCount: 
       const queryParams = getQueryParams(attribute);
       const isMultiStateRegion = queryParams?.geographicAreas[0] === "REGION : MULTI-STATE";
       const geoLevel = isMultiStateRegion ? "REGION : MULTI-STATE" : geographicLevel;
-      const params: IGetAttrDataParams = {attribute, geographicLevel: geoLevel};
-
-      if (cropOptions.options.includes(attribute) && cropUnits) {
-        params.cropUnits = cropUnits as keyof ICropDataItem;
-      }
-
-      const data = await getAttrData(params, selectedOptions, setReqCount);
-
-      data.forEach((dataItem: any) => {
-        const {state_name, year} = dataItem;
-
-        const itemAlreadyExists = items.find((item: any) => {
-          const isSameGeoLevel = geographicLevel === "County" ? item.County === dataItem.county_name : item.State === state_name;
-          return isSameGeoLevel && item.Year === year;
-        });
-
-        if (!itemAlreadyExists) {
-          const newItem: any = {State: state_name, Year: year};
-          if (geographicLevel === "County") {
-            newItem.County = dataItem.county_name;
-          }
-          items.push(newItem);
+      const yearsAvailable = years.filter(year => queryParams?.years[selectedOptions.geographicLevel].includes(year));
+      if (yearsAvailable.length) {
+        const params: IGetAttrDataParams = {attribute, geographicLevel: geoLevel, years: yearsAvailable, states: stateArray};
+        if (cropOptions.options.includes(attribute) && cropUnits) {
+          params.cropUnits = cropUnits as keyof ICropDataItem;
         }
-      });
+        const data = await getAttrData(params, selectedOptions, setReqCount);
 
-      items.forEach((item: any) => {
-        // find all the data items that match this item's state and year
-        const matchingData = data.filter((dataItem: any) => {
-          const {state_name, year} = dataItem;
-          const isSameGeoLevel = geographicLevel === "County" ? item.County === dataItem.county_name : item.State === state_name;
-          return isSameGeoLevel && item.Year === year;
-        });
-        // special case for handling acres operated, where we have to sum up the values of several data items
-        if (attribute === "Acres Operated") {
-          const acreTotals: IAcreTotals = {
-            "AREA OPERATED: (1.0 TO 9.9 ACRES)": {
-              "AREA OPERATED: (1.0 TO 9.9 ACRES)": 0
-            },
-            "AREA OPERATED: (10.0 TO 49.9 ACRES)": {
-              "AREA OPERATED: (10.0 TO 49.9 ACRES)": 0
-            },
-            "AREA OPERATED: (50.0 TO 100 ACRES)": {
-              "AREA OPERATED: (50.0 TO 69.9 ACRES)": 0,
-              "AREA OPERATED: (70.0 TO 99.9 ACRES)": 0
-            },
-            "AREA OPERATED: (100 TO 500 ACRES)": {
-              "AREA OPERATED: (100 TO 139 ACRES)": 0,
-              "AREA OPERATED: (140 TO 179 ACRES)": 0,
-              "AREA OPERATED: (180 TO 219 ACRES)": 0,
-              "AREA OPERATED: (220 TO 259 ACRES)": 0,
-              "AREA OPERATED: (260 TO 499 ACRES)": 0
-            },
-            "AREA OPERATED: (500 TO 999 ACRES)": {
-              "AREA OPERATED: (500 TO 999 ACRES)": 0
-            },
-            "AREA OPERATED: (1,000 TO 5,000 ACRES)": {
-              "AREA OPERATED: (1,000 TO 1,999 ACRES)": 0,
-              "AREA OPERATED: (2,000 TO 4,999 ACRES)": 0
-            },
-            "AREA OPERATED: (5,000 OR MORE ACRES)": {
-              "AREA OPERATED: (5,000 OR MORE ACRES)": 0
+        items.forEach((item: any) => {
+          // find all the data items that match this item's location and year
+          const matchingData = data.filter((dataObj: any) => {
+            if (isMultiStateRegion) {
+              const {region_desc, year} = dataObj;
+              const regionThatIncludesState = multiRegions.find((r) => r.States.includes(item.State));
+              return regionThatIncludesState?.Region.toLowerCase() === region_desc.toLowerCase() && year === Number(item.Year);
+            } else {
+              const {state_name, year} = dataObj;
+              const lowerItemState = item.State.toLowerCase();
+              const lowerDataState = state_name.toLowerCase();
+              let isSameGeoLevel;
+              if (geoLevel === "County") {
+                const lowerItemCounty = item.County.toLowerCase();
+                const lowerDataCounty = dataObj.county_name.toLowerCase();
+                isSameGeoLevel = lowerItemCounty === lowerDataCounty && lowerItemState === lowerDataState;
+              } else {
+                isSameGeoLevel = lowerItemState === lowerDataState;
+              }
+              return isSameGeoLevel && Number(item.Year) === year;
             }
-          };
-          const totalKeys = Object.keys(acreTotals);
-          for (const total of totalKeys) {
-            const subTotalKeys = Object.keys(acreTotals[total]);
-            const dataItems = matchingData.filter((dataItem: any) => subTotalKeys.includes(dataItem.domaincat_desc));
-            dataItems.forEach((dataItem: any) => {
-              acreTotals[total][dataItem.domaincat_desc] = dataItem.Value.replace(/,/g, "");
-            });
-            const codapColumnName = attrToCODAPColumnName[total].attributeNameInCodapTable;
-            // sum up all the values of acreTotals[total]
-            const onlyNumbers = subTotalKeys.map((k) => Number(acreTotals[total][k]));
-            const sum = onlyNumbers.reduce((acc, cur) => acc + cur);
-            item[codapColumnName] = sum;
-          }
-        } else {
-          matchingData.forEach((dataItem: any) => {
-            const dataItemDesc = attribute === "Economic Class" ? dataItem.domaincat_desc : dataItem.short_desc;
-            const codapColumnName = attrToCODAPColumnName[dataItemDesc].attributeNameInCodapTable;
-            item[codapColumnName] = dataItem.Value;
           });
-        }
-      });
+
+          if (isMultiStateRegion) {
+            if (item.State !== "Alaska") {
+              const { Value } = matchingData[0];
+              const codapColumnName = attrToCODAPColumnName[matchingData[0].short_desc].attributeNameInCodapTable;
+              item[codapColumnName] = Value;
+            }
+          } else if (attribute === "Acres Operated") {
+            // special case for handling acres operated, where we have to sum up the values of several data items
+            const acreTotals: IAcreTotals = {
+              [strings.oneTo9Acres]: {
+                [strings.oneTo9Acres]: 0
+              },
+              [strings.tenTo49Acres]: {
+                [strings.tenTo49Acres]: 0
+              },
+              [strings.fiftyTo100Acres]: {
+                [strings.fiftyTo69Acres]: 0,
+                [strings.seventyTo99Acres]: 0
+              },
+              [strings.oneHundredTo500Acres]: {
+                [strings.oneHundredTo139Acres]: 0,
+                [strings.oneHundredFortyTo179Acres]: 0,
+                [strings.oneHundredEightyTo219Acres]: 0,
+                [strings.twoHundredTwentyTo259Acres]: 0,
+                [strings.twoHundredSixtyTo499Acres]: 0
+              },
+              [strings.fiveHundredTo999Acres]: {
+                [strings.fiveHundredTo999Acres]: 0
+              },
+              [strings.oneThousandTo5000Acres]: {
+                [strings.oneThousandTo1999Acres]: 0,
+                [strings.twoThousandTo4999Acres]: 0
+              },
+              [strings.fiveThousandOrMoreAcres]: {
+                [strings.fiveThousandOrMoreAcres]: 0
+              }
+            };
+            const totalKeys = Object.keys(acreTotals);
+            for (const total of totalKeys) {
+              const subTotalKeys = Object.keys(acreTotals[total]);
+              const subTotalData = matchingData.filter((dataItem: any) => subTotalKeys.includes(dataItem.domaincat_desc));
+              subTotalData.forEach((dataObj: any) => {
+                acreTotals[total][dataObj.domaincat_desc] = dataObj.Value.replace(/,/g, "");
+              });
+              const codapColumnName = attrToCODAPColumnName[total].attributeNameInCodapTable;
+              // sum up all the values of acreTotals[total]
+              const onlyNumbers = subTotalKeys.map((k) => Number(acreTotals[total][k]));
+              const sum = onlyNumbers.reduce((acc, cur) => acc + cur);
+              item[codapColumnName] = sum;
+            }
+          } else {
+            matchingData.forEach((dataItem: any) => {
+              const dataItemDesc = attribute === "Economic Class" ? dataItem.domaincat_desc : dataItem.short_desc;
+              const codapColumnName = attrToCODAPColumnName[dataItemDesc]?.attributeNameInCodapTable;
+              if (codapColumnName) {
+                item[codapColumnName] = dataItem.Value;
+              }
+            });
+          }
+        });
+      }
     }
   }
+
   return items;
 };
 
 
 const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
-  const {attribute, geographicLevel, cropUnits} = params;
-  const {states, years} = selectedOptions;
-  const queryParams = getQueryParams(attribute);
-  const yearsAvailable = years.filter(year => queryParams?.years[selectedOptions.geographicLevel].includes(year));
-  const stateArray = states[0] === "All States" ? fiftyStates : states;
-
-  const reqParams: ICreateRequestParams = {attribute, geographicLevel, years: yearsAvailable, states: stateArray};
-
+  const {attribute, geographicLevel, cropUnits, years, states} = params;
+  const reqParams: IGetAttrDataParams = {attribute, geographicLevel, years, states};
   if (cropOptions.options.includes(attribute) && cropUnits) {
     reqParams.cropUnits = cropUnits;
   }
-
   const req = createRequest(reqParams);
-  const res = await fetchDataWithRetry(req, setReqCount);
 
-  const items: Array<any> = [];
-
-  if (res) {
-    return res.data;
+  if (attribute === "Total Farmers" && (years.length > 1 && years.includes("2017"))) {
+    // we need to make two requests -- one for the total farmers in 2017, and one for the total farmers in all other years
+    const req2017 = createRequest({...reqParams, years: ["2017"]});
+    const reqOtherYears = createRequest({...reqParams, years: years.filter((year) => year !== "2017")});
+    const res2017 = await fetchDataWithRetry(req2017, setReqCount);
+    const resOtherYears = await fetchDataWithRetry(reqOtherYears, setReqCount);
+    if (res2017 && resOtherYears) {
+      return [...res2017.data, ...resOtherYears.data];
+    } else {
+      console.log(`Error: did not receive resposnse for this request:`, req);
+    }
   } else {
-    // eslint-disable-next-line no-console
-    console.log(`Error: did not receive response for this request:`, req);
+    const res = await fetchDataWithRetry(req, setReqCount);
+    if (res) {
+      return res.data;
+    } else {
+      // eslint-disable-next-line no-console
+      console.log(`Error: did not receive response for this request:`, req);
+    }
   }
-
-  return items;
 };
 
 export const fetchDataWithRetry = async (req: string, setReqCount: ISetReqCount, maxRetries = 3,) => {
@@ -313,7 +318,10 @@ export const fetchDataWithRetry = async (req: string, setReqCount: ISetReqCount,
     try {
       const response = await fetchJsonp(req, { timeout: 30000 }); // Increase the timeout
       const json = await response.json();
-      setReqCount((prevState) => { return {...prevState, completed: prevState.completed + 1}; });
+      setReqCount((prevState) => {
+        const completed = prevState.completed + 1 > prevState.total ? prevState.total : prevState.completed + 1;
+        return {...prevState, completed};
+       });
       return json;
     } catch (error) {
       // eslint-disable-next-line no-console
