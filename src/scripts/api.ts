@@ -229,6 +229,7 @@ const getDataForSingleYearAndState = async (selectedOptions: IStateOptions, coun
 
         if (geoLevel === "County") {
           item.State = state;
+          params.state = state;
         }
 
         const attrData = await getAttrData(params);
