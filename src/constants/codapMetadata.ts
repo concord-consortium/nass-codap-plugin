@@ -52,7 +52,7 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Male",
     "unitInCodapTable": "# of Farmers"
   },
-  "PRODUCERS, AMERICAN INDIAN OR ALASKAN NATIVE - NUMBER OF PRODUCERS": {
+  "PRODUCERS, AMERICAN INDIAN OR ALASKA NATIVE - NUMBER OF PRODUCERS": {
     "attributeNameInCodapTable": "American Indian or Alaskan Native",
     "unitInCodapTable": "# of Farmers"
   },
@@ -72,7 +72,7 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Multi-race",
     "unitInCodapTable": "# of Farmers"
   },
-  "PRODUCERS, NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDERS - NUMBER OF PRODUCERS": {
+  "PRODUCERS, NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER - NUMBER OF PRODUCERS": {
     "attributeNameInCodapTable": "Native Hawaiian or Other Pacific Islanders",
     "unitInCodapTable": "# of Farmers"
   },
@@ -84,7 +84,7 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Total Number of Farms",
     "unitInCodapTable": "# of Farms"
   },
-  "FARM OPERATIONS, ORGANIZATION, TAX PURPOSES, CORPORATION (EXCL FAMILY HELD) - NUMBER OF OPERATIONS": {
+  "FARM OPERATIONS, ORGANIZATION, TAX PURPOSES, CORPORATION, (EXCL FAMILY HELD) - NUMBER OF OPERATIONS": {
     "attributeNameInCodapTable": "Corporate",
     "unitInCodapTable": "# of Farms"
   },
