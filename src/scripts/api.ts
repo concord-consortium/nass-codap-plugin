@@ -93,7 +93,6 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     req = req + `&freq_desc=ANNUAL`;
   }
 
-  console.log({req});
   return req;
 };
 
