@@ -3,16 +3,17 @@ import { Dropdown } from "./dropdown";
 import classnames from "classnames";
 import { Information } from "./information";
 import { Warning } from "./warning";
-import { attributeOptions, categories, defaultSelectedOptions } from "../constants/constants";
+import { attributeOptions, categories, defaultSelectedOptions, fiftyStates } from "../constants/constants";
+import { countyData } from "../constants/counties";
 import { IStateOptions } from "../constants/types";
-import { createTableFromSelections, getNumberOfItems } from "../scripts/api";
+import { createTableFromSelections } from "../scripts/api";
 import { connect } from "../scripts/connect";
-import ProgressIndicator from "../assets/progress-indicator.svg";
-import Checkmark from "../assets/done.svg";
-import Error from "../assets/warning.svg";
 import { flatten } from "../scripts/utils";
 import { queryData } from "../constants/queryHeaders";
 import { strings } from "../constants/strings";
+import ProgressIndicator from "../assets/progress-indicator.svg";
+import Checkmark from "../assets/done.svg";
+import Error from "../assets/warning.svg";
 
 import css from "./app.scss";
 
@@ -24,6 +25,7 @@ function App() {
   const [statusGraphic, setStatusGraphic] = useState<React.ReactElement>();
   const [showWarning, setShowWarning] = useState<boolean>(false);
   const [warningMessage, setWarningMessage] = useState<JSX.Element>(<p/>);
+  const [reqCount, setReqCount] = useState({total: 0, completed: 0});
   const {farmDemographics, farmerDemographics, crops} = selectedOptions;
 
   useEffect(() => {
@@ -52,6 +54,14 @@ function App() {
     }
   }, [farmerDemographics, farmDemographics, crops]);
 
+  useEffect(() => {
+    const {total, completed} = reqCount;
+    if (total > 0 && total !== completed) {
+      setStatusMessage(`${completed} of ${total} requests complete`);
+      setStatusGraphic(<ProgressIndicator/>);
+    }
+  }, [reqCount]);
+
   const handleSetSelectedOptions = (newState: Partial<IStateOptions>) => {
     const newSelectedOptions = {...selectedOptions, ...newState};
     setSelectedOptions(newSelectedOptions);
@@ -62,20 +72,33 @@ function App() {
   };
 
   const getData = async () => {
-    setStatusMessage(strings.fetchingMsg);
-    setStatusGraphic(<ProgressIndicator/>);
-    const res = await createTableFromSelections(selectedOptions);
+    const res = await createTableFromSelections(selectedOptions, setReqCount);
     if (res !== "success") {
       setStatusMessage(strings.fetchError);
       setStatusGraphic(<Error/>);
+      setReqCount({total: 0, completed: 0});
     } else {
       setStatusMessage(strings.fetchSuccess);
       setStatusGraphic(<Checkmark/>);
+      setReqCount({total: 0, completed: 0});
+    }
+  };
+
+  const getNumberOfItems = () => {
+    let {states, years} = selectedOptions;
+    const countySelected = selectedOptions.geographicLevel === "County";
+    if (states[0] === "All States") {
+      states = fiftyStates;
+    }
+    if (countySelected) {
+      return flatten(states.map((state: string) => countyData[state])).length * years.length;
+    } else {
+      return states.length * years.length;
     }
   };
 
   const handleGetData = async () => {
-    const numberOfRows = getNumberOfItems(selectedOptions);
+    const numberOfRows = getNumberOfItems();
     const attrKeys = attributeOptions.filter((attr) => attr.key !== "cropUnits").map((attr) => attr.key);
     const selectedAttrKeys = attrKeys.filter((key) => selectedOptions[key].length > 0);
     const allSelectedAttrs = flatten(selectedAttrKeys.map((key) => selectedOptions[key]));

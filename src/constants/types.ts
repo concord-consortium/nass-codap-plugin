@@ -84,3 +84,10 @@ export interface IQueryHeaders {
     "State": string[]
   }
 }
+
+export type ISetReqCount = (value: React.SetStateAction<IReqCount>) => void;
+
+export interface IReqCount {
+  total: number;
+  completed: number;
+}
