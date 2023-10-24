@@ -152,7 +152,7 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Grapes Yield",
     "unitInCodapTable": "Tons/Acre"
   },
-  "GRAPES, ORGANIC - ACRES HARVESTED": {
+  "GRAPES - ACRES BEARING": {
     "attributeNameInCodapTable": "Grapes Area Harvested",
     "unitInCodapTable": "Acres Harvested"
   },

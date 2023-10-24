@@ -29,10 +29,6 @@ const sharedLaborHeaders = {
 
 const sharedCropHeaders = {
   sect_desc: "Crops",
-  statisticcat_desc: {
-    ["Area Harvested"]: "Area Harvested",
-    ["Yield"]: "Yield"
-  },
   domain_desc: "Total",
   geographicAreas: ["State", "County"],
   years: {
@@ -209,6 +205,10 @@ export const queryData: Array<IQueryHeaders> = [
       plugInAttribute: "Corn",
       group_desc: "Field Crops",
       commodity_desc: "Corn",
+      statisticcat_desc: {
+        ["Area Harvested"]: "Area Harvested",
+        ["Yield"]: "Yield"
+      },
       short_desc: {
         ["Area Harvested"]: ["CORN, GRAIN - ACRES HARVESTED"],
         ["Yield"]: ["CORN, GRAIN - YIELD, MEASURED IN BU / ACRE"]
@@ -219,6 +219,10 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Cotton",
     group_desc: "Field Crops",
     commodity_desc: "Cotton",
+    statisticcat_desc: {
+      ["Area Harvested"]: "Area Harvested",
+      ["Yield"]: "Yield"
+    },
     short_desc: {
       ["Area Harvested"]: ["COTTON - ACRES HARVESTED"],
       ["Yield"]: ["COTTON - YIELD, MEASURED IN LB / ACRE"]
@@ -229,8 +233,12 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Grapes",
     group_desc: "Fruit & Tree Nuts",
     commodity_desc: "Grapes",
+    statisticcat_desc: {
+      ["Area Harvested"]: "Area Bearing",
+      ["Yield"]: "Yield"
+    },
     short_desc: {
-      ["Area Harvested"]: ["GRAPES, ORGANIC - ACRES HARVESTED"],
+      ["Area Harvested"]: ["GRAPES - ACRES BEARING"],
       ["Yield"]: ["GRAPES - YIELD, MEASURED IN TONS / ACRE"]
     },
     ...sharedCropHeaders
@@ -239,6 +247,10 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Oats",
     group_desc: "Field Crops",
     commodity_desc: "Oats",
+    statisticcat_desc: {
+      ["Area Harvested"]: "Area Harvested",
+      ["Yield"]: "Yield"
+    },
     short_desc: {
       ["Area Harvested"]: ["OATS - ACRES HARVESTED"],
       ["Yield"]: ["OATS - YIELD, MEASURED IN BU / ACRE"]
@@ -249,6 +261,10 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Soybeans",
     group_desc: "Field Crops",
     commodity_desc: "Soybeans",
+    statisticcat_desc: {
+      ["Area Harvested"]: "Area Harvested",
+      ["Yield"]: "Yield"
+    },
     short_desc: {
       ["Area Harvested"]: ["SOYBEANS - ACRES HARVESTED"],
       ["Yield"]: ["SOYBEANS - YIELD, MEASURED IN BU / ACRE"]
@@ -259,7 +275,10 @@ export const queryData: Array<IQueryHeaders> = [
     plugInAttribute: "Wheat",
     group_desc: "Field Crops",
     commodity_desc: "Wheat",
-
+    statisticcat_desc: {
+      ["Area Harvested"]: "Area Harvested",
+      ["Yield"]: "Yield"
+    },
     short_desc: {
       ["Area Harvested"]: ["WHEAT - ACRES HARVESTED"],
       ["Yield"]: ["WHEAT - YIELD, MEASURED IN BU / ACRE"]
