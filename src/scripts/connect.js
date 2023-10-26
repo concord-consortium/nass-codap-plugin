@@ -2,6 +2,8 @@ import { codapInterface } from "./codapInterface";
 
 const dataSetName = "NASS Quickstats Data";
 const dataSetTitle = "NASS Quickstats Data";
+const appDefaultWidth = 380;
+const appDefaultHeight = 520;
 
 export const connect = {
     initialize: async function () {
@@ -143,6 +145,10 @@ export const connect = {
     iFrameDescriptor: {
       version: '0.0.1',
       name: 'nass-plugin',
-      title: 'NASS Quickstats Data'
+      title: 'NASS Quickstats Data',
+      dimensions: {
+        width: appDefaultWidth,
+        height: appDefaultHeight
+      },
     },
 }
