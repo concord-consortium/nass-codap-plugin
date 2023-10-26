@@ -7,7 +7,7 @@
 .dropdownBody {
   padding-left: 0;
   padding-right: 0;
-  max-height: 1000px;
+  max-height: fit-content;
   transition: max-height;
   transition-duration: .5s;
   transition-timing-function: ease-in;
@@ -55,8 +55,6 @@
     transform: rotate(180deg);
   }
 }
-
-
 
 .userSelection {
   font-family: 'Montserrat', sans-serif;
