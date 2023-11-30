@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import {initializePlugin} from "@concord-consortium/codap-plugin-api";
 import { Dropdown } from "./dropdown";
 import classnames from "classnames";
 import { Information } from "./information";
@@ -7,7 +8,6 @@ import { attributeOptions, categories, defaultSelectedOptions, fiftyStates } fro
 import { countyData } from "../constants/counties";
 import { IStateOptions } from "../constants/types";
 import { createTableFromSelections } from "../scripts/api";
-import { connect } from "../scripts/connect";
 import { flatten } from "../scripts/utils";
 import { queryData } from "../constants/queryHeaders";
 import { strings } from "../constants/strings";
@@ -16,6 +16,12 @@ import Checkmark from "../assets/done.svg";
 import Error from "../assets/warning.svg";
 
 import css from "./app.scss";
+
+const iFrameDescriptor ={
+  version: "0.0.1",
+  name: "nass-plugin",
+  title: "NASS Quickstats Data",
+};
 
 function App() {
   const [showInfo, setShowInfo] = useState<boolean>(false);
@@ -30,7 +36,7 @@ function App() {
 
   useEffect(() => {
     const init = async () => {
-      await connect.initialize();
+      await initializePlugin(iFrameDescriptor);
     };
     init();
   }, []);
