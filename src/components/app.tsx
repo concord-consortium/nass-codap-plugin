@@ -19,8 +19,9 @@ import css from "./app.scss";
 
 const iFrameDescriptor ={
   version: "0.0.1",
-  name: "nass-plugin",
+  pluginName: "nass-plugin",
   title: "NASS Quickstats Data",
+  dimensions: {width: 300, height: 400},
 };
 
 function App() {

@@ -6,6 +6,7 @@ import {
   createParentCollection,
   createChildCollection,
   createItems,
+  createTable,
 } from "@concord-consortium/codap-plugin-api";
 import { ICropCategory, ICropDataItem, ISetReqCount, IStateOptions } from "../constants/types";
 import { multiRegions } from "../constants/regionData";
@@ -107,7 +108,7 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
 
 export const getAllAttrs = (selectedOptions: IStateOptions) => {
   const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
-  const allAttrs: Array<string|ICropDataItem> = ["Year"];
+  const allAttrs: Array<string|keyof ICropDataItem> = ["Year"];
 
   for (const key in subOptions) {
     const selections = subOptions[key as keyof typeof subOptions];
@@ -188,7 +189,7 @@ const createCountyCollection = async () => {
   await createChildCollection(dataSetName, "Counties", "States", attrs);
 };
 
-const createSubCollection = async (geoLevel: "State" | "County", attrs: (string | ICropDataItem)[]) => {
+const createSubCollection = async (geoLevel: "State" | "County", attrs: (string | keyof ICropDataItem)[]) => {
   const plural = geoLevel === "State" ? "States" : "Counties";
   const attrDefs = attrs.map((attr) => {
     return {
@@ -197,23 +198,6 @@ const createSubCollection = async (geoLevel: "State" | "County", attrs: (string 
     };
   });
   await createChildCollection(dataSetName, "Data", plural, attrDefs);
-};
-
-const makeCaseTableAppear = async () => {
-  const theMessage = {
-    action : "create",
-    resource : "component",
-    values : {
-      type : "caseTable",
-      dataContext : dataSetName,
-      name : dataSetName,
-      title: dataSetName,
-      cannotClose : false
-    }
-  };
-
-  const makeCaseTableResult = await codapInterface.sendRequest(theMessage);
-  return makeCaseTableResult.success && makeCaseTableResult.values.id;
 };
 
 export const createTableFromSelections = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
@@ -228,7 +212,7 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions, 
     }
     await createSubCollection(geographicLevel, allAttrs);
     await createItems(dataSetName, items);
-    await makeCaseTableAppear();
+    await createTable(dataSetName, dataSetName);
     return "success";
   } catch (error) {
     // eslint-disable-next-line no-console
