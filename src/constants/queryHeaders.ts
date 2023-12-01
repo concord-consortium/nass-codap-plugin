@@ -119,10 +119,10 @@ export const queryData: Array<IQueryHeaders> = [
         "FARM OPERATIONS, ORGANIZATION, TAX PURPOSES, PARTNERSHIP - NUMBER OF OPERATIONS"
       ],
       domain_desc: "Total",
-      geographicAreas: ["County"],
+      geographicAreas: ["State", "County"],
       years: {
         "County": ["1997", "2002", "2007", "2012", "2017"],
-        "State": []
+        "State": ["1997", "2002", "2007", "2012", "2017"]
       }
   },
   {
