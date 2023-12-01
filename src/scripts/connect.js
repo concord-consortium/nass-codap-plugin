@@ -10,7 +10,28 @@ export const connect = {
         return await codapInterface.init(this.iFrameDescriptor, null);
     },
 
-    makeCODAPAttributeDef: function (attr) {
+    makeCODAPAttributeDef: function (attr, geoLevel) {
+      console.log("UNIT attr", attr, geoLevel);
+      if (attr === "Boundary") {
+        if (geoLevel === "County") {
+          return (
+            {
+              "name": attr,
+              "formula": `lookupBoundary(US_county_boundaries, County, State)`,
+              "formulaDependents": "State"
+            }
+          )
+        }
+        if (geoLevel === "State") {
+          return (
+            {
+              "name": attr,
+              "formula": `lookupBoundary(US_state_boundaries, State)`,
+              "formulaDependents": "State"
+            }
+          )
+        }
+      }
       return {
         name: attr,
         type: "numeric"
@@ -96,13 +117,25 @@ export const connect = {
     },
 
     createSubCollection: async function(geoLevel, attrs) {
-      const plural = geoLevel === "State" ? "States" : "Counties";
+      const plural = (geoLevel === "State") && "States";
       const message = {
         "action": "create",
         "resource": `dataContext[${dataSetName}].collection`,
         "values": {
           "name": "Data",
           "parent": plural,
+          "attributes": attrs.map((attr) => this.makeCODAPAttributeDef(attr, geoLevel))
+        }
+      };
+      await codapInterface.sendRequest(message);
+    },
+
+    createCollection: async function(attrs) {
+      const message = {
+        "action": "create",
+        "resource": `dataContext[${dataSetName}].collection`,
+        "values": {
+          "name": "Data",
           "attributes": attrs.map((attr) => this.makeCODAPAttributeDef(attr))
         }
       };
