@@ -12,7 +12,8 @@ export const connect = {
 
     makeCODAPAttributeDef: function (attr) {
       return {
-        name: attr,
+        name: attr.name,
+        unit: attr.unit,
         type: "numeric"
       }
     },

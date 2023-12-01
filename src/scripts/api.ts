@@ -98,7 +98,7 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
 
 export const getAllAttrs = (selectedOptions: IStateOptions) => {
   const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
-  const allAttrs: Array<string|ICropDataItem> = ["Year"];
+  const allAttrs: Array<Record<string, string|ICropDataItem>> = [{"name": "Year"}];
 
   for (const key in subOptions) {
     const selections = subOptions[key as keyof typeof subOptions];
@@ -111,21 +111,27 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
       if (attribute === "Economic Class") {
         for (const econAttr of economicClassAttirbutes) {
           const codapColumnName = attrToCODAPColumnName[econAttr].attributeNameInCodapTable;
-          allAttrs.push(codapColumnName);
+          const codapColumnUnit = attrToCODAPColumnName[econAttr].unitInCodapTable;
+          allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         }
       } else if (attribute === "Acres Operated") {
         for (const acresAttr of acresOperatedAttributes) {
           const codapColumnName = attrToCODAPColumnName[acresAttr].attributeNameInCodapTable;
-          allAttrs.push(codapColumnName);
+          const codapColumnUnit = attrToCODAPColumnName[acresAttr].unitInCodapTable;
+          allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         }
       } else if (Array.isArray(short_desc)) {
         for (const desc of short_desc) {
           const codapColumnName = attrToCODAPColumnName[desc].attributeNameInCodapTable;
-          allAttrs.push(codapColumnName);
+          const codapColumnUnit = attrToCODAPColumnName[desc].unitInCodapTable;
+          allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         }
       } else if (typeof short_desc === "object" && cropUnits) {
         const attr = short_desc[cropUnits as keyof ICropDataItem][0];
-        allAttrs.push(attrToCODAPColumnName[attr].attributeNameInCodapTable);
+        allAttrs.push({"name": attrToCODAPColumnName[attr].attributeNameInCodapTable});
+        const codapColumnName = attrToCODAPColumnName[attr].attributeNameInCodapTable;
+        const codapColumnUnit = attrToCODAPColumnName[attr].unitInCodapTable;
+          allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
       }
     }
   }
@@ -134,17 +140,29 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
 
 export const createTableFromSelections = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
   const {geographicLevel} = selectedOptions;
+  console.log("UNIT selectedOptions", selectedOptions);
   try {
     const allAttrs = getAllAttrs(selectedOptions);
+    console.log("UNIT allAttrs", allAttrs);
     const items = await getItems(selectedOptions, setReqCount);
+    console.log("UNIT items", items);
     await connect.getNewDataContext();
+    console.log("UNIT in getNewDataContext");
+
     await connect.createStateCollection(geographicLevel === "State");
+    console.log("UNIT in createStateCollection");
+
     if (geographicLevel === "County") {
       await connect.createCountyCollection();
     }
     await connect.createSubCollection(geographicLevel, allAttrs);
+    console.log("UNIT in createSubCollection");
+
     await connect.createItems(items);
+    console.log("UNIT in createItems");
+
     await connect.makeCaseTableAppear();
+    console.log("UNIT in success");
     return "success";
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -193,6 +211,7 @@ const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCoun
         items.forEach((item: any) => {
           // find all the data items that match this item's location and year
           const matchingData = data.filter((dataObj: any) => {
+          console.log("UNIT dataObj in getItems", dataObj);
             if (isMultiStateRegion) {
               const {region_desc, year} = dataObj;
               const regionThatIncludesState = multiRegions.find((r) => r.States.includes(item.State));
@@ -212,10 +231,11 @@ const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCoun
               return isSameGeoLevel && Number(item.Year) === year;
             }
           });
+          console.log("UNIT matchingData in getItems", matchingData);
 
           if (isMultiStateRegion) {
             if (item.State !== "Alaska") {
-              const { Value } = matchingData[0];
+              const { Value } = matchingData.length > 0 && matchingData[0];
               const codapColumnName = attrToCODAPColumnName[matchingData[0].short_desc].attributeNameInCodapTable;
               item[codapColumnName] = Value;
             }
