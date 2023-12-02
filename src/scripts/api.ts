@@ -99,7 +99,6 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
 export const getAllAttrs = (selectedOptions: IStateOptions) => {
   const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
   const allAttrs: Array<string|ICropDataItem> = ["Year", geographicLevel, "Boundary"];
-  console.log("UNIT geographicLevel", geographicLevel);
 
   for (const key in subOptions) {
     const selections = subOptions[key as keyof typeof subOptions];
@@ -135,22 +134,18 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
 
 export const createTableFromSelections = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
   const {geographicLevel} = selectedOptions;
-  console.log("UNIT createTableFromSelections geographicLevel", geographicLevel);
 
   try {
     const allAttrs = getAllAttrs(selectedOptions);
     const items = await getItems(selectedOptions, setReqCount);
     await connect.getNewDataContext();
-    await connect.createStateCollection(geographicLevel === "State");
     if (geographicLevel === "County") {
-      // await connect.createStateCollection(true);
-      // await connect.createCountyCollection();
+      await connect.createStateCollection(true);
       await connect.createSubCollection(geographicLevel, allAttrs);
       await connect.createItems(items);
       await connect.makeCaseTableAppear();
       return "success";
     } else {
-    // await connect.createSubCollection(geographicLevel, allAttrs);
       await connect.createCollection(allAttrs);
       await connect.createItems(items);
       await connect.makeCaseTableAppear();

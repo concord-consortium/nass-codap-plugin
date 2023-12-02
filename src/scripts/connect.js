@@ -11,30 +11,32 @@ export const connect = {
     },
 
     makeCODAPAttributeDef: function (attr, geoLevel) {
-      console.log("UNIT attr", attr, geoLevel);
       if (attr === "Boundary") {
         if (geoLevel === "County") {
           return (
             {
-              "name": attr,
-              "formula": `lookupBoundary(US_county_boundaries, County, State)`,
-              "formulaDependents": "State"
+              name: attr,
+              type: "boundary",
+              formula: `lookupBoundary(US_county_boundaries, County, State)`,
+              formulaDependents: "State"
             }
           )
-        }
-        if (geoLevel === "State") {
+        } else {
           return (
             {
-              "name": attr,
-              "formula": `lookupBoundary(US_state_boundaries, State)`,
-              "formulaDependents": "State"
+              name: attr,
+              type: "boundary",
+              formula: `lookupBoundary(US_state_boundaries, State)`,
+              formulaDependents: "State"
             }
           )
         }
       }
       return {
         name: attr,
-        type: "numeric"
+        type: attr === "Boundary" ? "boundary"
+                                  : attr === "State" || attr === "County"
+                                      ? " string" : "numeric"
       }
     },
 
@@ -117,13 +119,12 @@ export const connect = {
     },
 
     createSubCollection: async function(geoLevel, attrs) {
-      const plural = (geoLevel === "State") && "States";
       const message = {
         "action": "create",
         "resource": `dataContext[${dataSetName}].collection`,
         "values": {
           "name": "Data",
-          "parent": plural,
+          "parent": "States",
           "attributes": attrs.map((attr) => this.makeCODAPAttributeDef(attr, geoLevel))
         }
       };
@@ -136,6 +137,7 @@ export const connect = {
         "resource": `dataContext[${dataSetName}].collection`,
         "values": {
           "name": "Data",
+          "parent": "_root_",
           "attributes": attrs.map((attr) => this.makeCODAPAttributeDef(attr))
         }
       };
