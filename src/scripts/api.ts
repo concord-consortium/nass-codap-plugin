@@ -98,7 +98,7 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
 
 export const getAllAttrs = (selectedOptions: IStateOptions) => {
   const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
-  const allAttrs: Array<string|ICropDataItem> = ["Year"];
+  const allAttrs: Array<Record<string, string|ICropDataItem>> = [{"name": "Year"}];
 
   for (const key in subOptions) {
     const selections = subOptions[key as keyof typeof subOptions];
@@ -111,21 +111,27 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
       if (attribute === "Economic Class") {
         for (const econAttr of economicClassAttirbutes) {
           const codapColumnName = attrToCODAPColumnName[econAttr].attributeNameInCodapTable;
-          allAttrs.push(codapColumnName);
+          const codapColumnUnit = attrToCODAPColumnName[econAttr].unitInCodapTable;
+          allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         }
       } else if (attribute === "Acres Operated") {
         for (const acresAttr of acresOperatedAttributes) {
           const codapColumnName = attrToCODAPColumnName[acresAttr].attributeNameInCodapTable;
-          allAttrs.push(codapColumnName);
+          const codapColumnUnit = attrToCODAPColumnName[acresAttr].unitInCodapTable;
+          allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         }
       } else if (Array.isArray(short_desc)) {
         for (const desc of short_desc) {
           const codapColumnName = attrToCODAPColumnName[desc].attributeNameInCodapTable;
-          allAttrs.push(codapColumnName);
+          const codapColumnUnit = attrToCODAPColumnName[desc].unitInCodapTable;
+          allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         }
       } else if (typeof short_desc === "object" && cropUnits) {
         const attr = short_desc[cropUnits as keyof ICropDataItem][0];
-        allAttrs.push(attrToCODAPColumnName[attr].attributeNameInCodapTable);
+        allAttrs.push({"name": attrToCODAPColumnName[attr].attributeNameInCodapTable});
+        const codapColumnName = attrToCODAPColumnName[attr].attributeNameInCodapTable;
+        const codapColumnUnit = attrToCODAPColumnName[attr].unitInCodapTable;
+          allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
       }
     }
   }
@@ -138,12 +144,16 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions, 
     const allAttrs = getAllAttrs(selectedOptions);
     const items = await getItems(selectedOptions, setReqCount);
     await connect.getNewDataContext();
+
     await connect.createStateCollection(geographicLevel === "State");
+
     if (geographicLevel === "County") {
       await connect.createCountyCollection();
     }
     await connect.createSubCollection(geographicLevel, allAttrs);
+
     await connect.createItems(items);
+
     await connect.makeCaseTableAppear();
     return "success";
   } catch (error) {
@@ -215,7 +225,7 @@ const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCoun
 
           if (isMultiStateRegion) {
             if (item.State !== "Alaska") {
-              const { Value } = matchingData[0];
+              const { Value } = matchingData.length > 0 && matchingData[0];
               const codapColumnName = attrToCODAPColumnName[matchingData[0].short_desc].attributeNameInCodapTable;
               item[codapColumnName] = Value;
             }
