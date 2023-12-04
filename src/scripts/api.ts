@@ -152,7 +152,7 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions, 
       await connect.makeCaseTableAppear();
       return "success";
     } else {
-      await connect.createCollection(allAttrs);
+      await connect.createCollection(allAttrs, geographicLevel);
       await connect.createItems(items);
       await connect.makeCaseTableAppear();
       return "success";

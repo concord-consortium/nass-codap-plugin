@@ -11,11 +11,11 @@ export const connect = {
     },
 
     makeCODAPAttributeDef: function (attr, geoLevel) {
-      if (attr === "Boundary") {
+      if (attr.name === "Boundary") {
         if (geoLevel === "County") {
           return (
             {
-              name: attr,
+              name: attr.name,
               type: "boundary",
               formula: `lookupBoundary(US_county_boundaries, County, State)`,
               formulaDependents: "State"
@@ -24,7 +24,7 @@ export const connect = {
         } else {
           return (
             {
-              name: attr,
+              name: attr.name,
               type: "boundary",
               formula: `lookupBoundary(US_state_boundaries, State)`,
               formulaDependents: "State"
@@ -33,10 +33,10 @@ export const connect = {
         }
       }
       return {
-        name: attr,
-        type: attr === "Boundary" ? "boundary"
-                                  : attr === "State" || attr === "County"
-                                      ? " string" : "numeric"
+        name: attr.name,
+        type: attr.name === "Boundary" ? "boundary"
+                                  : attr.name === "State" || attr.name === "County"
+                                      ? "string" : "numeric"
       }
     },
 
@@ -131,14 +131,14 @@ export const connect = {
       await codapInterface.sendRequest(message);
     },
 
-    createCollection: async function(attrs) {
+    createCollection: async function(attrs, geoLevel) {
       const message = {
         "action": "create",
         "resource": `dataContext[${dataSetName}].collection`,
         "values": {
           "name": "Data",
           "parent": "_root_",
-          "attributes": attrs.map((attr) => this.makeCODAPAttributeDef(attr))
+          "attributes": attrs.map((attr) => this.makeCODAPAttributeDef(attr, geoLevel))
         }
       };
       await codapInterface.sendRequest(message);
