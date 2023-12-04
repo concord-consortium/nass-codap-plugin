@@ -10,11 +10,33 @@ export const connect = {
         return await codapInterface.init(this.iFrameDescriptor, null);
     },
 
-    makeCODAPAttributeDef: function (attr) {
+    makeCODAPAttributeDef: function (attr, geoLevel) {
+      if (attr.name === "Boundary") {
+        if (geoLevel === "County") {
+          return (
+            {
+              name: attr.name,
+              type: "boundary",
+              formula: `lookupBoundary(US_county_boundaries, County, State)`,
+              formulaDependents: "State"
+            }
+          )
+        } else {
+          return (
+            {
+              name: attr.name,
+              type: "boundary",
+              formula: `lookupBoundary(US_state_boundaries, State)`,
+              formulaDependents: "State"
+            }
+          )
+        }
+      }
       return {
         name: attr.name,
-        unit: attr.unit,
-        type: "numeric"
+        type: attr.name === "Boundary" ? "boundary"
+                                  : attr.name === "State" || attr.name === "County"
+                                      ? "string" : "numeric"
       }
     },
 
@@ -97,14 +119,26 @@ export const connect = {
     },
 
     createSubCollection: async function(geoLevel, attrs) {
-      const plural = geoLevel === "State" ? "States" : "Counties";
       const message = {
         "action": "create",
         "resource": `dataContext[${dataSetName}].collection`,
         "values": {
           "name": "Data",
-          "parent": plural,
-          "attributes": attrs.map((attr) => this.makeCODAPAttributeDef(attr))
+          "parent": "States",
+          "attributes": attrs.map((attr) => this.makeCODAPAttributeDef(attr, geoLevel))
+        }
+      };
+      await codapInterface.sendRequest(message);
+    },
+
+    createCollection: async function(attrs, geoLevel) {
+      const message = {
+        "action": "create",
+        "resource": `dataContext[${dataSetName}].collection`,
+        "values": {
+          "name": "Data",
+          "parent": "_root_",
+          "attributes": attrs.map((attr) => this.makeCODAPAttributeDef(attr, geoLevel))
         }
       };
       await codapInterface.sendRequest(message);
