@@ -34,6 +34,7 @@ export const connect = {
       }
       return {
         name: attr.name,
+        unit: attr.unit,
         type: attr.name === "Boundary" ? "boundary"
                                   : attr.name === "State" || attr.name === "County"
                                       ? "string" : "numeric"
