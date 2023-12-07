@@ -1,5 +1,7 @@
+export type GeographicLevel = "County"|"State";
+
 export interface IStateOptions {
-  geographicLevel: "County"|"State",
+  geographicLevel: GeographicLevel,
   states: string[],
   farmerDemographics: string[],
   farmDemographics: string[],
@@ -90,4 +92,18 @@ export type ISetReqCount = (value: React.SetStateAction<IReqCount>) => void;
 export interface IReqCount {
   total: number;
   completed: number;
+}
+ export interface Attribute {
+  name: string;
+  formula?: string;
+  formulaDependents?: string;
+  description?: string;
+  type?: string;
+  cid?: string;
+  precision?: string;
+  unit?: string;
+  editable?: boolean;
+  renameable?: boolean;
+  deleteable?: boolean;
+  hidden?: boolean;
 }
