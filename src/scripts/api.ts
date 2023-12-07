@@ -107,7 +107,7 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
 
 export const getAllAttrs = (selectedOptions: IStateOptions) => {
   const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
-  const allAttrs: Array<Attribute> = [{"name": "Year"}, {"name": geographicLevel}, {"name": "Boundary"}];
+  const allAttrs: Array<Attribute> = [{"name": "Year"}, {"name": geographicLevel}, {"name": `${geographicLevel} Boundary`}];
 
   for (const key in subOptions) {
     const selections = subOptions[key as keyof typeof subOptions];
@@ -164,8 +164,8 @@ const getNewDataContext = async () => {
 
 const makeCODAPAttributeDef = (attr: Attribute, geoLevel: GeographicLevel) => {
   const {name, unit} = attr;
-  if (attr.name === "Boundary") {
-    const formula = geoLevel === "County" ? `lookupBoundary(US_county_boundaries, County, State)`
+  if (attr.name.includes("Boundary")) {
+    const formula = geoLevel === "County" ? `lookupBoundary(US_county_boundaries, County + ', ' + State)`
     : `lookupBoundary(US_state_boundaries, State)`;
     return {
       name,
@@ -182,19 +182,16 @@ const makeCODAPAttributeDef = (attr: Attribute, geoLevel: GeographicLevel) => {
   }
 };
 
-const createStateCollection = async  (createBoundaries: boolean) => {
+const createStateCollection = async () => {
   const attrs: Array<Attribute> = [{"name": "State"}];
-  if (createBoundaries) {
-    const boundaryDef = makeCODAPAttributeDef({"name": "Boundary"}, "State");
-    attrs.push(boundaryDef);
-  }
+  const boundaryDef = makeCODAPAttributeDef({"name": "State Boundary"}, "State");
+  attrs.push(boundaryDef);
   await createParentCollection(dataSetName, "States", attrs);
 };
 
 const createSubCollection = async (geoLevel: GeographicLevel, attrs: Array<Attribute>) => {
-  const plural = geoLevel === "State" ? "States" : "Counties";
   const attrDefs = attrs.map((attr) => makeCODAPAttributeDef(attr, geoLevel));
-  await createChildCollection(dataSetName, "Data", plural, attrDefs);
+  await createChildCollection(dataSetName, "Data", "States", attrDefs);
 };
 
 export const createTableFromSelections = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
@@ -205,7 +202,7 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions, 
     const items = await getItems(selectedOptions, setReqCount);
     await getNewDataContext();
     if (geographicLevel === "County") {
-      await createStateCollection(true);
+      await createStateCollection();
       await createSubCollection(geographicLevel, allAttrs);
       await createItems(dataSetName, items);
       await createTable(dataSetName, dataSetName);
