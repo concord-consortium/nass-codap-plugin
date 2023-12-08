@@ -182,7 +182,7 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
   },
   "ECONOMIC CLASS: (1,000 TO 9,999 $)": {
     "attributeNameInCodapTable": "Small Farm ($1,000 - $9,999)",
-    "unitInCodapTable": ""
+    "unitInCodapTable": "# of Farms"
   },
   "ECONOMIC CLASS: (10,000 TO 99,999 $)": {
     "attributeNameInCodapTable": "Small Medium Farm ($10,000 - $99,000)",
