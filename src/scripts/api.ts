@@ -1,7 +1,15 @@
 import fetchJsonp from "fetch-jsonp";
-import { ICropCategory, ICropDataItem, ISetReqCount, IStateOptions } from "../constants/types";
+import {
+  codapInterface,
+  createDataContext,
+  getDataContext,
+  createParentCollection,
+  createChildCollection,
+  createItems,
+  createTable,
+} from "@concord-consortium/codap-plugin-api";
+import { Attribute, GeographicLevel, ICropCategory, ICropDataItem, ISetReqCount, IStateOptions } from "../constants/types";
 import { multiRegions } from "../constants/regionData";
-import { connect } from "./connect";
 import { cropOptions, fiftyStates } from "../constants/constants";
 import { countyData } from "../constants/counties";
 import { getQueryParams } from "./utils";
@@ -9,6 +17,8 @@ import { acresOperatedAttributes, attrToCODAPColumnName, economicClassAttirbutes
 import { strings } from "../constants/strings";
 
 const baseURL = `https://quickstats.nass.usda.gov/api/api_GET/?key=9ED0BFB8-8DDD-3609-9940-A2341ED6A9E3`;
+
+const dataSetName = "NASS Quickstats Data";
 
 interface IGetAttrDataParams {
   attribute: string,
@@ -23,7 +33,6 @@ interface IAcreTotals {
     [key: string]: number | null
   }
 }
-
 
 export const createRequest = ({attribute, geographicLevel, years, states, cropUnits}: IGetAttrDataParams) => {
   const queryParams = getQueryParams(attribute);
@@ -98,7 +107,7 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
 
 export const getAllAttrs = (selectedOptions: IStateOptions) => {
   const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
-  const allAttrs: Array<Record<string, string|ICropDataItem>> = [{"name": "Year"}, {"name": geographicLevel}, {"name": "Boundary"}];
+  const allAttrs: Array<Attribute> = [{"name": "Year"}, {"name": geographicLevel}, {"name": `${geographicLevel} Boundary`}];
 
   for (const key in subOptions) {
     const selections = subOptions[key as keyof typeof subOptions];
@@ -138,23 +147,71 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
   return allAttrs;
 };
 
+const deleteOldDataContext = async () => {
+  return codapInterface.sendRequest({
+    action: "delete",
+    resource: `dataContext[${dataSetName}]`
+  });
+};
+
+const getNewDataContext = async () => {
+  const doesDataContextExist = await getDataContext(dataSetName);
+  if (doesDataContextExist.success) {
+    await deleteOldDataContext();
+  }
+  await createDataContext(dataSetName);
+};
+
+const makeCODAPAttributeDef = (attr: Attribute, geoLevel: GeographicLevel) => {
+  const {name, unit} = attr;
+  if (attr.name.includes("Boundary")) {
+    const formula = geoLevel === "County" ? `lookupBoundary(US_county_boundaries, County + ', ' + State)`
+    : `lookupBoundary(US_state_boundaries, State)`;
+    return {
+      name,
+      type: "boundary",
+      formula,
+      formulaDependents: "State"
+    };
+  } else {
+    return {
+      name,
+      unit,
+      type: name === "State" || name === "County" ? "string" : "numeric"
+    };
+  }
+};
+
+const createStateCollection = async () => {
+  const attrs: Array<Attribute> = [{"name": "State"}];
+  const boundaryDef = makeCODAPAttributeDef({"name": "State Boundary"}, "State");
+  attrs.push(boundaryDef);
+  await createParentCollection(dataSetName, "States", attrs);
+};
+
+const createSubCollection = async (geoLevel: GeographicLevel, attrs: Array<Attribute>) => {
+  const attrDefs = attrs.map((attr) => makeCODAPAttributeDef(attr, geoLevel));
+  await createChildCollection(dataSetName, "Data", "States", attrDefs);
+};
+
 export const createTableFromSelections = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
   const {geographicLevel} = selectedOptions;
 
   try {
     const allAttrs = getAllAttrs(selectedOptions);
     const items = await getItems(selectedOptions, setReqCount);
-    await connect.getNewDataContext();
+    await getNewDataContext();
     if (geographicLevel === "County") {
-      await connect.createStateCollection(true);
-      await connect.createSubCollection(geographicLevel, allAttrs);
-      await connect.createItems(items);
-      await connect.makeCaseTableAppear();
+      await createStateCollection();
+      await createSubCollection(geographicLevel, allAttrs);
+      await createItems(dataSetName, items);
+      await createTable(dataSetName, dataSetName);
       return "success";
     } else {
-      await connect.createCollection(allAttrs, geographicLevel);
-      await connect.createItems(items);
-      await connect.makeCaseTableAppear();
+      const attrDefinitions = allAttrs.map((attr) => makeCODAPAttributeDef(attr, geographicLevel));
+      await createParentCollection(dataSetName, "Data", attrDefinitions);
+      await createItems(dataSetName, items);
+      await createTable(dataSetName, dataSetName);
       return "success";
     }
   } catch (error) {
@@ -163,7 +220,6 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions, 
     return error;
   }
 };
-
 
 const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
   const {geographicLevel, states, years, cropUnits, ...subOptions} = selectedOptions;
