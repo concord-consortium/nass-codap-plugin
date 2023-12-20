@@ -137,10 +137,9 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
         }
       } else if (typeof short_desc === "object" && cropUnits) {
         const attr = short_desc[cropUnits as keyof ICropDataItem][0];
-        allAttrs.push({"name": attrToCODAPColumnName[attr].attributeNameInCodapTable});
         const codapColumnName = attrToCODAPColumnName[attr].attributeNameInCodapTable;
         const codapColumnUnit = attrToCODAPColumnName[attr].unitInCodapTable;
-          allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
+        allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
       }
     }
   }
@@ -209,6 +208,7 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions, 
       return "success";
     } else {
       const attrDefinitions = allAttrs.map((attr) => makeCODAPAttributeDef(attr, geographicLevel));
+      console.log("attrDefinitions", attrDefinitions);
       await createParentCollection(dataSetName, "Data", attrDefinitions);
       await createItems(dataSetName, items);
       await createTable(dataSetName, dataSetName);
