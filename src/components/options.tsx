@@ -1,5 +1,5 @@
 import React from "react";
-import { IStateOptions, OptionKey } from "../constants/types";
+import { GeographicLevel, IStateOptions, OptionKey } from "../constants/types";
 
 import css from "./options.scss";
 
@@ -39,7 +39,7 @@ export const Options: React.FC<IOptions> = (props) => {
         }
         // If user selects a crop and no unit is selected, auto-select Yield
         if (optionKey === "crops" && !selectedOptions.cropUnits) {
-          newSelection.cropUnits = "Yield";
+          newSelection.cropUnits = ["Yield"];
         }
         // If user selects a state, de-select "All States"
         if (optionKey === "states" && newArray.includes("All States")) {
@@ -68,7 +68,7 @@ export const Options: React.FC<IOptions> = (props) => {
             // Otherwise deselect crop units, too
             newSelection.crops = newArray.filter((o) => o !== e.target.value);
             if (newSelection.crops.length === 0) {
-              newSelection.cropUnits = "";
+              newSelection.cropUnits = [];
             }
           } else {
             newSelection[optionKey] = newArray.filter((o) => o !== e.target.value);
@@ -76,8 +76,8 @@ export const Options: React.FC<IOptions> = (props) => {
         }
       }
       handleSetSelectedOptions(newSelection);
-    } else if (optionKey === "geographicLevel" || optionKey === "cropUnits") {
-      handleSetSelectedOptions({[optionKey]: e.target.value});
+    } else if (optionKey === "geographicLevel") {
+      handleSetSelectedOptions({geographicLevel: e.target.value as GeographicLevel});
     }
   };
 
