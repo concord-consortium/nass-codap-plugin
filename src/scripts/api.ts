@@ -208,7 +208,6 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions, 
       return "success";
     } else {
       const attrDefinitions = allAttrs.map((attr) => makeCODAPAttributeDef(attr, geographicLevel));
-      console.log("attrDefinitions", attrDefinitions);
       await createParentCollection(dataSetName, "Data", attrDefinitions);
       await createItems(dataSetName, items);
       await createTable(dataSetName, dataSetName);
@@ -365,6 +364,7 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
     if (res2017 && resOtherYears) {
       return [...res2017.data, ...resOtherYears.data];
     } else {
+      // eslint-disable-next-line no-console
       console.log(`Error: did not receive resposnse for this request:`, req);
     }
   } else {
