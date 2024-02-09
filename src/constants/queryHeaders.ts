@@ -183,7 +183,7 @@ export const queryData: Array<IQueryHeaders> = [
       statisticcat_desc: "Wage Rate",
       short_desc: ["LABOR, HIRED - WAGE RATE, MEASURED IN $ / HOUR"],
       domain_desc: "Total",
-      geographicAreas: ["REGION : MULTI-STATE"],
+      geographicAreas: ["State", "County"],
       years: {
         "County": allYears.filter(y => Number(y) >= 1989),
         "State": allYears.filter(y => Number(y) >= 1989)
@@ -195,7 +195,7 @@ export const queryData: Array<IQueryHeaders> = [
       statisticcat_desc: "Time Worked",
       short_desc: ["LABOR, HIRED - TIME WORKED, MEASURED IN HOURS / WEEK"],
       domain_desc: "Total",
-      geographicAreas: ["REGION : MULTI-STATE"],
+      geographicAreas: ["State", "County"],
       years: {
         "County": allYears.filter(y => Number(y) >= 1989),
         "State": allYears.filter(y => Number(y) >= 1989)
