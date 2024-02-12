@@ -416,7 +416,6 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
     reqParams.cropUnits = cropUnits;
   }
   const req = createRequest(reqParams);
-  console.log("req", req);
   if (attribute === "Total Farmers" && (years.length > 1 && years.includes("2017"))) {
     // we need to make two requests -- one for the total farmers in 2017, and one for the total farmers in all other years
     const req2017 = createRequest({...reqParams, years: ["2017"]});
@@ -432,7 +431,6 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
     }
   } else {
     const res = await fetchDataWithRetry(req, setReqCount);
-    console.log("res", res);
     if (res) {
       return res.data;
     } else {
@@ -449,7 +447,6 @@ export const fetchDataWithRetry = async (req: string, setReqCount: ISetReqCount,
     const response = await fetchJsonp(req, { timeout: 10000 }); // Increase the timeout
     if (response?.ok) {
       const json = await response.json();
-      console.log("json", json);
       setReqCount((prevState) => {
         const completed = prevState.completed + 1 > prevState.total ? prevState.total : prevState.completed + 1;
         return {...prevState, completed};
