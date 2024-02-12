@@ -303,65 +303,66 @@ const processAttributeData = async (props: IProcessAttributeData) => {
     items.forEach((item: any) => {
       // find all the data items that match this item's location and year
       const matchingData = findMatchingData({isMultiStateRegion, data, item, geoLevel: geographicLevel});
-      if (isMultiStateRegion) {
-        if (item.State !== "Alaska") {
-          const { Value } = matchingData.length > 0 && matchingData[0];
-          const codapColumnName = attrToCODAPColumnName[matchingData[0].short_desc].attributeNameInCodapTable;
-          item[codapColumnName] = Value;
-        }
-      } else if (attribute === "Acres Operated") {
-        // special case for handling acres operated, where we have to sum up the values of several data items
-        const acreTotals: IAcreTotals = {
-          [strings.oneTo9Acres]: {
-            [strings.oneTo9Acres]: 0
-          },
-          [strings.tenTo49Acres]: {
-            [strings.tenTo49Acres]: 0
-          },
-          [strings.fiftyTo100Acres]: {
-            [strings.fiftyTo69Acres]: 0,
-            [strings.seventyTo99Acres]: 0
-          },
-          [strings.oneHundredTo500Acres]: {
-            [strings.oneHundredTo139Acres]: 0,
-            [strings.oneHundredFortyTo179Acres]: 0,
-            [strings.oneHundredEightyTo219Acres]: 0,
-            [strings.twoHundredTwentyTo259Acres]: 0,
-            [strings.twoHundredSixtyTo499Acres]: 0
-          },
-          [strings.fiveHundredTo999Acres]: {
-            [strings.fiveHundredTo999Acres]: 0
-          },
-          [strings.oneThousandTo5000Acres]: {
-            [strings.oneThousandTo1999Acres]: 0,
-            [strings.twoThousandTo4999Acres]: 0
-          },
-          [strings.fiveThousandOrMoreAcres]: {
-            [strings.fiveThousandOrMoreAcres]: 0
+      if (matchingData.length) {
+        if (isMultiStateRegion) {
+            const { Value } = matchingData[0];
+            const codapColumnName = attrToCODAPColumnName[matchingData[0].short_desc].attributeNameInCodapTable;
+            item[codapColumnName] = Value;
+        } else if (attribute === "Acres Operated") {
+          // special case for handling acres operated, where we have to sum up the values of several data items
+          const acreTotals: IAcreTotals = {
+            [strings.oneTo9Acres]: {
+              [strings.oneTo9Acres]: 0
+            },
+            [strings.tenTo49Acres]: {
+              [strings.tenTo49Acres]: 0
+            },
+            [strings.fiftyTo100Acres]: {
+              [strings.fiftyTo69Acres]: 0,
+              [strings.seventyTo99Acres]: 0
+            },
+            [strings.oneHundredTo500Acres]: {
+              [strings.oneHundredTo139Acres]: 0,
+              [strings.oneHundredFortyTo179Acres]: 0,
+              [strings.oneHundredEightyTo219Acres]: 0,
+              [strings.twoHundredTwentyTo259Acres]: 0,
+              [strings.twoHundredSixtyTo499Acres]: 0
+            },
+            [strings.fiveHundredTo999Acres]: {
+              [strings.fiveHundredTo999Acres]: 0
+            },
+            [strings.oneThousandTo5000Acres]: {
+              [strings.oneThousandTo1999Acres]: 0,
+              [strings.twoThousandTo4999Acres]: 0
+            },
+            [strings.fiveThousandOrMoreAcres]: {
+              [strings.fiveThousandOrMoreAcres]: 0
+            }
+          };
+          const totalKeys = Object.keys(acreTotals);
+          for (const total of totalKeys) {
+            const subTotalKeys = Object.keys(acreTotals[total]);
+            const subTotalData = matchingData.filter((dataItem: any) => subTotalKeys.includes(dataItem.domaincat_desc));
+            subTotalData.forEach((dataObj: any) => {
+              acreTotals[total][dataObj.domaincat_desc] = dataObj.Value.replace(/,/g, "");
+            });
+            const codapColumnName = attrToCODAPColumnName[total].attributeNameInCodapTable;
+            // sum up all the values of acreTotals[total]
+            const onlyNumbers = subTotalKeys.map((k) => Number(acreTotals[total][k]));
+            const sum = onlyNumbers.reduce((acc, cur) => acc + cur);
+            item[codapColumnName] = sum;
           }
-        };
-        const totalKeys = Object.keys(acreTotals);
-        for (const total of totalKeys) {
-          const subTotalKeys = Object.keys(acreTotals[total]);
-          const subTotalData = matchingData.filter((dataItem: any) => subTotalKeys.includes(dataItem.domaincat_desc));
-          subTotalData.forEach((dataObj: any) => {
-            acreTotals[total][dataObj.domaincat_desc] = dataObj.Value.replace(/,/g, "");
+        } else {
+          matchingData.forEach((dataItem: any) => {
+            const dataItemDesc = attribute === "Economic Class" ? dataItem.domaincat_desc : dataItem.short_desc;
+            const codapColumnName = attrToCODAPColumnName[dataItemDesc]?.attributeNameInCodapTable;
+            if (codapColumnName) {
+              item[codapColumnName] = dataItem.Value;
+            }
           });
-          const codapColumnName = attrToCODAPColumnName[total].attributeNameInCodapTable;
-          // sum up all the values of acreTotals[total]
-          const onlyNumbers = subTotalKeys.map((k) => Number(acreTotals[total][k]));
-          const sum = onlyNumbers.reduce((acc, cur) => acc + cur);
-          item[codapColumnName] = sum;
         }
-      } else {
-        matchingData.forEach((dataItem: any) => {
-          const dataItemDesc = attribute === "Economic Class" ? dataItem.domaincat_desc : dataItem.short_desc;
-          const codapColumnName = attrToCODAPColumnName[dataItemDesc]?.attributeNameInCodapTable;
-          if (codapColumnName) {
-            item[codapColumnName] = dataItem.Value;
-          }
-        });
       }
+
     });
   }
   return items;
@@ -415,6 +416,7 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
     reqParams.cropUnits = cropUnits;
   }
   const req = createRequest(reqParams);
+  console.log("req", req);
   if (attribute === "Total Farmers" && (years.length > 1 && years.includes("2017"))) {
     // we need to make two requests -- one for the total farmers in 2017, and one for the total farmers in all other years
     const req2017 = createRequest({...reqParams, years: ["2017"]});
@@ -430,6 +432,7 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
     }
   } else {
     const res = await fetchDataWithRetry(req, setReqCount);
+    console.log("res", res);
     if (res) {
       return res.data;
     } else {
@@ -443,20 +446,20 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
 export const fetchDataWithRetry = async (req: string, setReqCount: ISetReqCount, maxRetries = 3,) => {
   let retries = 0;
   while (retries < maxRetries) {
-    try {
-      const response = await fetchJsonp(req, { timeout: 30000 }); // Increase the timeout
+    const response = await fetchJsonp(req, { timeout: 10000 }); // Increase the timeout
+    if (response?.ok) {
       const json = await response.json();
+      console.log("json", json);
       setReqCount((prevState) => {
         const completed = prevState.completed + 1 > prevState.total ? prevState.total : prevState.completed + 1;
         return {...prevState, completed};
-       });
+        });
       return json;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(`Request attempt ${retries + 1} failed:`, error);
-      retries++;
+    } else {
+    // eslint-disable-next-line no-console
+    console.log(`Request attempt ${retries + 1} failed:`, req);
+    retries++;
     }
   }
-  // throw new Error(`Request failed after ${maxRetries} attempts`);
   return undefined;
 };
