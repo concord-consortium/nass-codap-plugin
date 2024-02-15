@@ -6,7 +6,7 @@ export interface IStateOptions {
   farmerDemographics: string[],
   farmDemographics: string[],
   economicsAndWages: string[],
-  cropUnits: string,
+  cropUnits: string[],
   crops: string[]
   years: string[]
 }

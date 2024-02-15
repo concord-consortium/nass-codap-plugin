@@ -30,11 +30,7 @@ const sharedLaborHeaders = {
 const sharedCropHeaders = {
   sect_desc: "Crops",
   domain_desc: "Total",
-  geographicAreas: ["State", "County"],
-  years: {
-    "County": allYears,
-    "State": allYears
-  }
+  geographicAreas: ["State", "County"]
 };
 
 export const queryData: Array<IQueryHeaders> = [
@@ -133,7 +129,7 @@ export const queryData: Array<IQueryHeaders> = [
       geographicAreas: ["State"],
       years: {
         "County": [],
-        "State": allYears.filter(y => Number(y) >= 1998)
+        "State": allYears.filter(y => Number(y) >= 1987)
       }
   },
   {
@@ -213,6 +209,10 @@ export const queryData: Array<IQueryHeaders> = [
         ["Area Harvested"]: ["CORN, GRAIN - ACRES HARVESTED"],
         ["Yield"]: ["CORN, GRAIN - YIELD, MEASURED IN BU / ACRE"]
       },
+      years: {
+        "County": allYears,
+        "State": allYears
+      },
       ...sharedCropHeaders
   },
   {
@@ -226,6 +226,10 @@ export const queryData: Array<IQueryHeaders> = [
     short_desc: {
       ["Area Harvested"]: ["COTTON - ACRES HARVESTED"],
       ["Yield"]: ["COTTON - YIELD, MEASURED IN LB / ACRE"]
+    },
+    years: {
+      "County": allYears,
+      "State": allYears
     },
     ...sharedCropHeaders
   },
@@ -241,6 +245,10 @@ export const queryData: Array<IQueryHeaders> = [
       ["Area Harvested"]: ["GRAPES - ACRES BEARING"],
       ["Yield"]: ["GRAPES - YIELD, MEASURED IN TONS / ACRE"]
     },
+    years: {
+      "County": allYears.filter(y => y === "2002" || Number(y) >= 2007),
+      "State": allYears.filter(y => y === "2002" || Number(y) >= 2007)
+    },
     ...sharedCropHeaders
   },
   {
@@ -254,6 +262,10 @@ export const queryData: Array<IQueryHeaders> = [
     short_desc: {
       ["Area Harvested"]: ["OATS - ACRES HARVESTED"],
       ["Yield"]: ["OATS - YIELD, MEASURED IN BU / ACRE"]
+    },
+    years: {
+      "County": allYears,
+      "State": allYears
     },
     ...sharedCropHeaders
   },
@@ -269,6 +281,10 @@ export const queryData: Array<IQueryHeaders> = [
       ["Area Harvested"]: ["SOYBEANS - ACRES HARVESTED"],
       ["Yield"]: ["SOYBEANS - YIELD, MEASURED IN BU / ACRE"]
     },
+    years: {
+      "County": allYears,
+      "State": allYears
+    },
     ...sharedCropHeaders
   },
   {
@@ -282,6 +298,10 @@ export const queryData: Array<IQueryHeaders> = [
     short_desc: {
       ["Area Harvested"]: ["WHEAT - ACRES HARVESTED"],
       ["Yield"]: ["WHEAT - YIELD, MEASURED IN BU / ACRE"]
+    },
+    years: {
+      "County": allYears,
+      "State": allYears
     },
     ...sharedCropHeaders
   }

@@ -128,7 +128,7 @@ export const defaultSelectedOptions: IStateOptions = {
   farmerDemographics: [],
   farmDemographics: [],
   economicsAndWages: [],
-  cropUnits: "",
+  cropUnits: [],
   crops: [],
   years: []
 };
