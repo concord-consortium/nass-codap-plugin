@@ -33,11 +33,11 @@ export const multiRegions: IRegion[] = [
     "States": ["Minnesota", "Wisconsin", "Michigan"]
   },
   {
-    "Region": "Cornbelt I",
+    "Region": "Corn Belt I",
     "States": ["Illinois", "Indiana", "Ohio"]
   },
   {
-    "Region": "Cornbelt II",
+    "Region": "Corn Belt II",
     "States": ["Iowa", "Missouri"]
   },
   {
