@@ -26,7 +26,7 @@ export const Options: React.FC<IOptions> = (props) => {
   const handleSelectState = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (Array.isArray(selectedOptions[optionKey])) {
       const newArray = [...selectedOptions[optionKey]];
-      const newSelection: any = {[optionKey]: newArray};
+      const newSelection = {[optionKey]: newArray};
       if (e.currentTarget.checked) {
         newSelection[optionKey].push(e.target.value);
         // If user selects "Age", "Gender", or "Race", auto-select "Total Farmers" as well
@@ -38,7 +38,7 @@ export const Options: React.FC<IOptions> = (props) => {
           newSelection.farmDemographics.push("Total Farms");
         }
         // If user selects a crop and no unit is selected, auto-select Yield
-        if (optionKey === "crops" && !selectedOptions.cropUnits) {
+        if (optionKey === "crops" && !selectedOptions.cropUnits.length) {
           newSelection.cropUnits = ["Yield"];
         }
         // If user selects a state, de-select "All States"
@@ -95,7 +95,7 @@ export const Options: React.FC<IOptions> = (props) => {
             checked={isOptionSelected(o)}
             onChange={(e) => handleSelectState(e)}
           />
-          <label className={css.label} htmlFor={o} key={`label-${o}`}>{o}</label>
+          <label className={css.label} htmlFor={o} key={`${inputType}-label-${o}`}>{o}</label>
         </div>
       );
     })}
