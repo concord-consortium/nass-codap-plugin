@@ -444,18 +444,18 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
 export const fetchDataWithRetry = async (req: string, setReqCount: ISetReqCount, maxRetries = 3,) => {
   let retries = 0;
   while (retries < maxRetries) {
-    const response = await fetchJsonp(req, { timeout: 10000 }); // Increase the timeout
-    if (response?.ok) {
+    try {
+      const response = await fetchJsonp(req, { timeout: 10000 }); // Increase the timeout
       const json = await response.json();
       setReqCount((prevState) => {
         const completed = prevState.completed + 1 > prevState.total ? prevState.total : prevState.completed + 1;
         return {...prevState, completed};
-        });
+      });
       return json;
-    } else {
-    // eslint-disable-next-line no-console
-    console.log(`Request attempt ${retries + 1} failed:`, req);
-    retries++;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log("Error fetching data:", error);
+      retries++;
     }
   }
   return undefined;
