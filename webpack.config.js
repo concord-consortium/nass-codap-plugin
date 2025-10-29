@@ -29,15 +29,7 @@ module.exports = (env, argv) => {
         key: path.resolve(os.homedir(), '.localhost-ssl/localhost.key'),
         cert: path.resolve(os.homedir(), '.localhost-ssl/localhost.pem'),
       },
-      allowedHosts: "all",
-      proxy: [
-        {
-          context: ['/api'],
-          target: 'https://quickstats.nass.usda.gov',
-          changeOrigin: true,
-          secure: false,
-        }
-      ]
+      allowedHosts: "all"
     },
     devtool: devMode ? 'eval-cheap-module-source-map' : 'source-map',
     entry: './src/index.tsx',
