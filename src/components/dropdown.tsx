@@ -33,14 +33,14 @@ export const Dropdown: React.FC<IProps> = (props) => {
   };
 
   return (
-  <div className={`${css.dropdown}`}>
-    <div className={`${css.sectionHeaderLine} ${css.dropdownHeader}`} title={sectionAltText}>
+  <div className={`${css.dropdown}`} data-testid={`dropdown-${category}`}>
+    <div className={`${css.sectionHeaderLine}`} title={sectionAltText} data-testid={`dropdown-${category}-header`}>
       <span className={css.sectionTitle}>{category}</span>
       <Summary category={category} selectedOptions={selectedOptions}/>
       <span className={css.userSelection}></span>
-      <span className={classnames(css.dropdownIndicator, {[css.up]: showItems})} onClick={handleClick}></span>
+      <span className={classnames(css.dropdownIndicator, {[css.up]: showItems})} onClick={handleClick} data-testid={`dropdown-${category}-toggle`}></span>
     </div>
-    <div className={classnames(css.dropdownBody, {[css.hidden]: !showItems})}>
+    <div className={classnames(css.dropdownBody, {[css.hidden]: !showItems})} data-testid={`dropdown-${category}-body`}>
       <div className={css.options}>
         {renderOptions()}
       </div>
