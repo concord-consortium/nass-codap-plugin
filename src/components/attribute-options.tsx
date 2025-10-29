@@ -35,7 +35,7 @@ export const AttributeOptions: React.FC<IProps> = (props) => {
       {
         attributeOptions.map((attr) => {
           return (
-            <>
+            <React.Fragment key={attr.key}>
             {attr.label && <div key={`header-${attr.key}`} className={css.statisticcat_desc}>{attr.label}</div>}
             {attr.instructions &&
               <div key={`instructions-${attr.key}`} className={css.instructions}>
@@ -51,7 +51,7 @@ export const AttributeOptions: React.FC<IProps> = (props) => {
                 {...commonProps}
               />
             </div>
-            </>
+            </React.Fragment>
           );
         })
       }
