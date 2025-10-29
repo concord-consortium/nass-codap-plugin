@@ -5,6 +5,7 @@ node_modules
 npm-error.log
 top-test
 .DS_Store
+.env
 .nyc_output
 
 # Editors

@@ -1,6 +1,9 @@
 'use strict';
 
+require('dotenv').config();
+
 const path = require('path');
+const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -24,9 +27,17 @@ module.exports = (env, argv) => {
       hot: true,
       https: {
         key: path.resolve(os.homedir(), '.localhost-ssl/localhost.key'),
-        cert: path.resolve(os.homedir(), '.localhost-ssl/localhost.crt'),
+        cert: path.resolve(os.homedir(), '.localhost-ssl/localhost.pem'),
       },
-      allowedHosts: "all"
+      allowedHosts: "all",
+      proxy: [
+        {
+          context: ['/api'],
+          target: 'https://quickstats.nass.usda.gov',
+          changeOrigin: true,
+          secure: false,
+        }
+      ]
     },
     devtool: devMode ? 'eval-cheap-module-source-map' : 'source-map',
     entry: './src/index.tsx',
@@ -140,6 +151,9 @@ module.exports = (env, argv) => {
       warningsFilter: /export .* was not found in/,
     },
     plugins: [
+      new webpack.DefinePlugin({
+        'process.env.REACT_APP_NASS_PROXY_URL': JSON.stringify(process.env.REACT_APP_NASS_PROXY_URL || ''),
+      }),
       new ESLintPlugin({
         extensions: ['ts', 'tsx', 'js', 'jsx'],
       }),
