@@ -25,7 +25,7 @@ export const PlaceOptions: React.FC<IProps> = (props) => {
     <>
       {placeOptions.map((placeOpt) => {
         return (
-          <>
+          <React.Fragment key={placeOpt.key}>
             <div key={`instructions-${placeOpt.key}`} className={css.instruction}>{placeOpt.instructions}:</div>
             <div
               key={`options-container-${placeOpt.key}`}
@@ -56,7 +56,7 @@ export const PlaceOptions: React.FC<IProps> = (props) => {
                 handleSetSelectedOptions={handleSetSelectedOptions}
               />
             </div>
-          </>
+          </React.Fragment>
         );
       })}
     </>

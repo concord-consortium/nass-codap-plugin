@@ -13,6 +13,8 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+        env:
+          REACT_APP_NASS_PROXY_URL: ${{ secrets.REACT_APP_NASS_PROXY_URL }}
       - name: Run Tests
         run: npm run test:coverage -- --runInBand
       - name: Upload coverage to Codecov
@@ -54,6 +56,8 @@ jobs:
           # Also turn on the code coverage tasks in cypress itself, these are disabled
           # by default.
           CYPRESS_coverage: true
+          # Proxy URL needed for API calls during E2E tests
+          REACT_APP_NASS_PROXY_URL: ${{ secrets.REACT_APP_NASS_PROXY_URL }}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
@@ -74,6 +78,8 @@ jobs:
           # This decreases the deploy time quite a bit
           CYPRESS_INSTALL_BINARY: 0
       - uses: concord-consortium/s3-deploy-action@v1
+        env:
+          REACT_APP_NASS_PROXY_URL: ${{ secrets.REACT_APP_NASS_PROXY_URL }}
         with:
           bucket: models-resources
           prefix: nass-plugin

@@ -1,4 +1,3 @@
-import fetchJsonp from "fetch-jsonp";
 import {
   codapInterface,
   createDataContext,
@@ -16,7 +15,11 @@ import { getQueryParams } from "./utils";
 import { acresOperatedAttributes, attrToCODAPColumnName, economicClassAttirbutes } from "../constants/codapMetadata";
 import { strings } from "../constants/strings";
 
-const baseURL = `https://quickstats.nass.usda.gov/api/api_GET/?key=9ED0BFB8-8DDD-3609-9940-A2341ED6A9E3`;
+const baseURL = process.env.REACT_APP_NASS_PROXY_URL;
+
+if (!baseURL) {
+  throw new Error("API Base URL not defined");
+}
 
 const dataSetName = "NASS Quickstats Data";
 
@@ -60,8 +63,8 @@ const cat = cropUnits ?
   let req = "";
   if (attribute === "Total Farmers" && !years.includes("2017")) {
     // we need to custom-build the req in this one case
-    req = `${baseURL}` +
-    `&sect_desc=${encodeURIComponent("DEMOGRAPHICS")}` +
+    req = `${baseURL}?` +
+    `sect_desc=${encodeURIComponent("DEMOGRAPHICS")}` +
     `&group_desc=${encodeURIComponent("OPERATORS")}` +
     `&commodity_desc=${encodeURIComponent("OPERATORS")}` +
     `&statisticcat_desc=${encodeURIComponent("OPERATORS")}` +
@@ -69,8 +72,8 @@ const cat = cropUnits ?
     `&agg_level_desc=${encodeURIComponent(geographicLevel)}` +
     `&short_desc=${encodeURIComponent("OPERATORS, (ALL) - NUMBER OF OPERATORS")}`;
   } else {
-    req = `${baseURL}` +
-    `&sect_desc=${encodeURIComponent(sect_desc)}` +
+    req = `${baseURL}?` +
+    `sect_desc=${encodeURIComponent(sect_desc)}` +
     `&group_desc=${encodeURIComponent(group_desc)}` +
     `&commodity_desc=${encodeURIComponent(commodity_desc)}` +
     `&statisticcat_desc=${encodeURIComponent(cat as string)}` +
@@ -90,7 +93,6 @@ const cat = cropUnits ?
       }
     } else {
       req = req + `&state_name=${encodeURIComponent(state)}`;
-
     }
   });
 
@@ -445,7 +447,20 @@ export const fetchDataWithRetry = async (req: string, setReqCount: ISetReqCount,
   let retries = 0;
   while (retries < maxRetries) {
     try {
-      const response = await fetchJsonp(req, { timeout: 10000 }); // Increase the timeout
+      const requestUrl = req.includes("format=") ? req : `${req}&format=JSON`;
+      
+      const response = await fetch(requestUrl, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+        },
+        signal: AbortSignal.timeout(10000) // 10 second timeout
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const json = await response.json();
       setReqCount((prevState) => {
         const completed = prevState.completed + 1 > prevState.total ? prevState.total : prevState.completed + 1;
@@ -456,6 +471,11 @@ export const fetchDataWithRetry = async (req: string, setReqCount: ISetReqCount,
       // eslint-disable-next-line no-console
       console.log("Error fetching data:", error);
       retries++;
+      
+      // Add exponential backoff delay before retrying
+      if (retries < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+      }
     }
   }
   return undefined;

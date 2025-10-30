@@ -2,13 +2,14 @@
 
 1. Clone this repo and `cd` into it
 2. Run `npm install` to pull dependencies
-3. Run `npm start` to run `webpack-dev-server` in development mode with hot module replacement
+3. Copy the `env.sample` file, rename the copy `.env`, and set the value for `REACT_APP_NASS_PROXY_URL`.
+4. Run `npm start` to run `webpack-dev-server` in development mode with hot module replacement
 
 #### Run using HTTPS
 
 Additional steps are required to run using HTTPS.
 
-1. install [mkcert](https://github.com/FiloSottile/mkcert) : `brew install mkcert` (install using Scoop or Chocolatey on Windows)
+1. Install [mkcert](https://github.com/FiloSottile/mkcert) : `brew install mkcert` (install using Scoop or Chocolatey on Windows)
 2. Create and install the trusted CA in keychain if it doesn't already exist:   `mkcert -install`
 3. Ensure you have a `.localhost-ssl` certificate directory in your home directory (create if needed, typically `C:\Users\UserName` on Windows) and cd into that directory
 4. Make the cert files: `mkcert -cert-file localhost.pem -key-file localhost.key localhost 127.0.0.1 ::1`
@@ -29,6 +30,10 @@ You *do not* need to build to deploy the code, that is automatic.  See more info
 1. Make sure if you are using Visual Studio Code that you use the workspace version of TypeScript.
    To ensure that you are open a TypeScript file in VSC and then click on the version number next to
    `TypeScript React` in the status bar and select 'Use Workspace Version' in the popup menu.
+
+## Proxy
+
+This application requires a proxy server to access the NASS QuickStats API. The proxy URL is configured via the `REACT_APP_NASS_PROXY_URL` environment variable. For development, you can use a locally-running instance of [nass-proxy](https://github.com/concord-consortium/nass-proxy).
 
 ## Deployment
 
