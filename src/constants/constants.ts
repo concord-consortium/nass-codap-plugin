@@ -98,7 +98,7 @@ const cropUnitOptions: IAttrOptions = {
 export const cropOptions: IAttrOptions = {
   key: "crops",
   label: null,
-  options: ["Corn", "Cotton", "Grapes", "Oats", "Soybeans", "Wheat"],
+  options: ["Corn", "Cotton", "Grapes", "Hay", "Oats", "Soybeans", "Tobacco", "Wheat"],
   instructions: "(Choose crops)"
 };
 

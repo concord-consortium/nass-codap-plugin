@@ -252,6 +252,24 @@ export const queryData: Array<IQueryHeaders> = [
     ...sharedCropHeaders
   },
   {
+    plugInAttribute: "Hay",
+    group_desc: "Field Crops",
+    commodity_desc: "Hay",
+    statisticcat_desc: {
+      ["Area Harvested"]: "Area Harvested",
+      ["Yield"]: "Yield"
+    },
+    short_desc: {
+      ["Area Harvested"]: ["HAY - ACRES HARVESTED"],
+      ["Yield"]: ["HAY - YIELD, MEASURED IN TONS / ACRE"]
+    },
+    years: {
+      "County": allYears,
+      "State": allYears
+    },
+    ...sharedCropHeaders
+  },
+  {
     plugInAttribute: "Oats",
     group_desc: "Field Crops",
     commodity_desc: "Oats",
@@ -280,6 +298,24 @@ export const queryData: Array<IQueryHeaders> = [
     short_desc: {
       ["Area Harvested"]: ["SOYBEANS - ACRES HARVESTED"],
       ["Yield"]: ["SOYBEANS - YIELD, MEASURED IN BU / ACRE"]
+    },
+    years: {
+      "County": allYears,
+      "State": allYears
+    },
+    ...sharedCropHeaders
+  },
+  {
+    plugInAttribute: "Tobacco",
+    group_desc: "Field Crops",
+    commodity_desc: "Tobacco",
+    statisticcat_desc: {
+      ["Area Harvested"]: "Area Harvested",
+      ["Yield"]: "Yield"
+    },
+    short_desc: {
+      ["Area Harvested"]: ["TOBACCO - ACRES HARVESTED"],
+      ["Yield"]: ["TOBACCO - YIELD, MEASURED IN LB / ACRE"]
     },
     years: {
       "County": allYears,
