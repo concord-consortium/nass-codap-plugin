@@ -74,6 +74,7 @@ context("Test the overall app", () => {
     it("expands and collapses Years section when clicked", () => {
       cy.get("[data-testid^='dropdown-Years-toggle']").click();
       cy.get("[data-testid^='dropdown-Years-body']").should("be.visible");
+      cy.get("[data-testid^='dropdown-Years-body']").should("contain.text", "Please select attributes to see available years.");
       cy.get("[data-testid^='dropdown-Years-toggle']").click();
       cy.get("[data-testid^='dropdown-Years-body']").should("not.be.visible");
     });

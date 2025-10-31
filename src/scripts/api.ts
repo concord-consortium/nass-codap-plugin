@@ -61,8 +61,8 @@ const cat = cropUnits ?
   statisticcat_desc;
 
   let req = "";
-  if (attribute === "Total Farmers" && !years.includes("2017")) {
-    // we need to custom-build the req in this one case
+  if (attribute === "Total Farmers" && years.every(year => parseInt(year, 10) < 2017)) {
+    // we need to custom-build the req for years before 2017
     req = `${baseURL}?` +
     `sect_desc=${encodeURIComponent("DEMOGRAPHICS")}` +
     `&group_desc=${encodeURIComponent("OPERATORS")}` +
@@ -418,14 +418,18 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
     reqParams.cropUnits = cropUnits;
   }
   const req = createRequest(reqParams);
-  if (attribute === "Total Farmers" && (years.length > 1 && years.includes("2017"))) {
-    // we need to make two requests -- one for the total farmers in 2017, and one for the total farmers in all other years
-    const req2017 = createRequest({...reqParams, years: ["2017"]});
-    const reqOtherYears = createRequest({...reqParams, years: years.filter((year) => year !== "2017")});
-    const res2017 = await fetchDataWithRetry(req2017, setReqCount);
-    const resOtherYears = await fetchDataWithRetry(reqOtherYears, setReqCount);
-    if (res2017 && resOtherYears) {
-      return [...res2017.data, ...resOtherYears.data];
+  if (attribute === "Total Farmers" && years.length > 1 && 
+      years.some(year => parseInt(year, 10) < 2017) && 
+      years.some(year => parseInt(year, 10) >= 2017)) {
+    // we need to make two requests -- one for pre-2017 years, and one for 2017+ years
+    const pre2017Years = years.filter(year => parseInt(year, 10) < 2017);
+    const post2017Years = years.filter(year => parseInt(year, 10) >= 2017);
+    const reqPre2017 = createRequest({...reqParams, years: pre2017Years});
+    const reqPost2017 = createRequest({...reqParams, years: post2017Years});
+    const resPre2017 = await fetchDataWithRetry(reqPre2017, setReqCount);
+    const resPost2017 = await fetchDataWithRetry(reqPost2017, setReqCount);
+    if (resPre2017 && resPost2017) {
+      return [...resPre2017.data, ...resPost2017.data];
     } else {
       // eslint-disable-next-line no-console
       console.log(`No data returned for ${attribute} at ${geographicLevel} level in ${years} for ${states}`);
