@@ -1,23 +1,25 @@
 export type GeographicLevel = "County"|"State";
 
 export interface IStateOptions {
-  geographicLevel: GeographicLevel,
-  states: string[],
-  farmerDemographics: string[],
-  farmDemographics: string[],
-  economicsAndWages: string[],
-  cropUnits: string[],
-  crops: string[]
+  geographicLevel: GeographicLevel;
+  states: string[];
+  farmerDemographics: string[];
+  farmDemographics: string[];
+  economicsAndWages: string[];
+  cropUnits: string[];
+  crops: string[];
+  livestockUnits: string[];
+  livestock: string[];
   years: string[]
 }
 
 export type OptionKey = keyof IStateOptions;
 
 export interface IAttrOptions {
-  key: keyof IStateOptions,
-  label: string|null,
-  options: string[],
-  instructions: string|null
+  key: keyof IStateOptions;
+  label: string|null;
+  options: string[];
+  instructions: string|null;
 }
 
 export interface IResData {
@@ -63,27 +65,40 @@ export interface IResData {
 }
 
 export interface ICropCategory {
-  ["Area Harvested"]: string,
-  ["Yield"]: string
+  ["Area Harvested"]: string;
+  ["Yield"]: string;
 }
 
 export interface ICropDataItem {
-  ["Area Harvested"]: string[],
-  ["Yield"]: string[]
+  ["Area Harvested"]: string[];
+  ["Yield"]: string[];
+}
+
+export interface ILivestockCategory {
+  ["Inventory"]: string;
+  ["Inventory, Broilers"]?: string[];
+  ["Inventory, Layers"]?: string[];
+}
+
+export interface ILivestockDataItem {
+  ["Inventory"]?: string[];
+  ["Inventory, Broilers"]?: string[];
+  ["Inventory, Layers"]?: string[];
 }
 
 export interface IQueryHeaders {
-  plugInAttribute: string,
-  sect_desc: string,
-  group_desc: string,
-  commodity_desc: string,
-  statisticcat_desc: string|ICropCategory,
-  short_desc: string[]|ICropDataItem,
-  domain_desc: string,
-  geographicAreas: string[],
+  plugInAttribute: string;
+  sect_desc: string;
+  group_desc: string;
+  commodity_desc: string;
+  statisticcat_desc: string|ICropCategory|ILivestockCategory;
+  short_desc: string[]|ICropDataItem|ILivestockDataItem;
+  domain_desc: string;
+  geographicAreas: string[];
   years: {
-    "County": string[]
-    "State": string[]
+    "County"?: string[];
+    "National"?: string[];
+    "State"?: string[];
   }
 }
 

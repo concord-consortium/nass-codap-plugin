@@ -21,7 +21,7 @@ const iFrameDescriptor ={
   version: "0.0.1",
   pluginName: "nass-plugin",
   title: "NASS Quickstats Data",
-  dimensions: {width: 300, height: 400},
+  dimensions: {width: 325, height: 400},
 };
 
 function App() {
@@ -118,7 +118,7 @@ function App() {
         const availableYears = attrInfo.years[selectedOptions.geographicLevel];
         for (let i = 0; i < selectedYears.length; i ++) {
           const y = selectedYears[i];
-          if (!availableYears.includes(y)) {
+          if (!availableYears?.includes(y)) {
             showYearsWarning = true;
             break;
           }

@@ -7,9 +7,9 @@ import {
   createItems,
   createTable,
 } from "@concord-consortium/codap-plugin-api";
-import { Attribute, GeographicLevel, ICropCategory, ICropDataItem, ISetReqCount, IStateOptions } from "../constants/types";
+import { Attribute, GeographicLevel, ICropCategory, ICropDataItem, ILivestockCategory, ILivestockDataItem, ISetReqCount, IStateOptions } from "../constants/types";
 import { multiRegions } from "../constants/regionData";
-import { cropOptions, fiftyStates } from "../constants/constants";
+import { cropOptions, livestockOptions, fiftyStates } from "../constants/constants";
 import { countyData } from "../constants/counties";
 import { getQueryParams } from "./utils";
 import { acresOperatedAttributes, attrToCODAPColumnName, economicClassAttirbutes } from "../constants/codapMetadata";
@@ -27,6 +27,7 @@ interface IGetAttrDataParams {
   attribute: string,
   geographicLevel: string,
   cropUnits?: keyof ICropDataItem,
+  livestockUnits?: keyof ILivestockDataItem,
   years: Array<string>,
   states: Array<string>
 }
@@ -37,7 +38,7 @@ interface IAcreTotals {
   }
 }
 
-export const createRequest = ({attribute, geographicLevel, years, states, cropUnits}: IGetAttrDataParams) => {
+export const createRequest = ({attribute, geographicLevel, years, states, cropUnits, livestockUnits}: IGetAttrDataParams) => {
   const queryParams = getQueryParams(attribute);
 
   if (!queryParams) {
@@ -53,12 +54,20 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     short_desc,
   } = queryParams;
 
-  const item = cropUnits ?
-  (queryParams?.short_desc as ICropDataItem)[cropUnits] :
-  short_desc as string[];
-const cat = cropUnits ?
-  (queryParams?.statisticcat_desc as ICropCategory)[cropUnits] :
-  statisticcat_desc;
+  const item = cropUnits
+    ? (queryParams?.short_desc as ICropDataItem)[cropUnits]
+    : livestockUnits
+      ? (queryParams?.short_desc as ILivestockDataItem)[livestockUnits]
+      : short_desc as string[];
+
+  // For livestock, extract the base category (e.g., "Inventory" from "Inventory, Broilers")
+  const livestockBaseCategory = livestockUnits ? livestockUnits.split(",")[0].trim() as keyof ILivestockCategory : undefined;
+  
+  const cat = cropUnits
+    ? (queryParams?.statisticcat_desc as ICropCategory)[cropUnits]
+    : livestockBaseCategory
+      ? (queryParams?.statisticcat_desc as ILivestockCategory)[livestockBaseCategory]
+      : statisticcat_desc;
 
   let req = "";
   if (attribute === "Total Farmers" && years.every(year => parseInt(year, 10) < 2017)) {
@@ -85,19 +94,24 @@ const cat = cropUnits ?
     req = req + `&year=${year}`;
   });
 
-  states.forEach((state) => {
-    if (geographicLevel === "REGION : MULTI-STATE") {
-      if (state !== "Alaska") {
-        const region = multiRegions.find((r) => r.States.includes(state));
-        req = req + `&region_desc=${encodeURIComponent(region?.Region as string)}`;
+  if (geographicLevel !== "National") {
+    states.forEach((state) => {
+      if (geographicLevel === "REGION : MULTI-STATE") {
+        if (state !== "Alaska") {
+          const region = multiRegions.find((r) => r.States.includes(state));
+          req = req + `&region_desc=${encodeURIComponent(region?.Region as string)}`;
+        }
+      } else {
+        req = req + `&state_name=${encodeURIComponent(state)}`;
       }
-    } else {
-      req = req + `&state_name=${encodeURIComponent(state)}`;
-    }
-  });
+    });
+  }
 
-  item.forEach(subItem => {
-    req = req + `&short_desc=${encodeURIComponent(subItem)}`;
+  const itemArray = Array.isArray(item) ? item : [item];
+  itemArray.forEach(subItem => {
+    if (subItem) {
+      req = req + `&short_desc=${encodeURIComponent(subItem)}`;
+    }
   });
 
   if (geographicLevel === "REGION : MULTI-STATE") {
@@ -108,7 +122,7 @@ const cat = cropUnits ?
 };
 
 export const getAllAttrs = (selectedOptions: IStateOptions) => {
-  const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
+  const {geographicLevel, states, cropUnits, livestockUnits, years, ...subOptions} = selectedOptions;
   const allAttrs: Array<Attribute> = [{"name": "Year"}, {"name": geographicLevel}, {"name": `${geographicLevel} Boundary`}];
 
   for (const key in subOptions) {
@@ -137,13 +151,44 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
           const codapColumnUnit = attrToCODAPColumnName[desc].unitInCodapTable;
           allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         }
-      } else if (typeof short_desc === "object" && cropUnits.length) {
+      } else if (typeof short_desc === "object" && cropUnits.length && cropOptions.options.includes(attribute)) {
         cropUnits.forEach((cropUnit) => {
-          const attr = short_desc[cropUnit as keyof ICropDataItem][0];
+          const attr = (short_desc as ICropDataItem)[cropUnit as keyof ICropDataItem][0];
           const codapColumnName = attrToCODAPColumnName[attr].attributeNameInCodapTable;
           const codapColumnUnit = attrToCODAPColumnName[attr].unitInCodapTable;
           allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         });
+      } else if (typeof short_desc === "object" && livestockUnits && livestockUnits.length && livestockOptions.options.includes(attribute)) {
+        // Special case for Chickens: create separate Broilers and Layers inventory columns
+        if (attribute === "Chickens") {
+          const broilersArray = (short_desc as ILivestockDataItem)["Inventory, Broilers"];
+          const layersArray = (short_desc as ILivestockDataItem)["Inventory, Layers"];
+          
+          if (broilersArray && broilersArray.length > 0) {
+            const broilersAttr = broilersArray[0];
+            const codapColumnName = attrToCODAPColumnName[broilersAttr].attributeNameInCodapTable;
+            const codapColumnUnit = attrToCODAPColumnName[broilersAttr].unitInCodapTable;
+            allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
+          }
+          
+          if (layersArray && layersArray.length > 0) {
+            const layersAttr = layersArray[0];
+            const codapColumnName = attrToCODAPColumnName[layersAttr].attributeNameInCodapTable;
+            const codapColumnUnit = attrToCODAPColumnName[layersAttr].unitInCodapTable;
+            allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
+          }
+        } else {
+          // Standard livestock handling
+          livestockUnits.forEach((livestockUnit) => {
+            const livestockArray = (short_desc as ILivestockDataItem)[livestockUnit as keyof ILivestockDataItem];
+            if (livestockArray && livestockArray.length > 0) {
+              const attr = livestockArray[0];
+              const codapColumnName = attrToCODAPColumnName[attr].attributeNameInCodapTable;
+              const codapColumnUnit = attrToCODAPColumnName[attr].unitInCodapTable;
+              allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
+            }
+          });
+        }
       }
     }
   }
@@ -243,6 +288,9 @@ const prepareQueryAndFetchData = async (props: IPrepareQueryAndFetchData) => {
     const params: IGetAttrDataParams = {attribute, geographicLevel: geoLevel, years: yearsAvailable, states: stateArray};
     if (cropOptions.options.includes(attribute) && cropUnit) {
       params.cropUnits = cropUnit as keyof ICropDataItem;
+    }
+    if (livestockOptions.options.includes(attribute) && cropUnit) {
+      params.livestockUnits = cropUnit as keyof ILivestockDataItem;
     }
     const data = await getAttrData(params, selectedOptions, setReqCount);
     return data;
@@ -370,7 +418,7 @@ const processAttributeData = async (props: IProcessAttributeData) => {
 };
 
 const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
-  const {geographicLevel, states, years, cropUnits, ...subOptions} = selectedOptions;
+  const {geographicLevel, states, years, cropUnits, livestockUnits, ...subOptions} = selectedOptions;
   const items: any = [];
   const stateArray = states[0] === "All States" ? fiftyStates : states;
 
@@ -393,15 +441,28 @@ const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCoun
 
   for (const key in subOptions) {
     const value = subOptions[key as keyof typeof subOptions];
-    if (cropUnits.length > 1) {
-      for (const cropUnit of cropUnits) {
-        for (const attribute of value) {
+    for (const attribute of value) {
+      const isCropAttribute = cropOptions.options.includes(attribute);
+      const isLivestockAttribute = livestockOptions.options.includes(attribute);
+      
+      if (isCropAttribute && cropUnits.length > 1) {
+        for (const cropUnit of cropUnits) {
           await processAttributeData({attribute, items, geographicLevel, years, cropUnit, selectedOptions, setReqCount, stateArray});
         }
-      }
-    } else {
-      for (const attribute of value) {
+      } else if (isCropAttribute && cropUnits.length === 1) {
         await processAttributeData({attribute, items, geographicLevel, years, cropUnit: cropUnits[0], selectedOptions, setReqCount, stateArray});
+      } else if (isLivestockAttribute && attribute === "Chickens") {
+        // Special case for Chickens: always fetch both Broilers and Layers
+        await processAttributeData({attribute, items, geographicLevel, years, cropUnit: "Inventory, Broilers", selectedOptions, setReqCount, stateArray});
+        await processAttributeData({attribute, items, geographicLevel, years, cropUnit: "Inventory, Layers", selectedOptions, setReqCount, stateArray});
+      } else if (isLivestockAttribute && livestockUnits && livestockUnits.length > 1) {
+        for (const livestockUnit of livestockUnits) {
+          await processAttributeData({attribute, items, geographicLevel, years, cropUnit: livestockUnit, selectedOptions, setReqCount, stateArray});
+        }
+      } else if (isLivestockAttribute && livestockUnits && livestockUnits.length === 1) {
+        await processAttributeData({attribute, items, geographicLevel, years, cropUnit: livestockUnits[0], selectedOptions, setReqCount, stateArray});
+      } else {
+        await processAttributeData({attribute, items, geographicLevel, years, cropUnit: "", selectedOptions, setReqCount, stateArray});
       }
     }
   }
@@ -411,10 +472,13 @@ const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCoun
 
 
 const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
-  const {attribute, geographicLevel, cropUnits, years, states} = params;
+  const {attribute, geographicLevel, cropUnits, livestockUnits, years, states} = params;
   const reqParams: IGetAttrDataParams = {attribute, geographicLevel, years, states};
   if (cropOptions.options.includes(attribute) && cropUnits) {
     reqParams.cropUnits = cropUnits;
+  }
+  if (livestockOptions.options.includes(attribute) && livestockUnits) {
+    reqParams.livestockUnits = livestockUnits;
   }
   const req = createRequest(reqParams);
   if (attribute === "Total Farmers" && years.length > 1 && 

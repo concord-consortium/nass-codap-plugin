@@ -4,7 +4,7 @@ export const geographicLevelOptions: IAttrOptions = {
   label: null,
   key: "geographicLevel",
   instructions: "Size of area for data",
-  options : ["State", "County"]
+  options : ["National", "State", "County"]
 };
 
 export const fiftyStates = [
@@ -101,8 +101,14 @@ export const cropOptions: IAttrOptions = {
   options: ["Corn", "Cotton", "Grapes", "Hay", "Oats", "Soybeans", "Tobacco", "Wheat"],
   instructions: "(Choose crops)"
 };
+export const livestockOptions: IAttrOptions = {
+  key: "livestock",
+  label: "Livestock",
+  options: ["Cattle", "Chickens", "Hogs", "Horses & Ponies"],
+  instructions: null
+};
 
-export const attributeOptions = [farmerOptions, farmOptions, economicOptions, cropUnitOptions, cropOptions];
+export const attributeOptions = [farmerOptions, farmOptions, economicOptions, cropUnitOptions, cropOptions, livestockOptions];
 
 const yearsArray = [];
 for (let year = 2022; year >= 1910; year--) {
@@ -130,5 +136,7 @@ export const defaultSelectedOptions: IStateOptions = {
   economicsAndWages: [],
   cropUnits: [],
   crops: [],
+  livestockUnits: [],
+  livestock: [],
   years: []
 };

@@ -1,6 +1,6 @@
 .radioOptions, .checkOptions {
   margin-top: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 0;
 }
 
 .radioOptions {
@@ -76,6 +76,10 @@
 
 .statisticcat_desc {
   font-weight: 600;
+}
+
+.checkOptions + .statisticcat_desc {
+  margin-top: 10px;
 }
 
 .instructions {

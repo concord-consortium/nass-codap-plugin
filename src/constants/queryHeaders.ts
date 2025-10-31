@@ -33,6 +33,12 @@ const sharedCropHeaders = {
   geographicAreas: ["State", "County"]
 };
 
+const sharedLivestockHeaders = {
+  sect_desc: "Animals & Products",
+  domain_desc: "Total",
+  geographicAreas: ["State", "County"]
+};
+
 export const queryData: Array<IQueryHeaders> = [
   {
       plugInAttribute: "Total Farmers",
@@ -340,5 +346,70 @@ export const queryData: Array<IQueryHeaders> = [
       "State": allYears
     },
     ...sharedCropHeaders
+  },
+  {
+      plugInAttribute: "Cattle",
+      group_desc: "Livestock",
+      commodity_desc: "Cattle",
+      statisticcat_desc: {
+        ["Inventory"]: "Inventory"
+      },
+      short_desc: {
+        ["Inventory"]: ["CATTLE, CALVES - INVENTORY"]
+      },
+      years: {
+        "County": [...allYears.filter(y => Number(y) >= 1920)],
+        "State": allYears
+      },
+      ...sharedLivestockHeaders
+  },
+  {
+      plugInAttribute: "Chickens",
+      group_desc: "Poultry",
+      commodity_desc: "Chickens",
+      statisticcat_desc: {
+        ["Inventory"]: "Inventory"
+      },
+      short_desc: {
+        ["Inventory, Broilers"]: ["CHICKENS, BROILERS - INVENTORY"],
+        ["Inventory, Layers"]: ["CHICKENS, LAYERS - INVENTORY"]
+      },
+      years: {
+        "County": ["2022", "2017", "2012", "2007", "2002", "1997"],
+        "State": ["2022", "2017", "2012", "2007", "2002", "1997"]
+      },
+      ...sharedLivestockHeaders
+  },
+  {
+      plugInAttribute: "Hogs",
+      group_desc: "Livestock",
+      commodity_desc: "Hogs",
+      statisticcat_desc: {
+        ["Inventory"]: "Inventory"
+      },
+      short_desc: {
+        ["Inventory"]: ["HOGS - INVENTORY"]
+      },
+      years: {
+        "County": [...allYears.filter(y => Number(y) >= 1919)],
+        "State": allYears
+      },
+      ...sharedLivestockHeaders
+  },
+  {
+      plugInAttribute: "Horses & Ponies",
+      group_desc: "Specialty",
+      commodity_desc: "Equine",
+      statisticcat_desc: {
+        ["Inventory"]: "Inventory"
+      },
+      short_desc: {
+        ["Inventory"]: ["EQUINE, HORSES & PONIES - INVENTORY"]
+      },
+      years: {
+        "County": ["2022", "2017", "2012", "2007", "2002"],
+        "State": ["2022", "2017", "2012", "2007", "2002", "1997"]
+      },
+      ...sharedLivestockHeaders
   }
 ];
