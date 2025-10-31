@@ -27,7 +27,7 @@ export const YearsOptions: React.FC<IProps> = (props) => {
     }
 
     const allSelectedAttrs = flatten(selectedAttrKeys.map((key) => selectedOptions[key]));
-    const newAvailableYears = allSelectedAttrs.reduce((years, attr) => {
+    const newAvailableYears: string[] = allSelectedAttrs.reduce((years, attr) => {
       const subAttrData = queryData.find((d) => d.plugInAttribute === attr);
       const availableYears = subAttrData?.years[selectedOptions.geographicLevel];
       if (availableYears) {
@@ -36,8 +36,8 @@ export const YearsOptions: React.FC<IProps> = (props) => {
         });
       }
       return years;
-    }, new Set());
-    const newSet: string[] = Array.from(newAvailableYears);
+    }, new Set<string>());
+    const newSet: string[] = Array.from(newAvailableYears).sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
     setAvailableYearOptions(newSet);
 
     // if selected years includes years not in available options, remove them from selection

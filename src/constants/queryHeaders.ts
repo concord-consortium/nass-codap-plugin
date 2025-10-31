@@ -39,8 +39,8 @@ export const queryData: Array<IQueryHeaders> = [
       ...sharedDemographicHeaders,
       short_desc: ["PRODUCERS, (ALL) - NUMBER OF PRODUCERS"],
       years: {
-        "County": ["2017", "2012", "2007", "2002"],
-        "State": ["2017", "2012", "2007", "2002"]
+        "County": ["2022", "2017", "2012", "2007", "2002"],
+        "State": ["2022", "2017", "2012", "2007", "2002"]
       }
   },
   {
@@ -56,8 +56,8 @@ export const queryData: Array<IQueryHeaders> = [
         "PRODUCERS, AGE GE 75 - NUMBER OF PRODUCERS"
       ],
       years: {
-        "County": ["2017"],
-        "State": ["2017"]
+        "County": ["2022", "2017"],
+        "State": ["2022", "2017"]
       }
 
   },
@@ -69,8 +69,8 @@ export const queryData: Array<IQueryHeaders> = [
         "PRODUCERS, (ALL), MALE - NUMBER OF PRODUCERS"
       ],
       years: {
-        "County": ["2017"],
-        "State": ["2017"]
+        "County": ["2022", "2017"],
+        "State": ["2022", "2017"]
       }
   },
   {
@@ -86,8 +86,8 @@ export const queryData: Array<IQueryHeaders> = [
         "PRODUCERS, WHITE - NUMBER OF PRODUCERS"
       ],
       years: {
-        "County": ["2017"],
-        "State": ["2017"]
+        "County": ["2022", "2017"],
+        "State": ["2022", "2017"]
       }
   },
   {
@@ -117,8 +117,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Total",
       geographicAreas: ["State", "County"],
       years: {
-        "County": ["1997", "2002", "2007", "2012", "2017"],
-        "State": ["1997", "2002", "2007", "2012", "2017"]
+        "County": ["2022", "2017", "2012", "2007", "2002", "1997"],
+        "State": ["2022", "2017", "2012", "2007", "2002", "1997"]
       }
   },
   {
@@ -142,8 +142,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Area Operated",
       geographicAreas: ["State", "County"],
       years: {
-        "County": ["1997", "2002", "2007", "2012", "2017"],
-        "State": ["1997", "2002", "2007", "2012", "2017"]
+        "County": ["2022", "2017", "2012", "2007", "2002", "1997"],
+        "State": ["2022", "2017", "2012", "2007", "2002", "1997"]
       }
   },
   {
@@ -153,8 +153,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Organic Status",
       geographicAreas: ["State", "County"],
       years: {
-        "County": ["2008", "2011", "2012", "2014", "2015", "2016", "2017", "2019", "2021"],
-        "State": ["2008", "2011", "2012", "2014", "2015", "2016", "2017", "2019", "2021"]
+        "County": ["2022", "2021", "2019", "2017", "2016", "2015", "2014", "2012", "2011", "2008"],
+        "State": ["2022", "2021", "2019", "2017", "2016", "2015", "2014", "2012", "2011", "2008"]
       }
   },
   {
@@ -169,8 +169,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Total",
       geographicAreas: ["State", "County"],
       years: {
-        "County": ["2012", "2017"],
-        "State": ["2012", "2017"]
+        "County": ["2022", "2017", "2012"],
+        "State": ["2022", "2017", "2012"]
       }
   },
   {
