@@ -1,7 +1,7 @@
 import { IQueryHeaders } from "./types";
 
 const allYears = [];
-for (let year = 2022; year >= 1910; year--) {
+for (let year = 2024; year >= 1910; year--) {
   allYears.push(`${year}`);
 }
 
@@ -228,8 +228,8 @@ export const queryData: Array<IQueryHeaders> = [
       ["Yield"]: ["COTTON - YIELD, MEASURED IN LB / ACRE"]
     },
     years: {
-      "County": allYears,
-      "State": allYears
+      "County": allYears.filter(y => Number(y) <= 2022),
+      "State": allYears.filter(y => Number(y) <= 2022)
     },
     ...sharedCropHeaders
   },
@@ -264,7 +264,7 @@ export const queryData: Array<IQueryHeaders> = [
       ["Yield"]: ["HAY - YIELD, MEASURED IN TONS / ACRE"]
     },
     years: {
-      "County": allYears,
+      "County": ["2022", "2017", "2012", ...allYears.filter(y => Number(y) <= 2008 && Number(y) >= 1918)],
       "State": allYears
     },
     ...sharedCropHeaders
@@ -318,7 +318,7 @@ export const queryData: Array<IQueryHeaders> = [
       ["Yield"]: ["TOBACCO - YIELD, MEASURED IN LB / ACRE"]
     },
     years: {
-      "County": allYears,
+      "County": ["2022", "2017", "2012", "2007", "2002", "1997"],
       "State": allYears
     },
     ...sharedCropHeaders
@@ -336,7 +336,7 @@ export const queryData: Array<IQueryHeaders> = [
       ["Yield"]: ["WHEAT - YIELD, MEASURED IN BU / ACRE"]
     },
     years: {
-      "County": allYears,
+      "County": allYears.filter(y => Number(y) <= 2022),
       "State": allYears
     },
     ...sharedCropHeaders
