@@ -173,14 +173,13 @@ const makeCODAPAttributeDef = (attr: Attribute, geoLevel: GeographicLevel) => {
     return {
       name,
       type: "boundary",
-      formula,
-      formulaDependents: "State"
+      formula
     };
   } else {
     return {
       name,
       unit,
-      type: name === "State" || name === "County" ? "string" : "numeric"
+      type: name === "State" || name === "County" ? "categorical" : "numeric"
     };
   }
 };
