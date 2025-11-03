@@ -1,9 +1,21 @@
 import { IQueryHeaders } from "./types";
 
-const allYears = [];
+const allYears: string[] = [];
 for (let year = 2024; year >= 1910; year--) {
   allYears.push(`${year}`);
 }
+
+const censusYears = ["1997", "2002", "2007", "2012", "2017", "2022"];
+
+const yearsFrom = (startYear: number) => allYears.filter(y => Number(y) >= startYear);
+const yearsUpTo = (endYear: number) => allYears.filter(y => Number(y) <= endYear);
+const yearsBetween = (startYear: number, endYear: number) => 
+  allYears.filter(y => Number(y) >= startYear && Number(y) <= endYear);
+
+const censusYearsFrom = (startYear: string) => {
+  const index = censusYears.indexOf(startYear);
+  return index >= 0 ? censusYears.slice(index) : censusYears;
+};
 
 const sharedDemographicHeaders = {
   sect_desc: "Demographics",
@@ -45,8 +57,8 @@ export const queryData: Array<IQueryHeaders> = [
       ...sharedDemographicHeaders,
       short_desc: ["PRODUCERS, (ALL) - NUMBER OF PRODUCERS"],
       years: {
-        "County": ["2022", "2017", "2012", "2007", "2002"],
-        "State": ["2022", "2017", "2012", "2007", "2002"]
+        "County": censusYearsFrom("2002"),
+        "State": censusYearsFrom("2002")
       }
   },
   {
@@ -62,8 +74,8 @@ export const queryData: Array<IQueryHeaders> = [
         "PRODUCERS, AGE GE 75 - NUMBER OF PRODUCERS"
       ],
       years: {
-        "County": ["2022", "2017"],
-        "State": ["2022", "2017"]
+        "County": censusYearsFrom("2017"),
+        "State": censusYearsFrom("2017")
       }
 
   },
@@ -75,8 +87,8 @@ export const queryData: Array<IQueryHeaders> = [
         "PRODUCERS, (ALL), MALE - NUMBER OF PRODUCERS"
       ],
       years: {
-        "County": ["2022", "2017"],
-        "State": ["2022", "2017"]
+        "County": censusYearsFrom("2017"),
+        "State": censusYearsFrom("2017")
       }
   },
   {
@@ -92,8 +104,8 @@ export const queryData: Array<IQueryHeaders> = [
         "PRODUCERS, WHITE - NUMBER OF PRODUCERS"
       ],
       years: {
-        "County": ["2022", "2017"],
-        "State": ["2022", "2017"]
+        "County": censusYearsFrom("2017"),
+        "State": censusYearsFrom("2017")
       }
   },
   {
@@ -123,8 +135,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Total",
       geographicAreas: ["State", "County"],
       years: {
-        "County": ["2022", "2017", "2012", "2007", "2002", "1997"],
-        "State": ["2022", "2017", "2012", "2007", "2002", "1997"]
+        "County": censusYears,
+        "State": censusYears
       }
   },
   {
@@ -135,7 +147,7 @@ export const queryData: Array<IQueryHeaders> = [
       geographicAreas: ["State"],
       years: {
         "County": [],
-        "State": allYears.filter(y => Number(y) >= 1987)
+        "State": yearsFrom(1987)
       }
   },
   {
@@ -148,8 +160,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Area Operated",
       geographicAreas: ["State", "County"],
       years: {
-        "County": ["2022", "2017", "2012", "2007", "2002", "1997"],
-        "State": ["2022", "2017", "2012", "2007", "2002", "1997"]
+        "County": censusYears,
+        "State": censusYears
       }
   },
   {
@@ -175,8 +187,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Total",
       geographicAreas: ["State", "County"],
       years: {
-        "County": ["2022", "2017", "2012"],
-        "State": ["2022", "2017", "2012"]
+        "County": censusYearsFrom("2012"),
+        "State": censusYearsFrom("2012")
       }
   },
   {
@@ -187,8 +199,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Total",
       geographicAreas: ["REGION : MULTI-STATE"],
       years: {
-        "County": allYears.filter(y => Number(y) >= 1989),
-        "State": allYears.filter(y => Number(y) >= 1989)
+        "County": yearsFrom(1989),
+        "State": yearsFrom(1989)
       }
   },
   {
@@ -199,8 +211,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Total",
       geographicAreas: ["REGION : MULTI-STATE"],
       years: {
-        "County": allYears.filter(y => Number(y) >= 1989),
-        "State": allYears.filter(y => Number(y) >= 1989)
+        "County": yearsFrom(1989),
+        "State": yearsFrom(1989)
       }
   },
   {
@@ -234,8 +246,8 @@ export const queryData: Array<IQueryHeaders> = [
       ["Yield"]: ["COTTON - YIELD, MEASURED IN LB / ACRE"]
     },
     years: {
-      "County": allYears.filter(y => Number(y) <= 2022),
-      "State": allYears.filter(y => Number(y) <= 2022)
+      "County": yearsUpTo(2022),
+      "State": yearsUpTo(2022)
     },
     ...sharedCropHeaders
   },
@@ -270,7 +282,7 @@ export const queryData: Array<IQueryHeaders> = [
       ["Yield"]: ["HAY - YIELD, MEASURED IN TONS / ACRE"]
     },
     years: {
-      "County": ["2022", "2017", "2012", ...allYears.filter(y => Number(y) <= 2008 && Number(y) >= 1918)],
+      "County": ["2022", "2017", "2012", ...yearsBetween(1918, 2008)],
       "State": allYears
     },
     ...sharedCropHeaders
@@ -342,7 +354,7 @@ export const queryData: Array<IQueryHeaders> = [
       ["Yield"]: ["WHEAT - YIELD, MEASURED IN BU / ACRE"]
     },
     years: {
-      "County": allYears.filter(y => Number(y) <= 2022),
+      "County": yearsUpTo(2022),
       "State": allYears
     },
     ...sharedCropHeaders
@@ -358,7 +370,7 @@ export const queryData: Array<IQueryHeaders> = [
         ["Inventory"]: ["CATTLE, CALVES - INVENTORY"]
       },
       years: {
-        "County": [...allYears.filter(y => Number(y) >= 1920)],
+        "County": yearsFrom(1920),
         "State": allYears
       },
       ...sharedLivestockHeaders
@@ -375,8 +387,8 @@ export const queryData: Array<IQueryHeaders> = [
         ["Inventory, Layers"]: ["CHICKENS, LAYERS - INVENTORY"]
       },
       years: {
-        "County": ["2022", "2017", "2012", "2007", "2002", "1997"],
-        "State": ["2022", "2017", "2012", "2007", "2002", "1997"]
+        "County": censusYears,
+        "State": censusYears
       },
       ...sharedLivestockHeaders
   },
@@ -391,7 +403,7 @@ export const queryData: Array<IQueryHeaders> = [
         ["Inventory"]: ["HOGS - INVENTORY"]
       },
       years: {
-        "County": [...allYears.filter(y => Number(y) >= 1919)],
+        "County": yearsFrom(1919),
         "State": allYears
       },
       ...sharedLivestockHeaders
@@ -407,8 +419,8 @@ export const queryData: Array<IQueryHeaders> = [
         ["Inventory"]: ["EQUINE, HORSES & PONIES - INVENTORY"]
       },
       years: {
-        "County": ["2022", "2017", "2012", "2007", "2002"],
-        "State": ["2022", "2017", "2012", "2007", "2002", "1997"]
+        "County": censusYearsFrom("2002"),
+        "State": censusYears
       },
       ...sharedLivestockHeaders
   }
