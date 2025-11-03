@@ -4,7 +4,7 @@ export const geographicLevelOptions: IAttrOptions = {
   label: null,
   key: "geographicLevel",
   instructions: "Size of area for data",
-  options : ["National", "State", "County"]
+  options : ["State", "County"]
 };
 
 export const fiftyStates = [
@@ -136,7 +136,6 @@ export const defaultSelectedOptions: IStateOptions = {
   economicsAndWages: [],
   cropUnits: [],
   crops: [],
-  livestockUnits: [],
   livestock: [],
   years: []
 };

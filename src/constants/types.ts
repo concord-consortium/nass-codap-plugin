@@ -8,7 +8,6 @@ export interface IStateOptions {
   economicsAndWages: string[];
   cropUnits: string[];
   crops: string[];
-  livestockUnits: string[];
   livestock: string[];
   years: string[]
 }

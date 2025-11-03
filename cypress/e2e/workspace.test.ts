@@ -52,13 +52,21 @@ context("Test the overall app", () => {
 
       // Check size of area options
       cy.get("[data-testid^='dropdown-Place-body']").should("contain.text", "Size of area for data:");
-      const sizes = ["National", "State", "County"];
+      const sizes = ["State", "County"];
       sizes.forEach(size => verifyRadioButtonAndLabel("Place", size));
 
       // Check state options
       cy.get("[data-testid^='dropdown-Place-body']").should("contain.text", "Choose states to include in your dataset from the list below:");
       verifyRadioButtonAndLabel("Place", "All States");
-      const states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"];
+      const states = [
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
+        "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
+        "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana",
+        "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina",
+        "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+        "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
+        "Wisconsin", "Wyoming"
+      ];
       states.forEach(state => verifyCheckboxAndLabel("Place", state));
 
       cy.get("[data-testid^='dropdown-Place-toggle']").click();

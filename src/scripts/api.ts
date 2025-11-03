@@ -122,7 +122,7 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
 };
 
 export const getAllAttrs = (selectedOptions: IStateOptions) => {
-  const {geographicLevel, states, cropUnits, livestockUnits, years, ...subOptions} = selectedOptions;
+  const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
   const allAttrs: Array<Attribute> = [{"name": "Year"}, {"name": geographicLevel}, {"name": `${geographicLevel} Boundary`}];
 
   for (const key in subOptions) {
@@ -158,7 +158,7 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
           const codapColumnUnit = attrToCODAPColumnName[attr].unitInCodapTable;
           allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         });
-      } else if (typeof short_desc === "object" && livestockUnits && livestockUnits.length && livestockOptions.options.includes(attribute)) {
+      } else if (typeof short_desc === "object" && livestockOptions.options.includes(attribute)) {
         // Special case for Chickens: create separate Broilers and Layers inventory columns
         if (attribute === "Chickens") {
           const broilersArray = (short_desc as ILivestockDataItem)["Inventory, Broilers"];
@@ -178,16 +178,14 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
             allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
           }
         } else {
-          // Standard livestock handling
-          livestockUnits.forEach((livestockUnit) => {
-            const livestockArray = (short_desc as ILivestockDataItem)[livestockUnit as keyof ILivestockDataItem];
-            if (livestockArray && livestockArray.length > 0) {
-              const attr = livestockArray[0];
-              const codapColumnName = attrToCODAPColumnName[attr].attributeNameInCodapTable;
-              const codapColumnUnit = attrToCODAPColumnName[attr].unitInCodapTable;
-              allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
-            }
-          });
+          // Standard livestock handling (Cattle, Hogs, etc.) - all use "Inventory"
+          const livestockArray = (short_desc as ILivestockDataItem).Inventory;
+          if (livestockArray && livestockArray.length > 0) {
+            const attr = livestockArray[0];
+            const codapColumnName = attrToCODAPColumnName[attr].attributeNameInCodapTable;
+            const codapColumnUnit = attrToCODAPColumnName[attr].unitInCodapTable;
+            allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
+          }
         }
       }
     }
@@ -418,7 +416,7 @@ const processAttributeData = async (props: IProcessAttributeData) => {
 };
 
 const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
-  const {geographicLevel, states, years, cropUnits, livestockUnits, ...subOptions} = selectedOptions;
+  const {geographicLevel, states, years, cropUnits, ...subOptions} = selectedOptions;
   const items: any = [];
   const stateArray = states[0] === "All States" ? fiftyStates : states;
 
@@ -455,12 +453,9 @@ const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCoun
         // Special case for Chickens: always fetch both Broilers and Layers
         await processAttributeData({attribute, items, geographicLevel, years, cropUnit: "Inventory, Broilers", selectedOptions, setReqCount, stateArray});
         await processAttributeData({attribute, items, geographicLevel, years, cropUnit: "Inventory, Layers", selectedOptions, setReqCount, stateArray});
-      } else if (isLivestockAttribute && livestockUnits && livestockUnits.length > 1) {
-        for (const livestockUnit of livestockUnits) {
-          await processAttributeData({attribute, items, geographicLevel, years, cropUnit: livestockUnit, selectedOptions, setReqCount, stateArray});
-        }
-      } else if (isLivestockAttribute && livestockUnits && livestockUnits.length === 1) {
-        await processAttributeData({attribute, items, geographicLevel, years, cropUnit: livestockUnits[0], selectedOptions, setReqCount, stateArray});
+      } else if (isLivestockAttribute) {
+        // For non-chicken livestock, use "Inventory" as the default unit
+        await processAttributeData({attribute, items, geographicLevel, years, cropUnit: "Inventory", selectedOptions, setReqCount, stateArray});
       } else {
         await processAttributeData({attribute, items, geographicLevel, years, cropUnit: "", selectedOptions, setReqCount, stateArray});
       }
