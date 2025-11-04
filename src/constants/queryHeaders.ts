@@ -5,6 +5,8 @@ for (let year = 2024; year >= 1910; year--) {
   allYears.push(`${year}`);
 }
 
+// The USDA Census of Agriculture occurs once every five years. These census years
+// are used exclusively by some of the attributes below.
 const censusYears = ["1997", "2002", "2007", "2012", "2017", "2022"];
 
 const yearsFrom = (startYear: number) => allYears.filter(y => Number(y) >= startYear);
