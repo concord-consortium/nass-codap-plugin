@@ -61,8 +61,9 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     categoryData: ILivestockCategory,
     fallback: ICropCategory | ILivestockCategory | string
   ) => {
-    const livestockBaseCategory = units.split(",")[0].trim();
-    if (livestockBaseCategory === "Inventory" && "Inventory" in categoryData) {
+    // All livestock units ("Inventory", "Inventory, Broilers", "Inventory, Layers") 
+    // use the base "Inventory" category for statisticcat_desc lookup.
+    if ("Inventory" in categoryData) {
       return categoryData.Inventory;
     }
     return Array.isArray(fallback) ? fallback[0] : fallback;

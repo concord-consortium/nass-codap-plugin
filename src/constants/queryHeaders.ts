@@ -14,9 +14,9 @@ const yearsUpTo = (endYear: number) => allYears.filter(y => Number(y) <= endYear
 const yearsBetween = (startYear: number, endYear: number) => 
   allYears.filter(y => Number(y) >= startYear && Number(y) <= endYear);
 
-const censusYearsFrom = (startYear: string) => {
+const censusYearsFrom = (startYear: (typeof censusYears)[number]) => {
   const index = censusYears.indexOf(startYear);
-  return index >= 0 ? censusYears.slice(index) : censusYears;
+  return censusYears.slice(index);
 };
 
 const sharedDemographicHeaders = {
