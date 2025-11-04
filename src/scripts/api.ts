@@ -56,11 +56,7 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     short_desc,
   } = queryParams;
 
-  const getLivestockCategoryValue = (
-    units: string,
-    categoryData: ILivestockCategory,
-    fallback: ICropCategory | ILivestockCategory | string
-  ) => {
+  const getLivestockCategoryValue = (categoryData: ILivestockCategory, fallback: ICropCategory | ILivestockCategory | string) => {
     // All livestock units ("Inventory", "Inventory, Broilers", "Inventory, Layers") 
     // use the base "Inventory" category for statisticcat_desc lookup.
     if ("Inventory" in categoryData) {
@@ -78,8 +74,10 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
   const cat = cropUnits && isCropCategory(queryParams?.statisticcat_desc)
     ? queryParams.statisticcat_desc[cropUnits]
     : livestockUnits && isLivestockCategory(queryParams?.statisticcat_desc)
-      ? getLivestockCategoryValue(livestockUnits, queryParams.statisticcat_desc, statisticcat_desc)
-      : Array.isArray(statisticcat_desc) ? statisticcat_desc[0] : statisticcat_desc;
+      ? getLivestockCategoryValue(queryParams.statisticcat_desc, statisticcat_desc)
+      : Array.isArray(statisticcat_desc)
+        ? statisticcat_desc[0]
+        : statisticcat_desc;
 
   let req = "";
   if (attribute === "Total Farmers" && years.every(year => parseInt(year, 10) < 2017)) {
@@ -106,11 +104,9 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     req = req + `&year=${year}`;
   });
 
-  const itemArray = Array.isArray(item) ? item : [item];
+  const itemArray = Array.isArray(item) ? item : (item ? [item] : []);
   itemArray.forEach(subItem => {
-    if (subItem) {
-      req = req + `&short_desc=${encodeURIComponent(subItem)}`;
-    }
+    req = req + `&short_desc=${encodeURIComponent(subItem)}`;
   });
 
   if (geographicLevel === "REGION : MULTI-STATE") {
