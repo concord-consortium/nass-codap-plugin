@@ -234,15 +234,16 @@ const makeCODAPAttributeDef = (attr: Attribute, geoLevel: GeographicLevel) => {
 };
 
 const createStateCollection = async () => {
-  const attrs: Array<Attribute> = [{"name": "State"}];
-  const boundaryDef = makeCODAPAttributeDef({"name": "State Boundary"}, "State");
-  attrs.push(boundaryDef);
+  const attrs: Array<Attribute> = [
+    makeCODAPAttributeDef({"name": "State"}, "State"),
+    makeCODAPAttributeDef({"name": "State Boundary"}, "State")
+  ];
   await createParentCollection(dataSetName, "States", attrs);
 };
 
 const createCountyCollection = async () => {
   const attrs: Array<Attribute> = [
-    {"name": "County"},
+    makeCODAPAttributeDef({"name": "County"}, "County"),
     makeCODAPAttributeDef({"name": "County Boundary"}, "County")
   ];
   await createChildCollection(dataSetName, "Counties", "States", attrs);
