@@ -248,25 +248,25 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "5,000 Acres or More",
     "unitInCodapTable": "# of Farms"
   },
-  "CATTLE, CALVES - INVENTORY": {
+  "CATTLE, INCL CALVES - INVENTORY": {
     "attributeNameInCodapTable": "Cattle, Calves",
-    "unitInCodapTable": "Count"
+    "unitInCodapTable": "Head"
   },
   "CHICKENS, BROILERS - INVENTORY": {
     "attributeNameInCodapTable": "Chickens, Broilers",
-    "unitInCodapTable": "Count"
+    "unitInCodapTable": "Head"
   },
   "CHICKENS, LAYERS - INVENTORY": {
     "attributeNameInCodapTable": "Chickens, Layers",
-    "unitInCodapTable": "Count"
+    "unitInCodapTable": "Head"
   },
   "HOGS - INVENTORY": {
     "attributeNameInCodapTable": "Hogs",
-    "unitInCodapTable": "Count"
+    "unitInCodapTable": "Head"
   },
   "EQUINE, HORSES & PONIES - INVENTORY": {
     "attributeNameInCodapTable": "Horses & Ponies",
-    "unitInCodapTable": "Count"
+    "unitInCodapTable": "Head"
   }
 };
 

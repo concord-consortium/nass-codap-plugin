@@ -369,7 +369,7 @@ export const queryData: Array<IQueryHeaders> = [
         ["Inventory"]: "Inventory"
       },
       short_desc: {
-        ["Inventory"]: ["CATTLE, CALVES - INVENTORY"]
+        ["Inventory"]: ["CATTLE, INCL CALVES - INVENTORY"]
       },
       years: {
         "County": yearsFrom(1920),
