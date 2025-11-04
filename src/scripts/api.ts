@@ -104,6 +104,17 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     req = req + `&year=${year}`;
   });
 
+  states.forEach((state) => {
+    if (geographicLevel === "REGION : MULTI-STATE") {
+      if (state !== "Alaska") {
+        const region = multiRegions.find((r) => r.States.includes(state));
+        req = req + `&region_desc=${encodeURIComponent(region?.Region as string)}`;
+      }
+    } else {
+      req = req + `&state_name=${encodeURIComponent(state)}`;
+    }
+  });
+
   const itemArray = Array.isArray(item) ? item : (item ? [item] : []);
   itemArray.forEach(subItem => {
     req = req + `&short_desc=${encodeURIComponent(subItem)}`;
