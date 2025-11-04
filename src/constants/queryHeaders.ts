@@ -244,8 +244,8 @@ export const queryData: Array<IQueryHeaders> = [
       ["Yield"]: "Yield"
     },
     short_desc: {
-      ["Area Harvested"]: ["COTTON - ACRES HARVESTED"],
-      ["Yield"]: ["COTTON - YIELD, MEASURED IN LB / ACRE"]
+      ["Area Harvested"]: ["COTTON, UPLAND - ACRES HARVESTED"],
+      ["Yield"]: ["COTTON, UPLAND - YIELD, MEASURED IN LB / ACRE"]
     },
     years: {
       "County": yearsUpTo(2022),

@@ -140,11 +140,11 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Corn Area Harvested",
     "unitInCodapTable": "Acres Harvested"
   },
-  "COTTON - YIELD, MEASURED IN LB / ACRE": {
+  "COTTON, UPLAND - YIELD, MEASURED IN LB / ACRE": {
     "attributeNameInCodapTable": "Cotton Yield",
     "unitInCodapTable": "LB/Acre"
   },
-  "COTTON - ACRES HARVESTED": {
+  "COTTON, UPLAND - ACRES HARVESTED": {
     "attributeNameInCodapTable": "Cotton Area Harvested",
     "unitInCodapTable": "Acres Harvested"
   },
