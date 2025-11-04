@@ -7,7 +7,9 @@ import {
   createItems,
   createTable,
 } from "@concord-consortium/codap-plugin-api";
-import { Attribute, GeographicLevel, ICropCategory, ICropDataItem, ILivestockCategory, ILivestockDataItem, ISetReqCount, IStateOptions } from "../constants/types";
+import { Attribute, GeographicLevel, ICropDataItem, ILivestockCategory, ILivestockDataItem,
+  ISetReqCount, IStateOptions, isCropCategory, isLivestockCategory, isCropDataItem,
+  isLivestockDataItem, ICropCategory, isCropDataItemKey, isLivestockDataItemKey } from "../constants/types";
 import { multiRegions } from "../constants/regionData";
 import { cropOptions, livestockOptions, fiftyStates } from "../constants/constants";
 import { countyData } from "../constants/counties";
@@ -54,20 +56,29 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     short_desc,
   } = queryParams;
 
-  const item = cropUnits
-    ? (queryParams?.short_desc as ICropDataItem)[cropUnits]
-    : livestockUnits
-      ? (queryParams?.short_desc as ILivestockDataItem)[livestockUnits]
+  const getLivestockCategoryValue = (
+    units: string,
+    categoryData: ILivestockCategory,
+    fallback: ICropCategory | ILivestockCategory | string
+  ) => {
+    const livestockBaseCategory = units.split(",")[0].trim();
+    if (livestockBaseCategory === "Inventory" && "Inventory" in categoryData) {
+      return categoryData.Inventory;
+    }
+    return Array.isArray(fallback) ? fallback[0] : fallback;
+  };
+
+  const item = cropUnits && isCropDataItem(queryParams?.short_desc)
+    ? queryParams.short_desc[cropUnits]
+    : livestockUnits && isLivestockDataItem(queryParams?.short_desc)
+      ? queryParams.short_desc[livestockUnits]
       : short_desc as string[];
 
-  // For livestock, extract the base category (e.g., "Inventory" from "Inventory, Broilers")
-  const livestockBaseCategory = livestockUnits ? livestockUnits.split(",")[0].trim() as keyof ILivestockCategory : undefined;
-  
-  const cat = cropUnits
-    ? (queryParams?.statisticcat_desc as ICropCategory)[cropUnits]
-    : livestockBaseCategory
-      ? (queryParams?.statisticcat_desc as ILivestockCategory)[livestockBaseCategory]
-      : statisticcat_desc;
+  const cat = cropUnits && isCropCategory(queryParams?.statisticcat_desc)
+    ? queryParams.statisticcat_desc[cropUnits]
+    : livestockUnits && isLivestockCategory(queryParams?.statisticcat_desc)
+      ? getLivestockCategoryValue(livestockUnits, queryParams.statisticcat_desc, statisticcat_desc)
+      : Array.isArray(statisticcat_desc) ? statisticcat_desc[0] : statisticcat_desc;
 
   let req = "";
   if (attribute === "Total Farmers" && years.every(year => parseInt(year, 10) < 2017)) {
@@ -85,7 +96,7 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     `sect_desc=${encodeURIComponent(sect_desc)}` +
     `&group_desc=${encodeURIComponent(group_desc)}` +
     `&commodity_desc=${encodeURIComponent(commodity_desc)}` +
-    `&statisticcat_desc=${encodeURIComponent(cat as string)}` +
+    `&statisticcat_desc=${encodeURIComponent(cat)}` +
     `&domain_desc=${encodeURIComponent(domain_desc)}` +
     `&agg_level_desc=${encodeURIComponent(geographicLevel)}`;
   }
@@ -93,19 +104,6 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
   years.forEach((year) => {
     req = req + `&year=${year}`;
   });
-
-  if (geographicLevel !== "National") {
-    states.forEach((state) => {
-      if (geographicLevel === "REGION : MULTI-STATE") {
-        if (state !== "Alaska") {
-          const region = multiRegions.find((r) => r.States.includes(state));
-          req = req + `&region_desc=${encodeURIComponent(region?.Region as string)}`;
-        }
-      } else {
-        req = req + `&state_name=${encodeURIComponent(state)}`;
-      }
-    });
-  }
 
   const itemArray = Array.isArray(item) ? item : [item];
   itemArray.forEach(subItem => {
@@ -151,18 +149,18 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
           const codapColumnUnit = attrToCODAPColumnName[desc].unitInCodapTable;
           allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         }
-      } else if (typeof short_desc === "object" && cropUnits.length && cropOptions.options.includes(attribute)) {
+      } else if (isCropDataItem(short_desc) && cropUnits.length && cropOptions.options.includes(attribute)) {
         cropUnits.forEach((cropUnit) => {
-          const attr = (short_desc as ICropDataItem)[cropUnit as keyof ICropDataItem][0];
+          const attr = short_desc[cropUnit as keyof ICropDataItem][0];
           const codapColumnName = attrToCODAPColumnName[attr].attributeNameInCodapTable;
           const codapColumnUnit = attrToCODAPColumnName[attr].unitInCodapTable;
           allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         });
-      } else if (typeof short_desc === "object" && livestockOptions.options.includes(attribute)) {
+      } else if (isLivestockDataItem(short_desc) && livestockOptions.options.includes(attribute)) {
         // Special case for Chickens: create separate Broilers and Layers inventory columns
         if (attribute === "Chickens") {
-          const broilersArray = (short_desc as ILivestockDataItem)["Inventory, Broilers"];
-          const layersArray = (short_desc as ILivestockDataItem)["Inventory, Layers"];
+          const broilersArray = short_desc["Inventory, Broilers"];
+          const layersArray = short_desc["Inventory, Layers"];
           
           if (broilersArray && broilersArray.length > 0) {
             const broilersAttr = broilersArray[0];
@@ -179,7 +177,7 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
           }
         } else {
           // Standard livestock handling (Cattle, Hogs, etc.) - all use "Inventory"
-          const livestockArray = (short_desc as ILivestockDataItem).Inventory;
+          const livestockArray = short_desc.Inventory;
           if (livestockArray && livestockArray.length > 0) {
             const attr = livestockArray[0];
             const codapColumnName = attrToCODAPColumnName[attr].attributeNameInCodapTable;
@@ -273,22 +271,22 @@ interface IPrepareQueryAndFetchData {
   queryParams: any,
   attribute: string,
   stateArray: string[],
-  cropUnit?: string,
+  unit?: string,
   selectedOptions: IStateOptions,
   setReqCount: ISetReqCount
 }
 
 const prepareQueryAndFetchData = async (props: IPrepareQueryAndFetchData) => {
-  const {isMultiStateRegion, years, geographicLevel, queryParams, stateArray, attribute, cropUnit, selectedOptions, setReqCount} = props;
+  const {isMultiStateRegion, years, geographicLevel, queryParams, stateArray, attribute, unit, selectedOptions, setReqCount} = props;
   const geoLevel = isMultiStateRegion ? "REGION : MULTI-STATE" : geographicLevel;
   const yearsAvailable = years.filter(year => queryParams?.years[geographicLevel].includes(year));
   if (yearsAvailable.length) {
     const params: IGetAttrDataParams = {attribute, geographicLevel: geoLevel, years: yearsAvailable, states: stateArray};
-    if (cropOptions.options.includes(attribute) && cropUnit) {
-      params.cropUnits = cropUnit as keyof ICropDataItem;
+    if (cropOptions.options.includes(attribute) && unit && isCropDataItemKey(unit)) {
+      params.cropUnits = unit;
     }
-    if (livestockOptions.options.includes(attribute) && cropUnit) {
-      params.livestockUnits = cropUnit as keyof ILivestockDataItem;
+    if (livestockOptions.options.includes(attribute) && unit && isLivestockDataItemKey(unit)) {
+      params.livestockUnits = unit;
     }
     const data = await getAttrData(params, selectedOptions, setReqCount);
     return data;
@@ -333,17 +331,17 @@ interface IProcessAttributeData {
   items: any,
   geographicLevel: GeographicLevel,
   years: string[],
-  cropUnit: string,
+  unit: string,
   selectedOptions: IStateOptions,
   setReqCount: ISetReqCount,
   stateArray: string[]
 }
 
 const processAttributeData = async (props: IProcessAttributeData) => {
-  const {attribute, items, geographicLevel, years, cropUnit, selectedOptions, setReqCount, stateArray} = props;
+  const {attribute, items, geographicLevel, years, unit, selectedOptions, setReqCount, stateArray} = props;
   const queryParams = getQueryParams(attribute);
   const isMultiStateRegion = queryParams?.geographicAreas[0] === "REGION : MULTI-STATE";
-  const data = await prepareQueryAndFetchData({isMultiStateRegion, years, geographicLevel, queryParams, attribute, stateArray, cropUnit, selectedOptions, setReqCount});
+  const data = await prepareQueryAndFetchData({isMultiStateRegion, years, geographicLevel, queryParams, attribute, stateArray, unit, selectedOptions, setReqCount});
 
   // there might be no data returned for the year/attribute/geoLevel combination, in which case we return items unchanged
   if (data) {
@@ -444,20 +442,20 @@ const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCoun
       const isLivestockAttribute = livestockOptions.options.includes(attribute);
       
       if (isCropAttribute && cropUnits.length > 1) {
-        for (const cropUnit of cropUnits) {
-          await processAttributeData({attribute, items, geographicLevel, years, cropUnit, selectedOptions, setReqCount, stateArray});
+        for (const unit of cropUnits) {
+          await processAttributeData({attribute, items, geographicLevel, years, unit, selectedOptions, setReqCount, stateArray});
         }
       } else if (isCropAttribute && cropUnits.length === 1) {
-        await processAttributeData({attribute, items, geographicLevel, years, cropUnit: cropUnits[0], selectedOptions, setReqCount, stateArray});
+        await processAttributeData({attribute, items, geographicLevel, years, unit: cropUnits[0], selectedOptions, setReqCount, stateArray});
       } else if (isLivestockAttribute && attribute === "Chickens") {
         // Special case for Chickens: always fetch both Broilers and Layers
-        await processAttributeData({attribute, items, geographicLevel, years, cropUnit: "Inventory, Broilers", selectedOptions, setReqCount, stateArray});
-        await processAttributeData({attribute, items, geographicLevel, years, cropUnit: "Inventory, Layers", selectedOptions, setReqCount, stateArray});
+        await processAttributeData({attribute, items, geographicLevel, years, unit: "Inventory, Broilers", selectedOptions, setReqCount, stateArray});
+        await processAttributeData({attribute, items, geographicLevel, years, unit: "Inventory, Layers", selectedOptions, setReqCount, stateArray});
       } else if (isLivestockAttribute) {
         // For non-chicken livestock, use "Inventory" as the default unit
-        await processAttributeData({attribute, items, geographicLevel, years, cropUnit: "Inventory", selectedOptions, setReqCount, stateArray});
+        await processAttributeData({attribute, items, geographicLevel, years, unit: "Inventory", selectedOptions, setReqCount, stateArray});
       } else {
-        await processAttributeData({attribute, items, geographicLevel, years, cropUnit: "", selectedOptions, setReqCount, stateArray});
+        await processAttributeData({attribute, items, geographicLevel, years, unit: "", selectedOptions, setReqCount, stateArray});
       }
     }
   }
