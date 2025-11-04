@@ -62,15 +62,20 @@ button:focus {
 }
 
 .summary {
+  align-items: baseline;
+  display: flex;
   flex-basis: 56px;
   flex-grow: 0;
   flex-shrink: 0;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  padding: 6px 0;
+
   .status {
-    display: flex;
     align-items: center;
+    display: flex;
+    flex: 1 1 100%;
     gap: 10px;
   }
 }
@@ -83,7 +88,6 @@ button:focus {
 }
 
 button {
-  margin: 6px;
   padding: 6px;
   border-radius: 3px;
   border: solid 1px $teal-light;
