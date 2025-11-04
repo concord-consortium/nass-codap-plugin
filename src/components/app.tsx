@@ -8,7 +8,7 @@ import { attributeOptions, categories, defaultSelectedOptions, fiftyStates } fro
 import { countyData } from "../constants/counties";
 import { IStateOptions } from "../constants/types";
 import { createTableFromSelections } from "../scripts/api";
-import { flatten } from "../scripts/utils";
+import { flatten, isDefaultSelection } from "../scripts/utils";
 import { queryData } from "../constants/queryHeaders";
 import { strings } from "../constants/strings";
 import ProgressIndicator from "../assets/progress-indicator.svg";
@@ -27,6 +27,7 @@ const iFrameDescriptor ={
 function App() {
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const [selectedOptions, setSelectedOptions] = useState<IStateOptions>(defaultSelectedOptions);
+  const [clearDataSelectionDisabled, setClearDataSelectionDisabled] = useState<boolean>(true);
   const [getDataDisabled, setGetDataDisabled] = useState<boolean>(true);
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [statusGraphic, setStatusGraphic] = useState<React.ReactElement>();
@@ -69,6 +70,11 @@ function App() {
     }
   }, [reqCount]);
 
+  useEffect(() => {
+    const isDefault = isDefaultSelection(selectedOptions, defaultSelectedOptions);
+    setClearDataSelectionDisabled(isDefault);
+  }, [selectedOptions]);
+
   const handleSetSelectedOptions = (newState: Partial<IStateOptions>) => {
     const newSelectedOptions = {...selectedOptions, ...newState};
     setSelectedOptions(newSelectedOptions);
@@ -102,6 +108,10 @@ function App() {
     } else {
       return states.length * years.length;
     }
+  };
+
+  const handleClearDataSelection = () => {
+    setSelectedOptions(defaultSelectedOptions);
   };
 
   const handleGetData = async () => {
@@ -179,13 +189,26 @@ function App() {
         })}
       </div>
       <div className={css.summary}>
+        <button
+          className={css.clearButton}
+          data-testid="clear-data-selection-button"
+          disabled={clearDataSelectionDisabled}
+          onClick={handleClearDataSelection}
+        >
+          {strings.clearDataSelection}
+        </button>
+        <button
+          className={css.getDataButton}
+          data-testid="get-data-button"
+          disabled={getDataDisabled}
+          onClick={handleGetData}
+        >
+          {strings.getData}
+        </button>
         <div className={css.status}>
           <div>{statusGraphic}</div>
           <div>{statusMessage}</div>
         </div>
-        <button className={css.getDataButton} disabled={getDataDisabled} onClick={handleGetData}>
-          {strings.getData}
-        </button>
       </div>
       { showWarning &&
         <Warning

@@ -13,6 +13,15 @@ context("Test the overall app", () => {
     cy.get(`[data-testid^='dropdown-${sectionName}-body'] label[for='${value}']`).should("contain.text", value);
   };
 
+  const makeMinimalSelection = () => {
+    cy.get("[data-testid^='dropdown-Attributes-toggle']").click();
+    cy.get("[data-testid^='dropdown-Attributes-body'] input[type='checkbox'][value='Corn']").check();
+    cy.get("[data-testid^='dropdown-Attributes-toggle']").click();
+    cy.get("[data-testid^='dropdown-Years-toggle']").click();
+    cy.get("[data-testid^='dropdown-Years-body'] input[type='checkbox'][value='2023']").check();
+    cy.get("[data-testid^='dropdown-Years-toggle']").click();
+  };
+
   describe("App loads properly", () => {
     it("renders with descriptive text", () => {
       cy.get(".app-sectionHeaderText").should("have.text", "Retrieve data on U.S. agricultural statistics at the state or county level.");
@@ -40,8 +49,9 @@ context("Test the overall app", () => {
       cy.get("[data-testid^='dropdown-Years-body']").should("not.be.visible");
     });
 
-    it("renders with a 'Get Data' button", () => {
-      cy.get("button").contains("Get Data");
+    it("renders with a 'Get Data' and a 'Clear Data Selection' buttons", () => {
+      cy.get("[data-testid='get-data-button']").should("be.visible").contains("Get Data");
+      cy.get("[data-testid='clear-data-selection-button']").should("be.visible").contains("Clear Data Selection");
     });
   });
 
@@ -112,6 +122,37 @@ context("Test the overall app", () => {
       cy.get("[data-testid^='dropdown-Years-body']").should("contain.text", "Please select attributes to see available years.");
       cy.get("[data-testid^='dropdown-Years-toggle']").click();
       cy.get("[data-testid^='dropdown-Years-body']").should("not.be.visible");
+    });
+  });
+
+  describe("Buttons functionality", () => {
+    it("initially renders both buttons as disabled before selections are made", () => {
+      cy.get("[data-testid='get-data-button']").should("be.disabled");
+      cy.get("[data-testid='clear-data-selection-button']").should("be.disabled");
+    });
+    
+    it("enables buttons when selections are made", () => {
+      makeMinimalSelection();
+      cy.get("[data-testid='get-data-button']").should("not.be.disabled");
+      cy.get("[data-testid='clear-data-selection-button']").should("not.be.disabled");
+    });
+
+    it("clears all selections and disables both buttons when 'Clear Data Selection' is clicked", () => {
+      cy.get("[data-testid^='dropdown-Place-toggle']").click();
+      cy.get("[data-testid^='dropdown-Place-body'] input[type='checkbox'][value='Texas']").check();
+      cy.get("[data-testid^='dropdown-Attributes-toggle']").click();
+      cy.get("[data-testid^='dropdown-Attributes-body'] input[type='checkbox'][value='Corn']").check();
+      cy.get("[data-testid^='dropdown-Attributes-body'] input[type='checkbox'][value='Cattle']").check();
+
+      cy.get("[data-testid^='dropdown-Place-body'] input[type='checkbox'][value='Texas']").should("be.checked");
+      cy.get("[data-testid^='dropdown-Attributes-body'] input[type='checkbox'][value='Corn']").should("be.checked");
+      cy.get("[data-testid^='dropdown-Attributes-body'] input[type='checkbox'][value='Cattle']").should("be.checked");
+
+      cy.get("[data-testid='clear-data-selection-button']").click();
+      cy.get("[data-testid^='dropdown-Place-body'] input[type='checkbox'][value='Texas']").should("not.be.checked");
+      cy.get("[data-testid^='dropdown-Attributes-body'] input[type='checkbox'][value='Corn']").should("not.be.checked");
+      cy.get("[data-testid^='dropdown-Attributes-body'] input[type='checkbox'][value='Cattle']").should("not.be.checked");
+      cy.get("[data-testid='clear-data-selection-button']").should("be.disabled");
     });
   });
 });
