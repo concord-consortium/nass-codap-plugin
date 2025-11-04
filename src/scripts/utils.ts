@@ -16,8 +16,14 @@ export const isDefaultSelection = (selectedOptions: IStateOptions, defaultOption
     const defaultVal = defaultOptions[key as keyof IStateOptions];
 
     if (Array.isArray(selected) && Array.isArray(defaultVal)) {
-      return selected.length === defaultVal.length && 
-             selected.every((item, index) => item === defaultVal[index]);
+      if (selected.length !== defaultVal.length) {
+        return false;
+      }
+
+      // Sort both arrays to compare regardless of order
+      const sortedSelected = [...selected].sort();
+      const sortedDefault = [...defaultVal].sort();
+      return sortedSelected.every((item, index) => item === sortedDefault[index]);
     }
 
     return selected === defaultVal;

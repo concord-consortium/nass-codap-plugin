@@ -168,5 +168,49 @@ describe("utils", () => {
 
       expect(isDefaultSelection(selectedOptions, modifiedDefaults)).toBe(false);
     });
+
+    it("should return true when arrays have same elements in different order", () => {
+      const defaultsWithOrder: IStateOptions = {
+        ...defaultOptions,
+        crops: ["Corn", "Wheat", "Soybeans"],
+        years: ["2023", "2022", "2021"]
+      };
+
+      const selectedWithDifferentOrder: IStateOptions = {
+        ...defaultOptions,
+        crops: ["Wheat", "Soybeans", "Corn"],
+        years: ["2021", "2023", "2022"]
+      };
+
+      expect(isDefaultSelection(selectedWithDifferentOrder, defaultsWithOrder)).toBe(true);
+    });
+
+    it("should return false when arrays have different elements despite same length", () => {
+      const defaultsWithItems: IStateOptions = {
+        ...defaultOptions,
+        livestock: ["Cattle", "Chickens", "Horses & Ponies"]
+      };
+
+      const selectedWithDifferentItems: IStateOptions = {
+        ...defaultOptions,
+        livestock: ["Cattle", "Hogs", "Horses & Ponies"]
+      };
+
+      expect(isDefaultSelection(selectedWithDifferentItems, defaultsWithItems)).toBe(false);
+    });
+
+    it("should handle mixed types in arrays when comparing order-independently", () => {
+      const defaultsWithMixed: IStateOptions = {
+        ...defaultOptions,
+        states: ["California", "Texas", "New York"]
+      };
+
+      const selectedWithMixedOrder: IStateOptions = {
+        ...defaultOptions,
+        states: ["New York", "California", "Texas"]
+      };
+
+      expect(isDefaultSelection(selectedWithMixedOrder, defaultsWithMixed)).toBe(true);
+    });
   });
 });
