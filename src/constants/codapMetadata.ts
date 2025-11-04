@@ -140,6 +140,10 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Corn Area Harvested",
     "unitInCodapTable": "Acres Harvested"
   },
+  "CORN, GRAIN - PRODUCTION, MEASURED IN BU": {
+    "attributeNameInCodapTable": "Corn Production",
+    "unitInCodapTable": "BU"
+  },
   "COTTON - YIELD, MEASURED IN LB / ACRE": {
     "attributeNameInCodapTable": "Cotton Yield",
     "unitInCodapTable": "LB/Acre"
@@ -147,6 +151,10 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
   "COTTON - ACRES HARVESTED": {
     "attributeNameInCodapTable": "Cotton Area Harvested",
     "unitInCodapTable": "Acres Harvested"
+  },
+  "COTTON - PRODUCTION, MEASURED IN 480 LB BALES": {
+    "attributeNameInCodapTable": "Cotton Production",
+    "unitInCodapTable": "480 LB Bales"
   },
   "GRAPES - YIELD, MEASURED IN TONS / ACRE": {
     "attributeNameInCodapTable": "Grapes Yield",
@@ -156,6 +164,10 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Grapes Area Harvested",
     "unitInCodapTable": "Acres Harvested"
   },
+  "GRAPES - PRODUCTION, MEASURED IN TONS": {
+    "attributeNameInCodapTable": "Grapes Production",
+    "unitInCodapTable": "Tons"
+  },
   "HAY - YIELD, MEASURED IN TONS / ACRE": {
     "attributeNameInCodapTable": "Hay Yield",
     "unitInCodapTable": "Tons/Acre"
@@ -163,6 +175,10 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
   "HAY - ACRES HARVESTED": {
     "attributeNameInCodapTable": "Hay Area Harvested",
     "unitInCodapTable": "Acres Harvested"
+  },
+  "HAY - PRODUCTION, MEASURED IN TONS": {
+    "attributeNameInCodapTable": "Hay Production",
+    "unitInCodapTable": "Tons"
   },
   "OATS - YIELD, MEASURED IN BU / ACRE": {
     "attributeNameInCodapTable": "Oats Yield",
@@ -172,6 +188,10 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Oats Area Harvested",
     "unitInCodapTable": "Acres Harvested"
   },
+  "OATS - PRODUCTION, MEASURED IN BU": {
+    "attributeNameInCodapTable": "Oats Production",
+    "unitInCodapTable": "BU"
+  },
   "SOYBEANS - YIELD, MEASURED IN BU / ACRE": {
     "attributeNameInCodapTable": "Soybeans Yield",
     "unitInCodapTable": "BU/Acre"
@@ -179,6 +199,10 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
   "SOYBEANS - ACRES HARVESTED": {
     "attributeNameInCodapTable": "Soybeans Area Harvested",
     "unitInCodapTable": "Acres Harvested"
+  },
+  "SOYBEANS - PRODUCTION, MEASURED IN BU": {
+    "attributeNameInCodapTable": "Soybeans Production",
+    "unitInCodapTable": "BU"
   },
   "TOBACCO - YIELD, MEASURED IN LB / ACRE": {
     "attributeNameInCodapTable": "Tobacco Yield",
@@ -188,6 +212,10 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "attributeNameInCodapTable": "Tobacco Area Harvested",
     "unitInCodapTable": "Acres Harvested"
   },
+  "TOBACCO - PRODUCTION, MEASURED IN LB": {
+    "attributeNameInCodapTable": "Tobacco Production",
+    "unitInCodapTable": "LB"
+  },
   "WHEAT - YIELD, MEASURED IN BU / ACRE": {
     "attributeNameInCodapTable": "Wheat Yield",
     "unitInCodapTable": "BU/Acre"
@@ -195,6 +223,10 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
   "WHEAT - ACRES HARVESTED": {
     "attributeNameInCodapTable": "Wheat Area Harvested",
     "unitInCodapTable": "Acres Harvested"
+  },
+  "WHEAT - PRODUCTION, MEASURED IN BU": {
+    "attributeNameInCodapTable": "Wheat Production",
+    "unitInCodapTable": "BU"
   },
   "ECONOMIC CLASS: (1,000 TO 9,999 $)": {
     "attributeNameInCodapTable": "Small Farm ($1,000 - $9,999)",
