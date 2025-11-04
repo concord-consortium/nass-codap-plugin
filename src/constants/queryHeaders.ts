@@ -1,9 +1,23 @@
 import { IQueryHeaders } from "./types";
 
-const allYears = [];
+const allYears: string[] = [];
 for (let year = 2024; year >= 1910; year--) {
   allYears.push(`${year}`);
 }
+
+// The USDA Census of Agriculture occurs once every five years. These census years
+// are used exclusively by some of the attributes below.
+const censusYears = ["1997", "2002", "2007", "2012", "2017", "2022"];
+
+const yearsFrom = (startYear: number) => allYears.filter(y => Number(y) >= startYear);
+const yearsUpTo = (endYear: number) => allYears.filter(y => Number(y) <= endYear);
+const yearsBetween = (startYear: number, endYear: number) => 
+  allYears.filter(y => Number(y) >= startYear && Number(y) <= endYear);
+
+const censusYearsFrom = (startYear: (typeof censusYears)[number]) => {
+  const index = censusYears.indexOf(startYear);
+  return censusYears.slice(index);
+};
 
 const sharedDemographicHeaders = {
   sect_desc: "Demographics",
@@ -33,14 +47,20 @@ const sharedCropHeaders = {
   geographicAreas: ["State", "County"]
 };
 
+const sharedLivestockHeaders = {
+  sect_desc: "Animals & Products",
+  domain_desc: "Total",
+  geographicAreas: ["State", "County"]
+};
+
 export const queryData: Array<IQueryHeaders> = [
   {
       plugInAttribute: "Total Farmers",
       ...sharedDemographicHeaders,
       short_desc: ["PRODUCERS, (ALL) - NUMBER OF PRODUCERS"],
       years: {
-        "County": ["2022", "2017", "2012", "2007", "2002"],
-        "State": ["2022", "2017", "2012", "2007", "2002"]
+        "County": censusYearsFrom("2002"),
+        "State": censusYearsFrom("2002")
       }
   },
   {
@@ -56,8 +76,8 @@ export const queryData: Array<IQueryHeaders> = [
         "PRODUCERS, AGE GE 75 - NUMBER OF PRODUCERS"
       ],
       years: {
-        "County": ["2022", "2017"],
-        "State": ["2022", "2017"]
+        "County": censusYearsFrom("2017"),
+        "State": censusYearsFrom("2017")
       }
 
   },
@@ -69,8 +89,8 @@ export const queryData: Array<IQueryHeaders> = [
         "PRODUCERS, (ALL), MALE - NUMBER OF PRODUCERS"
       ],
       years: {
-        "County": ["2022", "2017"],
-        "State": ["2022", "2017"]
+        "County": censusYearsFrom("2017"),
+        "State": censusYearsFrom("2017")
       }
   },
   {
@@ -86,8 +106,8 @@ export const queryData: Array<IQueryHeaders> = [
         "PRODUCERS, WHITE - NUMBER OF PRODUCERS"
       ],
       years: {
-        "County": ["2022", "2017"],
-        "State": ["2022", "2017"]
+        "County": censusYearsFrom("2017"),
+        "State": censusYearsFrom("2017")
       }
   },
   {
@@ -117,8 +137,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Total",
       geographicAreas: ["State", "County"],
       years: {
-        "County": ["2022", "2017", "2012", "2007", "2002", "1997"],
-        "State": ["2022", "2017", "2012", "2007", "2002", "1997"]
+        "County": censusYears,
+        "State": censusYears
       }
   },
   {
@@ -129,7 +149,7 @@ export const queryData: Array<IQueryHeaders> = [
       geographicAreas: ["State"],
       years: {
         "County": [],
-        "State": allYears.filter(y => Number(y) >= 1987)
+        "State": yearsFrom(1987)
       }
   },
   {
@@ -142,8 +162,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Area Operated",
       geographicAreas: ["State", "County"],
       years: {
-        "County": ["2022", "2017", "2012", "2007", "2002", "1997"],
-        "State": ["2022", "2017", "2012", "2007", "2002", "1997"]
+        "County": censusYears,
+        "State": censusYears
       }
   },
   {
@@ -169,8 +189,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Total",
       geographicAreas: ["State", "County"],
       years: {
-        "County": ["2022", "2017", "2012"],
-        "State": ["2022", "2017", "2012"]
+        "County": censusYearsFrom("2012"),
+        "State": censusYearsFrom("2012")
       }
   },
   {
@@ -181,8 +201,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Total",
       geographicAreas: ["REGION : MULTI-STATE"],
       years: {
-        "County": allYears.filter(y => Number(y) >= 1989),
-        "State": allYears.filter(y => Number(y) >= 1989)
+        "County": yearsFrom(1989),
+        "State": yearsFrom(1989)
       }
   },
   {
@@ -193,8 +213,8 @@ export const queryData: Array<IQueryHeaders> = [
       domain_desc: "Total",
       geographicAreas: ["REGION : MULTI-STATE"],
       years: {
-        "County": allYears.filter(y => Number(y) >= 1989),
-        "State": allYears.filter(y => Number(y) >= 1989)
+        "County": yearsFrom(1989),
+        "State": yearsFrom(1989)
       }
   },
   {
@@ -228,8 +248,8 @@ export const queryData: Array<IQueryHeaders> = [
       ["Yield"]: ["COTTON - YIELD, MEASURED IN LB / ACRE"]
     },
     years: {
-      "County": allYears.filter(y => Number(y) <= 2022),
-      "State": allYears.filter(y => Number(y) <= 2022)
+      "County": yearsUpTo(2022),
+      "State": yearsUpTo(2022)
     },
     ...sharedCropHeaders
   },
@@ -264,7 +284,7 @@ export const queryData: Array<IQueryHeaders> = [
       ["Yield"]: ["HAY - YIELD, MEASURED IN TONS / ACRE"]
     },
     years: {
-      "County": ["2022", "2017", "2012", ...allYears.filter(y => Number(y) <= 2008 && Number(y) >= 1918)],
+      "County": ["2022", "2017", "2012", ...yearsBetween(1918, 2008)],
       "State": allYears
     },
     ...sharedCropHeaders
@@ -336,9 +356,74 @@ export const queryData: Array<IQueryHeaders> = [
       ["Yield"]: ["WHEAT - YIELD, MEASURED IN BU / ACRE"]
     },
     years: {
-      "County": allYears.filter(y => Number(y) <= 2022),
+      "County": yearsUpTo(2022),
       "State": allYears
     },
     ...sharedCropHeaders
+  },
+  {
+      plugInAttribute: "Cattle",
+      group_desc: "Livestock",
+      commodity_desc: "Cattle",
+      statisticcat_desc: {
+        ["Inventory"]: "Inventory"
+      },
+      short_desc: {
+        ["Inventory"]: ["CATTLE, CALVES - INVENTORY"]
+      },
+      years: {
+        "County": yearsFrom(1920),
+        "State": allYears
+      },
+      ...sharedLivestockHeaders
+  },
+  {
+      plugInAttribute: "Chickens",
+      group_desc: "Poultry",
+      commodity_desc: "Chickens",
+      statisticcat_desc: {
+        ["Inventory"]: "Inventory"
+      },
+      short_desc: {
+        ["Inventory, Broilers"]: ["CHICKENS, BROILERS - INVENTORY"],
+        ["Inventory, Layers"]: ["CHICKENS, LAYERS - INVENTORY"]
+      },
+      years: {
+        "County": censusYears,
+        "State": censusYears
+      },
+      ...sharedLivestockHeaders
+  },
+  {
+      plugInAttribute: "Hogs",
+      group_desc: "Livestock",
+      commodity_desc: "Hogs",
+      statisticcat_desc: {
+        ["Inventory"]: "Inventory"
+      },
+      short_desc: {
+        ["Inventory"]: ["HOGS - INVENTORY"]
+      },
+      years: {
+        "County": yearsFrom(1919),
+        "State": allYears
+      },
+      ...sharedLivestockHeaders
+  },
+  {
+      plugInAttribute: "Horses & Ponies",
+      group_desc: "Specialty",
+      commodity_desc: "Equine",
+      statisticcat_desc: {
+        ["Inventory"]: "Inventory"
+      },
+      short_desc: {
+        ["Inventory"]: ["EQUINE, HORSES & PONIES - INVENTORY"]
+      },
+      years: {
+        "County": censusYearsFrom("2002"),
+        "State": censusYears
+      },
+      ...sharedLivestockHeaders
   }
 ];

@@ -33,7 +33,7 @@ function App() {
   const [showWarning, setShowWarning] = useState<boolean>(false);
   const [warningMessage, setWarningMessage] = useState<JSX.Element>(<p/>);
   const [reqCount, setReqCount] = useState({total: 0, completed: 0});
-  const {farmDemographics, farmerDemographics, economicsAndWages, crops} = selectedOptions;
+  const {farmDemographics, farmerDemographics, economicsAndWages, crops, livestock} = selectedOptions;
 
   useEffect(() => {
     const init = async () => {
@@ -54,12 +54,12 @@ function App() {
   }, [selectedOptions]);
 
   useEffect(() => {
-    if (!farmDemographics.length && !farmerDemographics.length && !economicsAndWages.length && !crops.length) {
+    if (!farmDemographics.length && !farmerDemographics.length && !economicsAndWages.length && !crops.length && !livestock.length) {
       setSelectedOptions(prevOptions => {
         return {...prevOptions, years: []};
       });
     }
-  }, [farmerDemographics, farmDemographics, crops, economicsAndWages]);
+  }, [farmerDemographics, farmDemographics, crops, economicsAndWages, livestock]);
 
   useEffect(() => {
     const {total, completed} = reqCount;
