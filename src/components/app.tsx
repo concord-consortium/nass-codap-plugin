@@ -189,10 +189,20 @@ function App() {
         })}
       </div>
       <div className={css.summary}>
-        <button className={css.clearButton} disabled={clearDataSelectionDisabled} onClick={handleClearDataSelection}>
+        <button
+          className={css.clearButton}
+          data-testid="clear-data-selection-button"
+          disabled={clearDataSelectionDisabled}
+          onClick={handleClearDataSelection}
+        >
           {strings.clearDataSelection}
         </button>
-        <button className={css.getDataButton} disabled={getDataDisabled} onClick={handleGetData}>
+        <button
+          className={css.getDataButton}
+          data-testid="get-data-button"
+          disabled={getDataDisabled}
+          onClick={handleGetData}
+        >
           {strings.getData}
         </button>
         <div className={css.status}>
