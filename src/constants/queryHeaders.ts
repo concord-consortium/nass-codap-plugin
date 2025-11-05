@@ -223,10 +223,12 @@ export const queryData: Array<IQueryHeaders> = [
       commodity_desc: "Corn",
       statisticcat_desc: {
         ["Area Harvested"]: "Area Harvested",
+        ["Production"]: "Production",
         ["Yield"]: "Yield"
       },
       short_desc: {
         ["Area Harvested"]: ["CORN, GRAIN - ACRES HARVESTED"],
+        ["Production"]: ["CORN, GRAIN - PRODUCTION, MEASURED IN BU"],
         ["Yield"]: ["CORN, GRAIN - YIELD, MEASURED IN BU / ACRE"]
       },
       years: {
@@ -241,10 +243,12 @@ export const queryData: Array<IQueryHeaders> = [
     commodity_desc: "Cotton",
     statisticcat_desc: {
       ["Area Harvested"]: "Area Harvested",
+      ["Production"]: "Production",
       ["Yield"]: "Yield"
     },
     short_desc: {
       ["Area Harvested"]: ["COTTON, UPLAND - ACRES HARVESTED"],
+      ["Production"]: ["COTTON, UPLAND - PRODUCTION, MEASURED IN 480 LB BALES"],
       ["Yield"]: ["COTTON, UPLAND - YIELD, MEASURED IN LB / ACRE"]
     },
     years: {
@@ -259,10 +263,12 @@ export const queryData: Array<IQueryHeaders> = [
     commodity_desc: "Grapes",
     statisticcat_desc: {
       ["Area Harvested"]: "Area Bearing",
+      ["Production"]: "Production",
       ["Yield"]: "Yield"
     },
     short_desc: {
       ["Area Harvested"]: ["GRAPES - ACRES BEARING"],
+      ["Production"]: ["GRAPES - PRODUCTION, MEASURED IN TONS"],
       ["Yield"]: ["GRAPES - YIELD, MEASURED IN TONS / ACRE"]
     },
     years: {
@@ -277,10 +283,12 @@ export const queryData: Array<IQueryHeaders> = [
     commodity_desc: "Hay",
     statisticcat_desc: {
       ["Area Harvested"]: "Area Harvested",
+      ["Production"]: "Production",
       ["Yield"]: "Yield"
     },
     short_desc: {
       ["Area Harvested"]: ["HAY - ACRES HARVESTED"],
+      ["Production"]: ["HAY - PRODUCTION, MEASURED IN TONS"],
       ["Yield"]: ["HAY - YIELD, MEASURED IN TONS / ACRE"]
     },
     years: {
@@ -295,10 +303,12 @@ export const queryData: Array<IQueryHeaders> = [
     commodity_desc: "Oats",
     statisticcat_desc: {
       ["Area Harvested"]: "Area Harvested",
+      ["Production"]: "Production",
       ["Yield"]: "Yield"
     },
     short_desc: {
       ["Area Harvested"]: ["OATS - ACRES HARVESTED"],
+      ["Production"]: ["OATS - PRODUCTION, MEASURED IN BU"],
       ["Yield"]: ["OATS - YIELD, MEASURED IN BU / ACRE"]
     },
     years: {
@@ -313,10 +323,12 @@ export const queryData: Array<IQueryHeaders> = [
     commodity_desc: "Soybeans",
     statisticcat_desc: {
       ["Area Harvested"]: "Area Harvested",
+      ["Production"]: "Production",
       ["Yield"]: "Yield"
     },
     short_desc: {
       ["Area Harvested"]: ["SOYBEANS - ACRES HARVESTED"],
+      ["Production"]: ["SOYBEANS - PRODUCTION, MEASURED IN BU"],
       ["Yield"]: ["SOYBEANS - YIELD, MEASURED IN BU / ACRE"]
     },
     years: {
@@ -331,10 +343,12 @@ export const queryData: Array<IQueryHeaders> = [
     commodity_desc: "Tobacco",
     statisticcat_desc: {
       ["Area Harvested"]: "Area Harvested",
+      ["Production"]: "Production",
       ["Yield"]: "Yield"
     },
     short_desc: {
       ["Area Harvested"]: ["TOBACCO - ACRES HARVESTED"],
+      ["Production"]: ["TOBACCO - PRODUCTION, MEASURED IN LB"],
       ["Yield"]: ["TOBACCO - YIELD, MEASURED IN LB / ACRE"]
     },
     years: {
@@ -349,10 +363,12 @@ export const queryData: Array<IQueryHeaders> = [
     commodity_desc: "Wheat",
     statisticcat_desc: {
       ["Area Harvested"]: "Area Harvested",
+      ["Production"]: "Production",
       ["Yield"]: "Yield"
     },
     short_desc: {
       ["Area Harvested"]: ["WHEAT - ACRES HARVESTED"],
+      ["Production"]: ["WHEAT - PRODUCTION, MEASURED IN BU"],
       ["Yield"]: ["WHEAT - YIELD, MEASURED IN BU / ACRE"]
     },
     years: {
