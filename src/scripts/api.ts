@@ -136,6 +136,10 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
   const {geographicLevel, states, cropUnits, years, ...subOptions} = selectedOptions;
   const allAttrs: Array<Attribute> = [{"name": "Year"}, {"name": geographicLevel}, {"name": `${geographicLevel} Boundary`}];
 
+  if (geographicLevel === "County") {
+    allAttrs.push({"name": "Agricultural District"});
+  }
+
   for (const key in subOptions) {
     const selections = subOptions[key as keyof typeof subOptions];
     for (const attribute of selections) {
@@ -381,6 +385,10 @@ const processAttributeData = async (props: IProcessAttributeData) => {
       // find all the data items that match this item's location and year
       const matchingData = findMatchingData({isMultiStateRegion, data, item, geoLevel: geographicLevel});
       if (matchingData.length) {
+        if (geographicLevel === "County" && matchingData[0].asd_desc && !item["Agricultural District"]) {
+          item["Agricultural District"] = matchingData[0].asd_desc;
+        }
+        
         if (isMultiStateRegion) {
             const { Value } = matchingData[0];
             const codapColumnName = attrToCODAPColumnName[matchingData[0].short_desc].attributeNameInCodapTable;
