@@ -21,7 +21,7 @@ const iFrameDescriptor ={
   version: "0.0.1",
   pluginName: "nass-plugin",
   title: "NASS Quickstats Data",
-  dimensions: {width: 300, height: 400},
+  dimensions: {width: 327, height: 400},
 };
 
 function App() {

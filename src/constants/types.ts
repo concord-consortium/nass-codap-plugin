@@ -65,11 +65,13 @@ export interface IResData {
 
 export interface ICropCategory {
   ["Area Harvested"]: string;
+  ["Production"]: string;
   ["Yield"]: string;
 }
 
 export interface ICropDataItem {
   ["Area Harvested"]: string[];
+  ["Production"]: string[];
   ["Yield"]: string[];
 }
 
@@ -165,7 +167,7 @@ export const isLivestockDataItem = (desc: unknown): desc is ILivestockDataItem =
 };
 
 export const isCropDataItemKey = (key: string): key is keyof ICropDataItem => {
-  return key === "Area Harvested" || key === "Yield";
+  return key === "Area Harvested" || key === "Production" || key === "Yield";
 };
 
 export const isLivestockDataItemKey = (key: string): key is keyof ILivestockDataItem => {

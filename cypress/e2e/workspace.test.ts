@@ -103,7 +103,7 @@ context("Test the overall app", () => {
         // Economics & Wages
         "Labor Status", "Wages", "Time Worked",
         // Crop Production - unit
-        "Area Harvested", "Yield",
+        "Area Harvested", "Production", "Yield",
         // Crop Production - crops
         "Corn", "Cotton", "Grapes", "Hay", "Oats", "Soybeans", "Tobacco", "Wheat",
         // Livestock
