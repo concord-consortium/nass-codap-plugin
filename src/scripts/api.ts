@@ -124,6 +124,11 @@ export const createRequest = ({attribute, geographicLevel, years, states, cropUn
     req = req + `&freq_desc=ANNUAL`;
   }
 
+  // For crops, filter to get final annual values
+  if (cropOptions.options.includes(attribute)) {
+    req = req + `&reference_period_desc=YEAR`;
+  }
+
   return req;
 };
 
