@@ -234,15 +234,30 @@ const makeCODAPAttributeDef = (attr: Attribute, geoLevel: GeographicLevel) => {
 };
 
 const createStateCollection = async () => {
-  const attrs: Array<Attribute> = [{"name": "State"}];
-  const boundaryDef = makeCODAPAttributeDef({"name": "State Boundary"}, "State");
-  attrs.push(boundaryDef);
+  const attrs: Array<Attribute> = [
+    makeCODAPAttributeDef({"name": "State"}, "State"),
+    makeCODAPAttributeDef({"name": "State Boundary"}, "State")
+  ];
   await createParentCollection(dataSetName, "States", attrs);
 };
 
-const createSubCollection = async (geoLevel: GeographicLevel, attrs: Array<Attribute>) => {
-  const attrDefs = attrs.map((attr) => makeCODAPAttributeDef(attr, geoLevel));
-  await createChildCollection(dataSetName, "Data", "States", attrDefs);
+const createCountyCollection = async () => {
+  const attrs: Array<Attribute> = [
+    makeCODAPAttributeDef({"name": "County"}, "County"),
+    makeCODAPAttributeDef({"name": "County Boundary"}, "County")
+  ];
+  await createChildCollection(dataSetName, "Counties", "States", attrs);
+};
+
+const createDataCollection = async (geoLevel: GeographicLevel, allAttrs: Array<Attribute>, parentCollection: string) => {
+  const dataAttrs = allAttrs.filter(attr => 
+    attr.name !== "State" && 
+    attr.name !== "State Boundary" && 
+    attr.name !== "County" && 
+    attr.name !== "County Boundary"
+  );
+  const dataAttrDefs = dataAttrs.map((attr) => makeCODAPAttributeDef(attr, geoLevel));
+  await createChildCollection(dataSetName, "Data", parentCollection, dataAttrDefs);
 };
 
 export const createTableFromSelections = async (selectedOptions: IStateOptions, setReqCount: ISetReqCount) => {
@@ -252,15 +267,19 @@ export const createTableFromSelections = async (selectedOptions: IStateOptions, 
     const allAttrs = getAllAttrs(selectedOptions);
     const items = await getItems(selectedOptions, setReqCount);
     await getNewDataContext();
+    
     if (geographicLevel === "County") {
+      // Three-level hierarchy: States > Counties > Data
       await createStateCollection();
-      await createSubCollection(geographicLevel, allAttrs);
+      await createCountyCollection();
+      await createDataCollection(geographicLevel, allAttrs, "Counties");
       await createItems(dataSetName, items);
       await createTable(dataSetName, dataSetName);
       return "success";
     } else {
-      const attrDefinitions = allAttrs.map((attr) => makeCODAPAttributeDef(attr, geographicLevel));
-      await createParentCollection(dataSetName, "Data", attrDefinitions);
+      // Two-level hierarchy: States > Data
+      await createStateCollection();
+      await createDataCollection(geographicLevel, allAttrs, "States");
       await createItems(dataSetName, items);
       await createTable(dataSetName, dataSetName);
       return "success";
