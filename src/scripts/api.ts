@@ -253,7 +253,8 @@ const createStateCollection = async () => {
 const createCountyCollection = async () => {
   const attrs: Array<Attribute> = [
     makeCODAPAttributeDef({"name": "County"}, "County"),
-    makeCODAPAttributeDef({"name": "County Boundary"}, "County")
+    makeCODAPAttributeDef({"name": "County Boundary"}, "County"),
+    makeCODAPAttributeDef({"name": "Agricultural District"}, "County"),
   ];
   await createChildCollection(dataSetName, "Counties", "States", attrs);
 };
@@ -263,7 +264,8 @@ const createDataCollection = async (geoLevel: GeographicLevel, allAttrs: Array<A
     attr.name !== "State" && 
     attr.name !== "State Boundary" && 
     attr.name !== "County" && 
-    attr.name !== "County Boundary"
+    attr.name !== "County Boundary" && 
+    attr.name !== "Agricultural District"
   );
   const dataAttrDefs = dataAttrs.map((attr) => makeCODAPAttributeDef(attr, geoLevel));
   await createChildCollection(dataSetName, "Data", parentCollection, dataAttrDefs);
