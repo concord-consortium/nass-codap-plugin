@@ -520,9 +520,15 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
     reqParams.livestockUnits = livestockUnits;
   }
 
-  if (attribute === "Total Farmers" && years.length > 1 && 
-      years.some(year => parseInt(year, 10) < 2017) && 
-      years.some(year => parseInt(year, 10) >= 2017)) {
+  const {hasPre2017, hasPost2017} = years.reduce((acc, year) => {
+    const y = parseInt(year, 10);
+    return {
+      hasPre2017: acc.hasPre2017 || y < 2017,
+      hasPost2017: acc.hasPost2017 || y >= 2017
+    };
+  }, {hasPre2017: false, hasPost2017: false});
+
+  if (attribute === "Total Farmers" && years.length > 1 && hasPre2017 && hasPost2017) {
     // we need to make two requests -- one for pre-2017 years, and one for 2017+ years
     const pre2017Years = years.filter(year => parseInt(year, 10) < 2017);
     const post2017Years = years.filter(year => parseInt(year, 10) >= 2017);
