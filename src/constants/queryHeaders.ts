@@ -153,7 +153,7 @@ export const queryData: Array<IQueryHeaders> = [
       }
   },
   {
-      plugInAttribute: "Acres Operated",
+      plugInAttribute: "Size",
       sect_desc: "Economics",
       group_desc: "Farms & Land & Assets",
       commodity_desc: "Farm Operations",

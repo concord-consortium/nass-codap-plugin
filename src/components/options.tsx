@@ -59,7 +59,7 @@ export const Options: React.FC<IOptions> = (props) => {
               newSelection[optionKey] = newArray.filter((o) => o !== e.target.value);
             }
           } else if (optionKey === "farmDemographics" && e.target.value === "Total Farms") {
-            const shouldFilter = !includesAny(["Economic Class", "Acres Operated", "Organic", "Organization Type"], "farmDemographics");
+            const shouldFilter = !includesAny(["Economic Class", "Size", "Organic", "Organization Type"], "farmDemographics");
             if (shouldFilter) {
               newSelection[optionKey] = newArray.filter((o) => o !== e.target.value);
             }
