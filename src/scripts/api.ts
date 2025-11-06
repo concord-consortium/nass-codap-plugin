@@ -515,7 +515,7 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
   if (livestockOptions.options.includes(attribute) && livestockUnits) {
     reqParams.livestockUnits = livestockUnits;
   }
-  const req = createRequest(reqParams);
+
   if (attribute === "Total Farmers" && years.length > 1 && 
       years.some(year => parseInt(year, 10) < 2017) && 
       years.some(year => parseInt(year, 10) >= 2017)) {
@@ -533,7 +533,23 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
       console.log(`No data returned for ${attribute} at ${geographicLevel} level in ${years} for ${states}`);
       return undefined;
     }
+  }
+  
+  // For large year ranges, we need to batch requests to avoid API timeouts.
+  const BATCH_SIZE = 5;
+  if (years.length > BATCH_SIZE) {
+    const allData = [];
+    for (let i = 0; i < years.length; i += BATCH_SIZE) {
+      const yearBatch = years.slice(i, i + BATCH_SIZE);
+      const req = createRequest({...reqParams, years: yearBatch});
+      const res = await fetchDataWithRetry(req, setReqCount);
+      if (res?.data) {
+        allData.push(...res.data);
+      }
+    }
+    return allData.length > 0 ? allData : undefined;
   } else {
+    const req = createRequest(reqParams);
     const res = await fetchDataWithRetry(req, setReqCount);
     if (res) {
       return res.data;
