@@ -281,7 +281,7 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "unitInCodapTable": "# of Farms"
   },
   "CATTLE, INCL CALVES - INVENTORY": {
-    "attributeNameInCodapTable": "Cattle, Calves",
+    "attributeNameInCodapTable": "Cattle",
     "unitInCodapTable": "Head"
   },
   "CHICKENS, BROILERS - INVENTORY": {
