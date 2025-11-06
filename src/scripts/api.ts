@@ -394,7 +394,7 @@ const processAttributeData = async (props: IProcessAttributeData) => {
             const codapColumnName = attrToCODAPColumnName[matchingData[0].short_desc].attributeNameInCodapTable;
             item[codapColumnName] = Value;
         } else if (attribute === "Size") {
-          // special case for handling acres operated, where we have to sum up the values of several data items
+          // special case for handling size (acres operated), where we have to sum up the values of several data items
           const acreTotals: IAcreTotals = {
             [strings.oneTo9Acres]: {
               [strings.oneTo9Acres]: 0
