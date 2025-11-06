@@ -538,7 +538,7 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
   // For large year ranges, we need to batch requests to avoid API timeouts.
   const BATCH_SIZE = 5;
   if (years.length > BATCH_SIZE) {
-    const allData = [];
+    const allData: any[] = [];
     for (let i = 0; i < years.length; i += BATCH_SIZE) {
       const yearBatch = years.slice(i, i + BATCH_SIZE);
       const req = createRequest({...reqParams, years: yearBatch});
