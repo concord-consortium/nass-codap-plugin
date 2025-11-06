@@ -311,7 +311,7 @@ export const economicClassAttirbutes = [
   "ECONOMIC CLASS: (1,000,000 OR MORE $)"
 ];
 
-export const acresOperatedAttributes = [
+export const sizeAttributes = [
   "AREA OPERATED: (1.0 TO 9.9 ACRES)",
   "AREA OPERATED: (10.0 TO 49.9 ACRES)",
   "AREA OPERATED: (50.0 TO 100 ACRES)",

@@ -14,7 +14,7 @@ import { multiRegions } from "../constants/regionData";
 import { cropOptions, livestockOptions, fiftyStates } from "../constants/constants";
 import { countyData } from "../constants/counties";
 import { getQueryParams } from "./utils";
-import { acresOperatedAttributes, attrToCODAPColumnName, economicClassAttirbutes } from "../constants/codapMetadata";
+import { sizeAttributes, attrToCODAPColumnName, economicClassAttirbutes } from "../constants/codapMetadata";
 import { strings } from "../constants/strings";
 
 const baseURL = process.env.REACT_APP_NASS_PROXY_URL;
@@ -154,10 +154,10 @@ export const getAllAttrs = (selectedOptions: IStateOptions) => {
           const codapColumnUnit = attrToCODAPColumnName[econAttr].unitInCodapTable;
           allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         }
-      } else if (attribute === "Acres Operated") {
-        for (const acresAttr of acresOperatedAttributes) {
-          const codapColumnName = attrToCODAPColumnName[acresAttr].attributeNameInCodapTable;
-          const codapColumnUnit = attrToCODAPColumnName[acresAttr].unitInCodapTable;
+      } else if (attribute === "Size") {
+        for (const sizeAttr of sizeAttributes) {
+          const codapColumnName = attrToCODAPColumnName[sizeAttr].attributeNameInCodapTable;
+          const codapColumnUnit = attrToCODAPColumnName[sizeAttr].unitInCodapTable;
           allAttrs.push({"name": codapColumnName, "unit": codapColumnUnit});
         }
       } else if (Array.isArray(short_desc)) {
@@ -393,7 +393,7 @@ const processAttributeData = async (props: IProcessAttributeData) => {
             const { Value } = matchingData[0];
             const codapColumnName = attrToCODAPColumnName[matchingData[0].short_desc].attributeNameInCodapTable;
             item[codapColumnName] = Value;
-        } else if (attribute === "Acres Operated") {
+        } else if (attribute === "Size") {
           // special case for handling acres operated, where we have to sum up the values of several data items
           const acreTotals: IAcreTotals = {
             [strings.oneTo9Acres]: {
