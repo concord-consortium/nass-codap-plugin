@@ -25,6 +25,10 @@ if (!baseURL) {
 
 const dataSetName = "NASS Quickstats Data";
 
+// Maximum number of years to request in a single API call.
+// Larger numbers can lead to NASS API timeouts, especially for attributes with many subcategories.
+const MAX_YEARS_PER_REQUEST = 5;
+
 interface IGetAttrDataParams {
   attribute: string,
   geographicLevel: string,
@@ -536,11 +540,10 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
   }
   
   // For large year ranges, we need to batch requests to avoid API timeouts.
-  const BATCH_SIZE = 5;
-  if (years.length > BATCH_SIZE) {
+  if (years.length > MAX_YEARS_PER_REQUEST) {
     const allData: any[] = [];
-    for (let i = 0; i < years.length; i += BATCH_SIZE) {
-      const yearBatch = years.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < years.length; i += MAX_YEARS_PER_REQUEST) {
+      const yearBatch = years.slice(i, i + MAX_YEARS_PER_REQUEST);
       const req = createRequest({...reqParams, years: yearBatch});
       const res = await fetchDataWithRetry(req, setReqCount);
       if (res?.data) {
