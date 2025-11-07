@@ -122,6 +122,18 @@ export const queryData: Array<IQueryHeaders> = [
       }
   },
   {
+    plugInAttribute: "Total Area",
+    ...sharedEconomicHeaders,
+    statisticcat_desc: "Area Operated",
+    short_desc: ["FARM OPERATIONS - ACRES OPERATED"],
+    domain_desc: "Total",
+    geographicAreas: ["State", "County"],
+    years: {
+      "County": censusYears,
+      "State": yearsFrom(1950)
+    }
+  },
+  {
       plugInAttribute: "Organization Type",
       sect_desc: "Demographics",
       group_desc: "Farms & Land & Assets",

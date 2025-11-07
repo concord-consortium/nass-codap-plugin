@@ -80,7 +80,7 @@ const farmerOptions: IAttrOptions = {
 const farmOptions: IAttrOptions = {
   key: "farmDemographics",
   label: "Farm Demographics",
-  options: ["Total Farms", "Organization Type", "Economic Class", "Size", "Organic"],
+  options: ["Total Farms", "Total Area", "Organization Type", "Economic Class", "Size", "Organic"],
   instructions: null
 };
 const economicOptions: IAttrOptions = {
