@@ -99,7 +99,7 @@ context("Test the overall app", () => {
         // Farmer Demographics
         "Total Farmers", "Age", "Race", "Gender",
         // Farm Demographics  
-        "Total Farms", "Organization Type", "Economic Class", "Size", "Organic",
+        "Total Farms", "Total Area", "Organization Type", "Economic Class", "Size", "Organic",
         // Economics & Wages
         "Labor Status", "Wages", "Time Worked",
         // Crop Production - unit

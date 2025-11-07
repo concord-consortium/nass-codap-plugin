@@ -105,8 +105,8 @@ export const attrToCODAPColumnName: IAttrToCodapColumn = {
     "unitInCodapTable": "# of Farms"
   },
   "FARM OPERATIONS - ACRES OPERATED": {
-    "attributeNameInCodapTable": "",
-    "unitInCodapTable": "# of Farms"
+    "attributeNameInCodapTable": "Total Area",
+    "unitInCodapTable": "Acres"
   },
   "FARM OPERATIONS, ORGANIC - NUMBER OF OPERATIONS": {
     "attributeNameInCodapTable": "Organic",
