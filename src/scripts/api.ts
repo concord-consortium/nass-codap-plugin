@@ -25,6 +25,10 @@ if (!baseURL) {
 
 const dataSetName = "NASS Quickstats Data";
 
+// Maximum number of years to request in a single API call.
+// Larger numbers can lead to NASS API timeouts, especially for attributes with many subcategories.
+const MAX_YEARS_PER_REQUEST = 5;
+
 interface IGetAttrDataParams {
   attribute: string,
   geographicLevel: string,
@@ -515,10 +519,16 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
   if (livestockOptions.options.includes(attribute) && livestockUnits) {
     reqParams.livestockUnits = livestockUnits;
   }
-  const req = createRequest(reqParams);
-  if (attribute === "Total Farmers" && years.length > 1 && 
-      years.some(year => parseInt(year, 10) < 2017) && 
-      years.some(year => parseInt(year, 10) >= 2017)) {
+
+  const {hasPre2017, hasPost2017} = years.reduce((acc, year) => {
+    const y = parseInt(year, 10);
+    return {
+      hasPre2017: acc.hasPre2017 || y < 2017,
+      hasPost2017: acc.hasPost2017 || y >= 2017
+    };
+  }, {hasPre2017: false, hasPost2017: false});
+
+  if (attribute === "Total Farmers" && years.length > 1 && hasPre2017 && hasPost2017) {
     // we need to make two requests -- one for pre-2017 years, and one for 2017+ years
     const pre2017Years = years.filter(year => parseInt(year, 10) < 2017);
     const post2017Years = years.filter(year => parseInt(year, 10) >= 2017);
@@ -533,7 +543,22 @@ const getAttrData = async (params: IGetAttrDataParams, selectedOptions: IStateOp
       console.log(`No data returned for ${attribute} at ${geographicLevel} level in ${years} for ${states}`);
       return undefined;
     }
+  }
+  
+  // For large year ranges, we need to batch requests to avoid API timeouts.
+  if (years.length > MAX_YEARS_PER_REQUEST) {
+    const allData: any[] = [];
+    for (let i = 0; i < years.length; i += MAX_YEARS_PER_REQUEST) {
+      const yearBatch = years.slice(i, i + MAX_YEARS_PER_REQUEST);
+      const req = createRequest({...reqParams, years: yearBatch});
+      const res = await fetchDataWithRetry(req, setReqCount);
+      if (res?.data) {
+        allData.push(...res.data);
+      }
+    }
+    return allData.length > 0 ? allData : undefined;
   } else {
+    const req = createRequest(reqParams);
     const res = await fetchDataWithRetry(req, setReqCount);
     if (res) {
       return res.data;
