@@ -18,7 +18,7 @@ import Error from "../assets/warning.svg";
 import css from "./app.scss";
 
 const iFrameDescriptor ={
-  version: "0.0.1",
+  version: process.env.PLUGIN_VERSION || "local-build",
   pluginName: "nass-plugin",
   title: "NASS Quickstats Data",
   dimensions: {width: 327, height: 400},
