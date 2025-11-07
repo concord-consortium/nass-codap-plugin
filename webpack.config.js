@@ -148,9 +148,6 @@ module.exports = (env, argv) => {
       warningsFilter: /export .* was not found in/,
     },
     plugins: [
-      new webpack.DefinePlugin({
-        'process.env.REACT_APP_NASS_PROXY_URL': JSON.stringify(process.env.REACT_APP_NASS_PROXY_URL || ''),
-      }),
       new ESLintPlugin({
         extensions: ['ts', 'tsx', 'js', 'jsx'],
       }),
