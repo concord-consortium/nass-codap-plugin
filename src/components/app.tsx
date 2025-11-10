@@ -21,7 +21,7 @@ const iFrameDescriptor ={
   version: process.env.PLUGIN_VERSION || "local-build",
   pluginName: "National Agricultural Statistics Service",
   title: "NASS Quickstats Data",
-  dimensions: {width: 335, height: 400},
+  dimensions: {width: 355, height: 400},
 };
 
 function App() {
