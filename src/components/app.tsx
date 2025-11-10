@@ -19,9 +19,9 @@ import css from "./app.scss";
 
 const iFrameDescriptor ={
   version: process.env.PLUGIN_VERSION || "local-build",
-  pluginName: "nass-plugin",
+  pluginName: "National Agricultural Statistics Service",
   title: "NASS Quickstats Data",
-  dimensions: {width: 327, height: 400},
+  dimensions: {width: 335, height: 400},
 };
 
 function App() {
