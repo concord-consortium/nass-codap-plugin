@@ -29,3 +29,7 @@ export const isDefaultSelection = (selectedOptions: IStateOptions, defaultOption
     return selected === defaultVal;
   });
 };
+
+export const isCategorical = (name: string): boolean => {
+  return name === "State" || name === "County" || name === "Agricultural District";
+};
