@@ -1,4 +1,4 @@
-import { flatten, getQueryParams, isDefaultSelection } from "./utils";
+import { flatten, getQueryParams, isDefaultSelection, isCategorical } from "./utils";
 import { IStateOptions } from "../constants/types";
 
 describe("utils", () => {
@@ -211,6 +211,33 @@ describe("utils", () => {
       };
 
       expect(isDefaultSelection(selectedWithMixedOrder, defaultsWithMixed)).toBe(true);
+    });
+  });
+
+  describe("isCategorical", () => {
+    it("should return true for State, County, or Agricultural District", () => {
+      expect(isCategorical("State")).toBe(true);
+      expect(isCategorical("County")).toBe(true);
+      expect(isCategorical("Agricultural District")).toBe(true);
+    });
+
+    it("should return false for Year", () => {
+      expect(isCategorical("Year")).toBe(false);
+    });
+
+    it("should return false for numeric attribute names", () => {
+      expect(isCategorical("Total Number of Farmers")).toBe(false);
+      expect(isCategorical("Total Area")).toBe(false);
+      expect(isCategorical("Corn Yield")).toBe(false);
+    });
+
+    it("should return false for boundary attributes", () => {
+      expect(isCategorical("State Boundary")).toBe(false);
+      expect(isCategorical("County Boundary")).toBe(false);
+    });
+
+    it("should return false for empty string", () => {
+      expect(isCategorical("")).toBe(false);
     });
   });
 });

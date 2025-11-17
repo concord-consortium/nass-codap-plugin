@@ -13,7 +13,7 @@ import { Attribute, GeographicLevel, ICropDataItem, ILivestockCategory, ILivesto
 import { multiRegions } from "../constants/regionData";
 import { cropOptions, livestockOptions, fiftyStates } from "../constants/constants";
 import { countyData } from "../constants/counties";
-import { getQueryParams } from "./utils";
+import { getQueryParams, isCategorical } from "./utils";
 import { sizeAttributes, attrToCODAPColumnName, economicClassAttirbutes } from "../constants/codapMetadata";
 import { strings } from "../constants/strings";
 
@@ -241,7 +241,7 @@ const makeCODAPAttributeDef = (attr: Attribute, geoLevel: GeographicLevel) => {
     return {
       name,
       unit,
-      type: name === "State" || name === "County" ? "categorical" : "numeric"
+      type: isCategorical(name) ? "categorical" : "numeric"
     };
   }
 };
