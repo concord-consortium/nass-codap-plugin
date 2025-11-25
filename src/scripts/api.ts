@@ -379,6 +379,36 @@ interface IProcessAttributeData {
   stateArray: string[]
 }
 
+/**
+ * Backfills Agricultural District values across all items for the same county/state.
+ * This prevents CODAP from creating duplicate county parent cases when some years have
+ * Agricultural District data and others don't.
+ */
+const backfillAgriculturalDistricts = (items: any[]) => {
+  // Build a map of county -> state -> agricultural district
+  const countyDistrictMap: {[key: string]: {[key: string]: string}} = {};
+  
+  items.forEach((item: any) => {
+    if (item["Agricultural District"]) {
+      const county = item.County;
+      const state = item.State;
+      if (!countyDistrictMap[county]) {
+        countyDistrictMap[county] = {};
+      }
+      countyDistrictMap[county][state] = item["Agricultural District"];
+    }
+  });
+  
+  // Backfill all items for those counties with their Agricultural District value
+  items.forEach((item: any) => {
+    const county = item.County;
+    const state = item.State;
+    if (countyDistrictMap[county]?.[state]) {
+      item["Agricultural District"] = countyDistrictMap[county][state];
+    }
+  });
+};
+
 const processAttributeData = async (props: IProcessAttributeData) => {
   const {attribute, items, geographicLevel, years, unit, selectedOptions, setReqCount, stateArray} = props;
   const queryParams = getQueryParams(attribute);
@@ -391,6 +421,7 @@ const processAttributeData = async (props: IProcessAttributeData) => {
       // find all the data items that match this item's location and year
       const matchingData = findMatchingData({isMultiStateRegion, data, item, geoLevel: geographicLevel});
       if (matchingData.length) {
+        // Populate Agricultural District if available (backfill logic will propagate to all items for this county)
         if (geographicLevel === "County" && matchingData[0].asd_desc && !item["Agricultural District"]) {
           item["Agricultural District"] = matchingData[0].asd_desc;
         }
@@ -504,6 +535,10 @@ const getItems = async (selectedOptions: IStateOptions, setReqCount: ISetReqCoun
         await processAttributeData({attribute, items, geographicLevel, years, unit: "", selectedOptions, setReqCount, stateArray});
       }
     }
+  }
+
+  if (geographicLevel === "County") {
+    backfillAgriculturalDistricts(items);
   }
 
   return items;
