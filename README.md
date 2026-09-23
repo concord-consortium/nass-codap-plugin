@@ -35,39 +35,18 @@ You *do not* need to build to deploy the code, that is automatic.  See more info
 
 This application requires a proxy server to access the NASS QuickStats API. The proxy URL is configured via the `REACT_APP_NASS_PROXY_URL` environment variable. For development, you can use a locally-running instance of [nass-proxy](https://github.com/concord-consortium/nass-proxy).
 
+See the [Deployment](#deployment) section above and [docs/deploy.md](docs/deploy.md) for how releases are built, deployed, and promoted.
+
 ## Deployment
 
-Production releases to S3 are based on the contents of the /dist folder and are built automatically by GitHub Actions
-for each branch and tag pushed to GitHub.
+S3 deployment is handled by GitHub Actions using OIDC for AWS authentication. See [deploy-setup.md in starter-projects](https://github.com/concord-consortium/starter-projects/blob/main/doc/deploy-setup.md) for how the AWS side is set up, and [docs/deploy.md](docs/deploy.md) for how deploys work in this repo.
 
-Branches are deployed to http://nass-plugin.concord.org/branch/<name>.
-If the branch name starts or ends with a number this number is stripped off.
 
-Tags are deployed to http://nass-plugin.concord.org/version/<name>.
-
-To deploy a production release:
-
-1. Increment version number in package.json
-2. Create new entry in CHANGELOG.md
-3. Run `git log --pretty=oneline --reverse <last release tag>...HEAD | grep '#' | grep -v Merge` and add contents (after edits if needed to CHANGELOG.md)
-4. Run `npm run build`
-5. Copy asset size markdown table from previous release and change sizes to match new sizes in `dist`
-6. Create `release-<version>` branch and commit changes, push to GitHub, create PR and merge
-7. Checkout master and pull
-8. Create an annotated tag for the version, of the form `v[x].[y].[z]`, include at least the version in the tag message. On the command line this can be done with a command like `git tag -a v1.2.3 -m "1.2.3 some info about this version"`
-9. Push the tag to github with a command like: `git push origin v1.2.3`.
-10. Use https://github.com/concord-consortium/starter-projects/releases to make this tag into a GitHub release.
-11. Run the release workflow to update http://starter-projects.concord.org/index.html.
-    1. Navigate to the actions page in GitHub and the click the "Release" workflow. This should take you to this page: https://github.com/concord-consortium/starter-projects/actions/workflows/release.yml.
-    2. Click the "Run workflow" menu button.
-    3. Type in the tag name you want to release for example `v1.2.3`.  (Note this won't work until the PR has been merged to master)
-    4. Click the `Run Workflow` button.
-
-### Testing
+## Testing
 
 Run `npm test` to run jest tests. Run `npm run test:full` to run jest and Cypress tests.
 
-##### Cypress Run Options
+### Cypress Run Options
 
 Inside of your `package.json` file:
 1. `--browser browser-name`: define browser for running tests
@@ -79,7 +58,7 @@ Inside of your `package.json` file:
 7. `--key`: specify your secret record key
 8. `--reporter`: specify a mocha reporter
 
-##### Cypress Run Examples
+### Cypress Run Examples
 
 1. `cypress run --browser chrome` will run cypress in a chrome browser
 2. `cypress run --headed --no-exit` will open cypress test runner when tests begin to run, and it will remain open when tests are finished running.
