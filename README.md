@@ -1,7 +1,3 @@
-## Deployment
-
-S3 deployment is handled by GitHub Actions using OIDC for AWS authentication. See [deploy-setup.md in starter-projects](https://github.com/concord-consortium/starter-projects/blob/main/doc/deploy-setup.md) for how the AWS side is set up, and [docs/deploy.md](docs/deploy.md) for how deploys work in this repo.
-
 ### Initial steps
 
 1. Clone this repo and `cd` into it
@@ -41,11 +37,16 @@ This application requires a proxy server to access the NASS QuickStats API. The 
 
 See the [Deployment](#deployment) section above and [docs/deploy.md](docs/deploy.md) for how releases are built, deployed, and promoted.
 
-### Testing
+## Deployment
+
+S3 deployment is handled by GitHub Actions using OIDC for AWS authentication. See [deploy-setup.md in starter-projects](https://github.com/concord-consortium/starter-projects/blob/main/doc/deploy-setup.md) for how the AWS side is set up, and [docs/deploy.md](docs/deploy.md) for how deploys work in this repo.
+
+
+## Testing
 
 Run `npm test` to run jest tests. Run `npm run test:full` to run jest and Cypress tests.
 
-##### Cypress Run Options
+### Cypress Run Options
 
 Inside of your `package.json` file:
 1. `--browser browser-name`: define browser for running tests
@@ -57,7 +58,7 @@ Inside of your `package.json` file:
 7. `--key`: specify your secret record key
 8. `--reporter`: specify a mocha reporter
 
-##### Cypress Run Examples
+### Cypress Run Examples
 
 1. `cypress run --browser chrome` will run cypress in a chrome browser
 2. `cypress run --headed --no-exit` will open cypress test runner when tests begin to run, and it will remain open when tests are finished running.

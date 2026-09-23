@@ -2,10 +2,10 @@
 
 S3 deployment is handled by GitHub Actions. Pushes are deployed to `models-resources/nass-plugin/` by the `s3-deploy` job in [`ci.yml`](../.github/workflows/ci.yml).
 
-Branches are deployed to http://nass-plugin.concord.org/branch/<name>.
+Branches are deployed to `https://nass-plugin.concord.org/branch/<name>`.
 If the branch name starts or ends with a number this number is stripped off.
 
-Tags are deployed to http://nass-plugin.concord.org/version/<name>.
+Tags are deployed to `https://nass-plugin.concord.org/version/<name>`.
 
 A released version is promoted to the top-level `index.html` by [`release.yml`](../.github/workflows/release.yml) via `workflow_dispatch`.
 
@@ -34,3 +34,5 @@ The GitHub actions in this project are allowed to update files in S3 using OIDC.
 This repo's S3 prefix (`nass-plugin`) does not match its GitHub repository name (`nass-codap-plugin`), so the role also has an inline policy, `NassPluginLegacyPrefix`, granting the same object-level permissions on `models-resources/nass-plugin/*`.
 
 See [deploy-setup.md in starter-projects](https://github.com/concord-consortium/starter-projects/blob/main/doc/deploy-setup.md) for how the AWS side is set up.
+
+Two hardening options sometimes suggested in code review — splitting the build and the deploy into separate jobs, and pinning actions to a commit SHA — have been considered and declined. See [Hardening we have chosen not to do](https://github.com/concord-consortium/starter-projects/blob/main/doc/deploy-setup.md#hardening-we-have-chosen-not-to-do) for the reasons.
